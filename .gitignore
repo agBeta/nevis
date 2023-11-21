@@ -1,2 +1,5 @@
 /.vscode
-/self-documentation/**
+/self-documentation
+/node_modules
+/logs
+/temp
