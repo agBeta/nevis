@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "module": "es2020",
+        "moduleResolution": "Node",
+        "outDir": "./tsBuild/just-to-turn-off-some-tsconfig-error",
+        "allowSyntheticDefaultImports": true,
+        "paths": {
+            "$types": ["./types.d.ts"],
+        }
+    },
+    "include": ["./**/*.js", "/*.js"],
+    "exclude": ["./node_modules", "./**/node_modules", "./temp"],
+    "types": [ 
+        "node",
+        "express"
+    ]
+}
