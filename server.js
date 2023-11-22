@@ -11,8 +11,8 @@ app.set("views", path.resolve(__dirname, "client"));
 
 
 app.use("/public/fonts",
-    //  By default, "express.static()" sets Cache-Control to 'public, max-age=0', so we are fine. But for fonts, we
-    //  decided to cache them for a long time.
+    //  By default, "express.static()" sets Cache-Control to 'public, max-age=0'. But for fonts, we want the browser
+    //  to cache them longer.
     express.static(path.resolve(__dirname, "client", "public", "fonts"), { maxAge: "30d" })
 );
 app.use("/public", express.static(path.resolve(__dirname, "client", "public")));
