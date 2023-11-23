@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "start": "node ./src/server.js",
-    "lint": "eslint ./src/server.js"
+    "lint": "eslint .",
+    "test:unit": "node --test src/**/*.test.js",
+    "test:int": "node --test tests/integration",
+    "test:int:only": "node --test --test-only tests/integration"
   },
   "keywords": [],
   "author": "",
