@@ -1,5 +1,5 @@
-/.vscode
 /self-documentation
 /**/node_modules
-/logs
+/web-app/logs
 /temp
+/web-app/.env
