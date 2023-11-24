@@ -15,9 +15,8 @@ router.use("/public/fonts",
 router.use("/public", express.static(path.resolve(__dirname, "..", "client", "public")));
 
 router.get("/*", (req, res) => {
-    res.sendFile("index.html", {
-        maxAge: "1d",
-        root: path.resolve(__dirname, "..", "client")
+    res.render("index", {
+        
     });
 });
 
