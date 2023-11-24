@@ -8,12 +8,14 @@
         "outDir": "./tsBuild/just-to-turn-off-some-tsconfig-error",
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "$types": ["./types.d.ts"],
+            "#types": ["./src/types.d.ts"],
+            "#utils/*": ["./src/utils/*"],
+            "#controllers/*": ["./src/controllers/*"]
         }
     },
     "include": ["./**/*.js", "/*.js"],
     "exclude": ["./node_modules", "./**/node_modules", "./temp"],
-    "types": [ 
+    "types": [
         "node",
         "express"
     ]
