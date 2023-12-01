@@ -1,7 +1,12 @@
 import { Request, Response, CookieOptions } from "express";
+import { Pool, Connection } from "mysql2/promise";
 
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;
+
+export type MYSQLConnection = Promise<Connection>;
+export type MySQLConnectionPool = Pool;
+
 
 export type HttpRequest = {
     readonly path: string,
@@ -56,7 +61,7 @@ export type Handler = (HttpRequest) => Promise<HttpResponse>;
 
 export type Controller = (HttpRequest) => HttpResponse | Promise<HttpResponse>;
 
-
+/** @todo TODO change to CodeService */
 export type VerificationService = {
     createAndSendCode: (email: string) => Promise<void>,
     verify: (email: string, code: string) => Promise<boolean>
@@ -64,10 +69,11 @@ export type VerificationService = {
 
 export type EmailService = {
     send: ({ email: string, subject: string, body: string }) => Promise<void>
-}
+} 
 
 export type CodeDataAccess = {
-    findOne: (criteria: Object) => Promise<any>,
-    insert: (Object) => Promise<any>,
-    deleteOne: (criteria: Object) => Promise<any>
+    doFindAll: ({ 
+        [email]: string 
+    }) => Promise<{code: string, email: string, expiresAt: string}[]>,
+    doInsert: (Object) => Promise<any>,
 };
