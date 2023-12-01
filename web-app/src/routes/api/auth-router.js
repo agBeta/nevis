@@ -1,9 +1,9 @@
 import express from "express";
 import makeExpressCallback from "#utils/express-callback.js";
-import { makeEndpointController as makeVerificationCodeEndpointController } from "#controllers/auth/verification-code.js";
+import { verificationController } from "#controllers";
 
 const authRouter = express.Router();
 
-authRouter.post("/verification-code", makeExpressCallback());
+authRouter.all("/verification-code", makeExpressCallback(verificationController));
 
 export { authRouter };
