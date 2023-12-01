@@ -6,6 +6,13 @@ export default Object.freeze({
      * @returns {Promise<void>}
      */
     send: async function ({ email, subject, body }) {
-        /** @todo TODO */
+        console.log(process.env.NODE_ENV);
+        console.log(`Sending email to ${email}`);
+        console.log(`subject: ${subject}`);
+        console.log(`body: ${body}`);
+
+        if (process.env.NODE_ENV !== "dev" && process.env.NODE_ENV !== "test"){
+            // @todo TODO use node-mailer
+        }
     }
 });

@@ -9,7 +9,7 @@ import { InvalidStateError, OperationalError } from "#utils/errors.js";
 export default function makeCodeDbAccess({ dbConnectionPool }) {
 
     //  We don't use setInterval. We already have EVENT in our MySQL Server. Moreover it makes testing a bit difficult.
-    //      setInterval(removeExpiredCodes, 60 * 1000);
+    //  setInterval(removeExpiredCodes, 60 * 1000);
     //  You may also read test.md in self-documentation.
 
     return Object.freeze({
@@ -48,18 +48,6 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
         }
         catch (error) {
             throw new OperationalError("Could not insert new code into database.");
-        }
-    }
-
-
-    async function removeExpiredCodes() {
-        try {
-            const db = await dbConnectionPool;
-            const sqlCmd = "DELETE FROM codes_tbl WHERE expiresAt < ? ;";
-            // Do not use [Date.now()] below. It will throw an error.
-            await db.execute(sqlCmd, [new Date()]);
-        } catch (e) {
-            throw new OperationalError("Could not remove expired codes. " + e.message);
         }
     }
 

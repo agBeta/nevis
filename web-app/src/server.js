@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { router as apiRouter } from "./routes/api/index.js";
 import { router as filesRouter } from "./routes/files-router.js";
 import { createServer } from "node:http";
+import morgan from "morgan";
 
 dotenv.config();
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -13,13 +14,11 @@ app.set("trust proxy", true);
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "client"));
 
-// app.use("/api", apiRouter);
-// app.use("/", filesRouter);
-app.get("/*", (req, res) => {
-    res.status(200).json({firstName: "Jack"});
-});
+app.use(morgan("dev"));
+app.use("/api", apiRouter);
+app.use("/", filesRouter);
 
-const PORT = process.env.PORT || 9009;
+const PORT = process.env.PORT;
 const server = createServer(app);
 
 if (process.env.NODE_ENV !== "test") {

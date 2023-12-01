@@ -11,10 +11,7 @@ export function makeEndpointController({ verificationService }) {
             case "POST":
                 return handlePost(httpRequest);
             default:
-                return makeHttpError({
-                    statusCode: 405,
-                    errorMessage: `${httpRequest.method} is not allowed.`
-                });
+                return makeHttpError({ statusCode: 405, error: `${httpRequest.method} is not allowed.` });
         }
     };
 
@@ -22,7 +19,7 @@ export function makeEndpointController({ verificationService }) {
     /** @type {Handler} */
     async function handlePost(httpRequest) {
         console.log("Received");
-        return makeHttpError({ statusCode: 404, errorMessage: "test" });
+        return makeHttpError({ statusCode: 400, error: "test" });
     }
 }
 

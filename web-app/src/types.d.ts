@@ -1,11 +1,14 @@
 import { Request, Response, CookieOptions } from "express";
 import { Pool, Connection } from "mysql2/promise";
+import { Server } from "http";
 
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;
 
 export type MYSQLConnection = Promise<Connection>;
 export type MySQLConnectionPool = Pool;
+
+export type WebAppServer = Server;
 
 
 export type HttpRequest = {
