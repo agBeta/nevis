@@ -3,18 +3,20 @@
  * @typedef {import("#types").ExpressResponse} ExpressResponse
  * @typedef {import("../types").HttpRequest} HttpRequest
  * @typedef {import("#types").Controller} Controller
- */
+*/
 
 /**
  * @param {Controller} controller
- * @returns {Function} callback
+ * @returns {*} callback
  */
 export default function makeExpressCallback(controller) {
 
     return async (/** @type ExpressRequest */ req, /** @type ExpressResponse */ res) => {
         const httpRequest = adaptRequest(req);
         try {
+            console.log(httpRequest);
             const httpResponse = await controller(httpRequest);
+            console.log(httpResponse);
 
             if (httpResponse.headers) {
                 res.set(httpResponse.headers);
@@ -30,7 +32,7 @@ export default function makeExpressCallback(controller) {
         }
         catch (e) {
             /** @todo TODO log the error */
-            res.status(500).send({ error: "An unknown error occurred on the server." });
+            res.status(500).json({ error: "An unknown error occurred on the server." });
         }
     };
 
