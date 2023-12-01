@@ -1,20 +1,35 @@
 {
     "compilerOptions": {
+        "target": "es2017",
         "allowJs": true,
         "checkJs": true,
         "strict": true,
-        "module": "es2020",
+        "module": "esnext",
         "moduleResolution": "Node",
         "outDir": "./tsBuild/just-to-turn-off-some-tsconfig-error",
         "allowSyntheticDefaultImports": true,
+        "useUnknownInCatchVariables": false,
         "paths": {
-            "#types": ["./src/types.d.ts"],
-            "#utils/*": ["./src/utils/*"],
-            "#controllers/*": ["./src/controllers/*"]
+            "#types": [
+                "./src/types.d.ts"
+            ],
+            "#utils/*": [
+                "./src/utils/*"
+            ],
+            "#controllers": [
+                "./src/controllers/index.js"
+            ]
         }
     },
-    "include": ["./**/*.js", "/*.js"],
-    "exclude": ["./node_modules", "./**/node_modules", "./temp"],
+    "include": [
+        "./**/*.js",
+        "/*.js"
+    ],
+    "exclude": [
+        "./node_modules",
+        "./**/node_modules",
+        "./temp"
+    ],
     "types": [
         "node",
         "express"
