@@ -4,7 +4,7 @@ import { AppError } from "#utils/errors.js";
  * @param {{ codeDb: CodeDataAccess,
  *           emailService: EmailService,
  *           generateCode: () => Promise<string>
- *         }} properties
+ *         }} injected
  * @returns {VerificationService}
  */
 export default function makeVerificationService({ codeDb, emailService, generateCode }) {
@@ -25,12 +25,18 @@ export default function makeVerificationService({ codeDb, emailService, generate
             .concat(" ").concat("این کد برای مدت").concat(" " + "10" + " ").concat("دقیقه معتبر میباشد" + ".");
 
         await emailService.send({ email, subject, body });
-        await codeDb.insert({ email, code });
-        /** @todo TODO Error handling */
+        await codeDb.doInsert({ email, code });
     }
 
     async function verify(/** @type {string} */ email, /** @type {string} */ code) {
-        return true;
+        const results = await codeDb.doFindAll({ email });
+        if (!results) return false;
+        for (const el of results){
+            if (el.code === code) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
