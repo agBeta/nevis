@@ -10,7 +10,6 @@ export type MySQLConnectionPool = Pool;
 
 export type WebAppServer = Server;
 
-
 export type HttpRequest = {
     readonly path: string,
     readonly method: string,
@@ -56,27 +55,37 @@ export type HttpCacheableResponse = HttpResponse & {
     }
 };
 
+
 // For reusable function interface, see https://stackoverflow.com/questions/55086068/jsdoc-for-reused-function-interface.
+export type Controller = (httpRequest: HttpRequest) => HttpResponse | Promise<HttpResponse>;
+
+// Synonyms for services: utility, facility. Not to confuse with so-called 'services' in REST API design.
+// ----------------------------
+// ----------------------------
+export type Timestamp = number;
+
+export type IdFacility = {
+    createId: () => string,
+    isValidId: (string) => boolean
+};
+
+export type UserRawInformation = {
+    id?: string, 
+    email: string,
+    displayName: string,
+    birthYear: number,
+    signupAt?: Timestamp,
+    lastLoginAt?: Timestamp
+}
+
+export type User = {
+
+};
+
+export type UserFactory = (UserRawInformation) => User;
+
 
 //  No need to specify return type as "HttpResponse | Promise<HttpResponse>". See the following link:
 //  https://stackoverflow.com/questions/57695992/in-typescript-why-cant-an-async-function-return-a-union-of-type-t-promiset
-export type Handler = (HttpRequest) => Promise<HttpResponse>;
+// export type Handler = (httpRequest: HttpRequest) => Promise<HttpResponse>;
 
-export type Controller = (HttpRequest) => HttpResponse | Promise<HttpResponse>;
-
-/** @todo TODO change to CodeService */
-export type VerificationService = {
-    createAndSendCode: (email: string) => Promise<void>,
-    verify: (email: string, code: string) => Promise<boolean>
-};
-
-export type EmailService = {
-    send: ({ email: string, subject: string, body: string }) => Promise<void>
-} 
-
-export type CodeDataAccess = {
-    doFindAll: ({ 
-        [email]: string 
-    }) => Promise<{code: string, email: string, expiresAt: string}[]>,
-    doInsert: (Object) => Promise<any>,
-};

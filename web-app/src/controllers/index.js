@@ -1,5 +1,5 @@
-import { verificationService } from "../services/index.js";
-import { makeEndpointController as makeVerificationCodeEndpointController } from "./verification-code.js";
+import { verificationService } from "../use-cases/index.js";
+import { makeEndpointController as makeVerificationCodeEndpointController } from "./auth-code.js/index.js";
 
 const verificationController = makeVerificationCodeEndpointController({ verificationService });
 

@@ -1,9 +1,9 @@
 import path from "node:path";
+import { createServer } from "node:http";
 import express from "express";
 import dotenv from "dotenv";
-import { router as apiRouter } from "./routes/api/index.js";
+import { router as apiRouter } from "./routes/api-router.js";
 import { router as filesRouter } from "./routes/files-router.js";
-import { createServer } from "node:http";
 import morgan from "morgan";
 
 dotenv.config();

@@ -18,8 +18,6 @@ export function makeEndpointController({ verificationService }) {
 
     /** @type {Handler} */
     async function handlePost(httpRequest) {
-        console.log("Received");
-        return makeHttpError({ statusCode: 400, error: "test" });
     }
 }
 
@@ -27,6 +25,6 @@ export function makeEndpointController({ verificationService }) {
  * @typedef {import("#types").HttpRequest} HttpRequest
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
- * @typedef {import("#types").Handler} Handler
+
  * @typedef {import("#types").VerificationService} VerificationService
  */

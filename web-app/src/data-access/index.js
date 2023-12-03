@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import { AppError } from "#utils/errors.js";
-import makeCodeDbAccess from "./code-db.js";
+import makeCodeDbAccess from "./codes-db.js/index.js";
 dotenv.config();
 
 const dbName = process.env.MYSQL_DB_NAME;
