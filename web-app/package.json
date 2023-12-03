@@ -8,8 +8,9 @@
     "start": "node ./src/server.js",
     "lint": "eslint .",
     "test:unit": "cross-env NODE_ENV=test node --test src/**/*.test.js",
-    "test:int": "cross-env NODE_ENV=test node  --test-reporter=spec --test tests/integration",
-    "test": "npm run test:int"
+    "test:integration": "cross-env NODE_ENV=test node  --test-reporter=spec --test tests/integration",
+    "test": "npm run test:integration",
+    "pretest": "cross-env NODE_ENV=test PORT=9079 node ./src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "helmet": "^7.1.0",
     "hpp": "^0.2.3",
     "mysql2": "^3.6.5",
+    "sanitize-html": "^2.11.0",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
