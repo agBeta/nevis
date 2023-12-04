@@ -1,7 +1,9 @@
+import crypto from "node:crypto";
 import { init, isCuid } from "@paralleldrive/cuid2";
+import sanitizeHtml from "sanitize-html";
 import buildMakeUser from "./user.js";
+import buildMakePost from "./post.js";
 
-/** @type Id */
 const Id = Object.freeze({
     createId: init({
         length: 24,
@@ -11,5 +13,21 @@ const Id = Object.freeze({
     isValidId: isCuid
 });
 
-const makeUser = buildMakeUser({ Id: Id, hash });
+const makeUser = buildMakeUser({ Id });
+
+const makePost = buildMakePost({
+    Id,
+    sanitize: function(text) {
+        return sanitizeHtml(text, {
+            disallowedTagsMode: "discard",
+            allowedIframeHostnames: []
+        });
+    },
+    calcHash: function(text) {
+        return crypto.createHash("md5").update(text).digest("hex");
+    }
+});
+
+
+export { makeUser, makePost };
 
