@@ -1,4 +1,4 @@
-import { InvalidStateError } from "#utils/errors";
+import { InvalidStateError } from "#utils/errors.js";
 
 /**
  * @param {{ Id: import("#types").IdFacility }} injections

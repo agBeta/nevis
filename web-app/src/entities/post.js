@@ -1,4 +1,4 @@
-import { InvalidStateError } from "#utils/errors";
+import { InvalidStateError } from "#utils/errors.js";
 
 const DELETED_TITLE = "xX این پست حذف شده است Xx";
 const DELETED_BODY = "xX این پست حذف شده است Xx";
