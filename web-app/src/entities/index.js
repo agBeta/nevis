@@ -7,9 +7,10 @@ import buildMakePost from "./post.js";
 const Id = Object.freeze({
     createId: init({
         length: 24,
-        // less collision between different hosts  https://github.com/paralleldrive/cuid2#configuration.
+        // less collision between different hosts. Based on https://github.com/paralleldrive/cuid2#configuration.
         fingerprint: (process.env.APP_ID || "host"),
     }),
+    // isCuid has some issues at the moment (2023-12). See https://github.com/paralleldrive/cuid2/issues/66.
     isValidId: isCuid
 });
 
