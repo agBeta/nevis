@@ -26,18 +26,31 @@ describe("user entity", { concurrency: true }, () => {
         assert.doesNotThrow(() => makeUser(rawUser));
     });
 
-    it("should throw error if given id isn't valid", (ctx) => {
+    it("should throw error if given id isn't valid", () => {
         //  Note, isCuid has some issues at the moment (2023-12). See https://github.com/paralleldrive/cuid2/issues/66.
         const rawUser = makeFakeUser({ id: "invalid id" });
+        assert.strictEqual(rawUser.id, "invalid id");
         assert.throws(() => makeUser(rawUser), {
             name: /StateError/i,
             message: /must have a valid id/i
         });
     });
 
-    it.todo("signupAt is now in UTC if signupAt isn't given");
+    it("signupAt is now if signupAt isn't given", () => {
+        const noSignupAtRawUser = makeFakeUser({ signupAt: undefined });
+        assert.strictEqual(noSignupAtRawUser.signupAt, undefined);
+        assert.doesNotThrow(() => makeUser(noSignupAtRawUser));
+        const user = makeUser(noSignupAtRawUser);
+        assert.strictEqual(typeof user.getSignupAt() === "number", true);
+        assert.strictEqual(Date.now() - user.getSignupAt() >= 0, true);
+        assert.strictEqual(Date.now() - user.getSignupAt() <= 500, true);
+    });
 
-    it.todo("should throw error if email isn't valid");
+    it("should throw error if email isn't valid", () => {
+        const rawUser = makeFakeUser({ email: "invalid" });
+        assert.throws(() => makeUser(rawUser), { name: /StateError/i, message: /email/i });
+    });
+
     it.todo("should throw error if birthYear isn't valid");
     it.todo("lastLoginAt is now in UTC if lastLoginAt isn't given");
 });
