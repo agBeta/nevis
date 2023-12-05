@@ -5,6 +5,13 @@ import { makePost } from "./index.js";
 
 
 describe("post entity", { concurrency: true }, () => {
+    it("should create post entity", () => {
+        const rawPost = makeFakePost({});
+        assert.strictEqual(rawPost.postTitle.length > 1, true);
+        assert.strictEqual(rawPost.authorId.length > 1, true);
+        const post = makePost(rawPost);
+        assert.strictEqual(Object.prototype.hasOwnProperty.call(post, "getCreatedAt"), true);
+    });
     it("should throw error if postTitle is not supplied", () => {
         const rawPost = makeFakePost({ postTitle: undefined });
         assert.throws(() => makePost(rawPost), {
@@ -12,7 +19,13 @@ describe("post entity", { concurrency: true }, () => {
             message: /postTitle/i
         });
     });
-    it.todo("should throw error if authorId is not supplied");
+    it("should throw error if authorId is not supplied", () => {
+        const rawPost = makeFakePost({ authorId: undefined });
+        assert.throws(() => makePost(rawPost), {
+            name: /StateError/i,
+            message: /authorId/i
+        });
+    });
     it.todo("should throw error if given authorId is not valid");
     it.todo("can create an id if not supplied");
     it.todo("sanitizes its postTitle");
