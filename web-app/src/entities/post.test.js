@@ -42,9 +42,9 @@ describe("post entity", { concurrency: true }, () => {
 
     it("can have postTitle", () => {
         const rawPost = makeFakePost({ postTitle: "Something Fine" });
-        assert.strictEqual(rawPost.postTitle, "Something Fine" );
+        assert.strictEqual(rawPost.postTitle, "Something Fine");
         const post = makePost(rawPost);
-        assert.strictEqual(post.getPostTitle(), "Something Fine" );
+        assert.strictEqual(post.getPostTitle(), "Something Fine");
     });
 
     it("sanitizes its postTitle", () => {
@@ -57,13 +57,41 @@ describe("post entity", { concurrency: true }, () => {
         assert.strictEqual(sane.getPostTitle(), "<p>یک عنوان درست</p>");
         assert.strictEqual(insane.getPostTitle(), "<p>but this is ok</p>");
 
-        const totallyInsaneRawPost = makeFakePost({ postTitle: "<script>You are hacked.</script>" })
+        const totallyInsaneRawPost = makeFakePost({ postTitle: "<script>You are hacked.</script>" });
         assert.throws(() => makePost(totallyInsaneRawPost), {
             name: /Invalid/i,
             message: /no usable text/i
         });
     });
 
+    it("shouldn't be published by default", () => {
+        const raw = makeFakePost({ isPublished: undefined });
+        const post = makePost(raw);
+        assert.strictEqual(post.isPublished(), false);
+        post.publish();
+        assert.strictEqual(post.isPublished(), true);
+    });
+
+    it("can be (un)published", () => {
+        const raw = makeFakePost({ isPublished: false });
+        const post = makePost(raw);
+        post.publish();
+        assert.strictEqual(post.isPublished(), true);
+        post.unPublish();
+        assert.strictEqual(post.isPublished(), false);
+    });
+
+    it("can be marked as deleted", () => {
+        const raw = makeFakePost({ postTitle: "Some title", postBody: "Some text in body" });
+        const post = makePost(raw);
+        assert.strictEqual(post.isDeleted(), false);
+        assert.strictEqual(post.getPostTitle(), "Some title");
+        post.markDeleted();
+        assert.strictEqual(post.isDeleted(), true);
+        assert.strictEqual(post.getPostTitle(), "xX این پست حذف شده است Xx");
+        assert.strictEqual(post.getPostBody(), "xX این پست حذف شده است Xx");
+        assert.strictEqual(post.getAuthorId(), "deleted");
+    });
+
     it.todo("sanitizes its postBody");
-    it.todo("shouldn't publish by default");
 });
