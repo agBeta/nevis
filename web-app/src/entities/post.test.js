@@ -5,7 +5,13 @@ import { makePost } from "./index.js";
 
 
 describe("post entity", { concurrency: true }, () => {
-    it.todo("should throw error if postTitle is not supplied");
+    it("should throw error if postTitle is not supplied", () => {
+        const rawPost = makeFakePost({ postTitle: undefined });
+        assert.throws(() => makePost(rawPost), {
+            name: /StateError/i,
+            message: /postTitle/i
+        });
+    });
     it.todo("should throw error if authorId is not supplied");
     it.todo("should throw error if given authorId is not valid");
     it.todo("can create an id if not supplied");
