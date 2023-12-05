@@ -1,4 +1,4 @@
-import { InvalidStateError } from "#utils/errors.js";
+import { InvalidError } from "#utils/errors.js";
 
 /**
  * @param {{ Id: import("#types").IdFacility }} injections
@@ -23,31 +23,31 @@ export default function buildMakeUser({ Id }) {
 
         // Early sign of putting application in invalid state helps us debug easier, before invalid object contaminates the rest.
         if (!Id.isValidId(id)) {
-            throw new InvalidStateError("User must have a valid id.");
+            throw new InvalidError("User must have a valid id.");
         }
         if (!displayName) {
-            throw new InvalidStateError("User must have a displayName.");
+            throw new InvalidError("User must have a displayName.");
         }
         if (displayName.length < 3) {
-            throw new InvalidStateError("User displayName must be longer than 2 characters.");
+            throw new InvalidError("User displayName must be longer than 2 characters.");
         }
         if (displayName.length > 80) {
-            throw new InvalidStateError("User displayName must be smaller than 80 characters.");
+            throw new InvalidError("User displayName must be smaller than 80 characters.");
         }
         if (!email) {
-            throw new InvalidStateError("User must have an email");
+            throw new InvalidError("User must have an email");
         }
         if (!email.includes("@") || !email.includes(".")) {
-            throw new InvalidStateError("User email must be valid.");
+            throw new InvalidError("User email must be valid.");
         }
         if (email.length > 80) {
-            throw new InvalidStateError("User email must be smaller than 80 characters.");
+            throw new InvalidError("User email must be smaller than 80 characters.");
         }
         if (!birthYear) {
-            throw new InvalidStateError("User must have a birthYear.");
+            throw new InvalidError("User must have a birthYear.");
         }
         if (birthYear < 1200 || birthYear > 1500) {
-            throw new InvalidStateError("User birthYear must greater than 1200 and less than 1500.");
+            throw new InvalidError("User birthYear must greater than 1200 and less than 1500.");
         }
 
         return Object.freeze({

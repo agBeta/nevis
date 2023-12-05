@@ -8,7 +8,7 @@ describe("user entity", { concurrency: true }, () => {
     it("should throw error if displayName isn't valid", () => {
         const rawUser = makeFakeUser({ displayName: null });
         assert.throws(() => makeUser(rawUser), {
-            name: /StateError/i,
+            name: /Invalid/i,
             message: /must have a displayName/i
         });
     });
@@ -31,7 +31,7 @@ describe("user entity", { concurrency: true }, () => {
         const rawUser = makeFakeUser({ id: "invalid id" });
         assert.strictEqual(rawUser.id, "invalid id");
         assert.throws(() => makeUser(rawUser), {
-            name: /StateError/i,
+            name: /Invalid/i,
             message: /must have a valid id/i
         });
     });
@@ -48,7 +48,7 @@ describe("user entity", { concurrency: true }, () => {
 
     it("should throw error if email isn't valid", () => {
         const rawUser = makeFakeUser({ email: "invalid" });
-        assert.throws(() => makeUser(rawUser), { name: /StateError/i, message: /email/i });
+        assert.throws(() => makeUser(rawUser), { name: /Invalid/i, message: /email/i });
     });
 
     it.todo("should throw error if birthYear isn't valid");

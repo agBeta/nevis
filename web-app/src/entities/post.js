@@ -1,4 +1,4 @@
-import { InvalidStateError } from "#utils/errors.js";
+import { InvalidError } from "#utils/errors.js";
 
 const DELETED_TITLE = "xX این پست حذف شده است Xx";
 const DELETED_BODY = "xX این پست حذف شده است Xx";
@@ -25,26 +25,26 @@ export default function buildMakePost({ Id, calcHash, sanitize }) {
     }) {
 
         if (!id || !Id.isValidId(id)) {
-            throw new InvalidStateError("Post must have a valid id.");
+            throw new InvalidError("Post must have a valid id.");
         }
         if (!authorId || !Id.isValidId(authorId)) {
-            throw new InvalidStateError("Post must have a valid authorId.");
+            throw new InvalidError("Post must have a valid authorId.");
         }
         if (!postTitle) {
-            throw new InvalidStateError("Post must have a postTitle.");
+            throw new InvalidError("Post must have a postTitle.");
         }
         if (!postBody) {
-            throw new InvalidStateError("Post must have a postBody.");
+            throw new InvalidError("Post must have a postBody.");
         }
 
         let sanitizedTitle = sanitize(postTitle).trim();
         let sanitizedBody = sanitize(postBody).trim();
 
         if (sanitizedTitle.length < 1) {
-            throw new InvalidStateError("Post title contains no usable text.");
+            throw new InvalidError("Post title contains no usable text.");
         }
         if (sanitizedBody.length < 1) {
-            throw new InvalidStateError("Post body contains no usable text.");
+            throw new InvalidError("Post body contains no usable text.");
         }
 
         //  Hash is an expensive time-consuming function. We calculate the hash only the first time we want to

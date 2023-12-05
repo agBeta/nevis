@@ -9,14 +9,14 @@ export class AppError extends Error {
 }
 
 
-export class InvalidStateError extends Error {
+export class InvalidError extends Error {
     /**
      * This error means: Refused to continue. Continuing will potentially create invalid state in our objects.
      * @param {string} message
      */
     constructor(message) {
         super(message);
-        this.name = this.constructor.name /* which is InvalidStateError in this case */;
+        this.name = this.constructor.name /* which is InvalidError in this case */;
         Error.captureStackTrace(this, AppError);
     }
 }
