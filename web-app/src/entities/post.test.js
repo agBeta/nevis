@@ -93,5 +93,26 @@ describe("post entity", { concurrency: true }, () => {
         assert.strictEqual(post.getAuthorId(), "deleted");
     });
 
-    it.todo("sanitizes its postBody");
+    it("sanitizes its postBody", () => {
+        //  Not all XSS attacks include < or > at all, depending on where the data is being inserted. Also note
+        //  if the attacker types &#39; it will bypass escape characters.
+        //  Based on https://stackoverflow.com/a/9139603.
+        const insane = makePost({
+            ...makeFakePost({
+                postTitle: `
+                <button onclick="confirm('Want to delete <%= data_from_user; %> ?'">Delete</button><p>but this is ok</p>
+            ` })
+        });
+        assert.strictEqual(insane.getPostTitle(), "Delete<p>but this is ok</p>");
+
+        // Copied from https://erlend.oftedal.no/blog/static-124.html.
+        const totallyInsaneRawPost = makeFakePost({
+            postTitle: `<img src="/user/13.jpg"
+                onmouseover="showToolTip('Click for a larger picture of Joe&#39;);alert(&#39;XSS')" />`
+        });
+        assert.throws(() => makePost(totallyInsaneRawPost), {
+            name: /Invalid/i,
+            message: /no usable text/i
+        });
+    });
 });
