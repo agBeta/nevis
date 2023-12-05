@@ -33,7 +33,12 @@ describe("post entity", { concurrency: true }, () => {
             message: /valid authorId/i
         });
     });
-    it.todo("can create an id if not supplied");
+    it("can create an id if not supplied", () => {
+        const idLessRawPost = makeFakePost({ id: undefined });
+        assert.strictEqual(idLessRawPost.id == null, true);
+        const post = makePost(idLessRawPost);
+        assert.strictEqual(post.getId().length > 1, true);
+    });
     it.todo("sanitizes its postTitle");
     it.todo("sanitizes its postBody");
     it.todo("shouldn't publish by default");
