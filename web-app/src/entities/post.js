@@ -24,10 +24,10 @@ export default function buildMakePost({ Id, calcHash, sanitize }) {
         modifiedAt = Date.now()
     }) {
 
-        if (!Id.isValidId(id)) {
+        if (!id || !Id.isValidId(id)) {
             throw new InvalidStateError("Post must have a valid id.");
         }
-        if (!Id.isValidId(authorId)) {
+        if (!authorId || !Id.isValidId(authorId)) {
             throw new InvalidStateError("Post must have a valid authorId.");
         }
         if (!postTitle) {
