@@ -1,16 +1,14 @@
 CREATE TABLE IF NOT EXISTS users_tbl (
     id CHAR(24) PRIMARY KEY,
     email VARCHAR(80) NOT NULL,
+    -- Column data type for hashedCode is based on https://stackoverflow.com/a/5881429.
+    hashedPassword CHAR(60),
     -- NAME is a reserved word in MySQL.
     displayName VARCHAR(80) NOT NULL,
-        
     -- Don't use YEAR(4). See database.md from self-documentation.
     birthYear SMALLINT NULL,
-
     signupAt TIMESTAMP NOT NULL,
-    lastLoginAt TIMESTAMP NOT NULL,
 
-    INDEX idx_users_id (id),
     CONSTRAINT UNQ_user_email UNIQUE(email)
 ) 
 ENGINE=INNODB
@@ -19,11 +17,6 @@ ENGINE=INNODB
 -- See timestamp auto-update in database.md from self-documentation.
 ALTER TABLE users_tbl MODIFY 
     signupAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
-ALTER TABLE users_tbl MODIFY 
-    lastLoginAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
-
 
 ALTER TABLE users_tbl MODIFY
     displayName VARCHAR(80)

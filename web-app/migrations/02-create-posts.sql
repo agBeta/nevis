@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS posts_tbl (
 
     postTitle VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     postBody TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-
+    
+    isPublished TINYINT(1) NOT NULL DEFAULT 0,
     createdAt TIMESTAMP NOT NULL,
     modifiedAt TIMESTAMP NOT NULL,
     
