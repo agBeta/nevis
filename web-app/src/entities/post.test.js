@@ -26,7 +26,13 @@ describe("post entity", { concurrency: true }, () => {
             message: /authorId/i
         });
     });
-    it.todo("should throw error if given authorId is not valid");
+    it("should throw error if given authorId is not valid", () => {
+        const rawPost = makeFakePost({ authorId: "something invalid" });
+        assert.throws(() => makePost(rawPost), {
+            name: /StateError/i,
+            message: /valid authorId/i
+        });
+    });
     it.todo("can create an id if not supplied");
     it.todo("sanitizes its postTitle");
     it.todo("sanitizes its postBody");
