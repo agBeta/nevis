@@ -15,21 +15,21 @@ describe("post entity", { concurrency: true }, () => {
     it("should throw error if postTitle is not supplied", () => {
         const rawPost = makeFakePost({ postTitle: undefined });
         assert.throws(() => makePost(rawPost), {
-            name: /StateError/i,
+            name: /Invalid/i,
             message: /postTitle/i
         });
     });
     it("should throw error if authorId is not supplied", () => {
         const rawPost = makeFakePost({ authorId: undefined });
         assert.throws(() => makePost(rawPost), {
-            name: /StateError/i,
+            name: /Invalid/i,
             message: /authorId/i
         });
     });
     it("should throw error if given authorId is not valid", () => {
         const rawPost = makeFakePost({ authorId: "something invalid" });
         assert.throws(() => makePost(rawPost), {
-            name: /StateError/i,
+            name: /Invalid/i,
             message: /valid authorId/i
         });
     });
@@ -39,7 +39,31 @@ describe("post entity", { concurrency: true }, () => {
         const post = makePost(idLessRawPost);
         assert.strictEqual(post.getId().length > 1, true);
     });
-    it.todo("sanitizes its postTitle");
+
+    it("can have postTitle", () => {
+        const rawPost = makeFakePost({ postTitle: "Something Fine" });
+        assert.strictEqual(rawPost.postTitle, "Something Fine" );
+        const post = makePost(rawPost);
+        assert.strictEqual(post.getPostTitle(), "Something Fine" );
+    });
+
+    it("sanitizes its postTitle", () => {
+        const sane = makePost({
+            ...makeFakePost({ postTitle: "<p>یک عنوان درست</p>" })
+        });
+        const insane = makePost({
+            ...makeFakePost({ postTitle: "<script>This is not so fine</script><p>but this is ok</p>" })
+        });
+        assert.strictEqual(sane.getPostTitle(), "<p>یک عنوان درست</p>");
+        assert.strictEqual(insane.getPostTitle(), "<p>but this is ok</p>");
+
+        const totallyInsaneRawPost = makeFakePost({ postTitle: "<script>You are hacked.</script>" })
+        assert.throws(() => makePost(totallyInsaneRawPost), {
+            name: /Invalid/i,
+            message: /no usable text/i
+        });
+    });
+
     it.todo("sanitizes its postBody");
     it.todo("shouldn't publish by default");
 });
