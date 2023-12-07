@@ -4,7 +4,7 @@ CREATE EVENT e_delete_expired_codes
     ON SCHEDULE 
         EVERY 1 MINUTE
     ENABLE
-    COMMENT 'Removes codes that are expired and can no longer be used to verify the email'
+    COMMENT 'Removes codes that are expired and can no longer be used to signup/reset password'
     DO
         BEGIN
             DELETE FROM `codes_tbl`
