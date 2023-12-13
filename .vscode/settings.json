@@ -5,9 +5,16 @@
     "workbench.colorCustomizations": {
         "editorRuler.foreground": "#40b3ff5e"
     },
+    "cSpell.language": "en,fa",
     "cSpell.words": [
+        "birthdate",
         "Cacheable",
+        "INNODB",
+        "Jalali",
         "linebreak",
+        "nocheck",
+        "signup",
+        "TINYINT",
         "worktree",
         "worktrees"
     ],
