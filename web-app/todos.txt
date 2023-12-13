@@ -1,1 +1,3 @@
 // @todo test alert('1') for displayName --> maybe in e2e
+
+// Swagger auth/code --> we do not tell email is already in use. We do not leak info.
