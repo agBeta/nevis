@@ -66,5 +66,7 @@ export function closeConnections(){
  */
 export async function findInCodesDb(email){
     const db = await dbConnectionPool;
-
+    const [rows,] = await db.execute("SELECT * from codes_tbl WHERE email LIKE ? ;", [email]);
+    if (!rows) return [];
+    return /** @type {any[]} */ (rows);
 }
