@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users_tbl (
     email VARCHAR(80) NOT NULL,
     -- Column data type for hashedCode is based on https://stackoverflow.com/a/5881429.
     hashedPassword CHAR(60),
-    -- NAME is a reserved word in MySQL.
+    -- NAME is a reserved word in MySQL. Also see "backticks vs brackets" in database.md self-documentation.
     displayName VARCHAR(80) NOT NULL,
     -- Don't use YEAR(4). See database.md from self-documentation.
     birthYear SMALLINT NULL,
