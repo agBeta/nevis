@@ -54,6 +54,12 @@ export async function clearDb(name = "all") {
 }
 
 
+export function closeConnections(){
+    // Based on https://github.com/mysqljs/mysql/blob/master/Readme.md#terminating-connections.
+    dbConnectionPool.end();
+}
+
+
 /**
  * @param {string} email
  * @returns {Promise<any[]>}
