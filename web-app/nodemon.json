@@ -1,0 +1,12 @@
+{
+    "ignore": [
+      "node_modules/**/node_modules"
+    ],
+    "verbose": true,
+    "watch": ["src/"],
+    "env": {
+      "NODE_ENV": "test",
+      "PORT": 9079
+    },
+    "ext": "js,json,cjs,ejs"
+}
