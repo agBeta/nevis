@@ -45,3 +45,7 @@ Caution These methods of escaping values only works when the NO_BACKSLASH_ESCAPE
 
 ## Faker 
 There are a few methods which use relative dates for which setting a random seed is not sufficient to have reproducible results.  for example: faker.date.past. This is because these methods default to creating a date before or after "today", and "today" depends on when the code is run. See https://fakerjs.dev/guide/usage.html#reproducible-results.
+
+
+## Joi
+We use it. But be careful about email. Note, don't use regex for email verification. See https://stackoverflow.com/a/1373724 and https://mailoji.com/.

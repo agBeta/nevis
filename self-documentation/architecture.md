@@ -36,3 +36,7 @@ We may have differnt verification services. One with email. One with SMS. one wi
 ## Why randomBytes over UUID for sessionId?
 According to https://nodejs.org/api/crypto.html#cryptorandombytessize-callback, Generates cryptographically strong pseudorandom data.
 See database.md uuid.
+
+
+## Why Joi inside controller?
+Want to see validation next to code. Less jump around and search fatigue. No overdoing of clean-architecture.

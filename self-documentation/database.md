@@ -153,6 +153,10 @@ https://stackoverflow.com/questions/11264447/what-is-the-limit-of-auto-increment
 The limit of an auto_increment column is the size of the column. For unsigned int it is 4294967295.
 Also https://stackoverflow.com/questions/46365450/what-to-do-if-the-auto-increment-value-reaches-its-limit.
 
+## AUTO_INCREMENT Handling in InnoDb
+See https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html. `innodb_autoinc_lock_mode` variable.
+
+</br>
 
 ## Delete in MySQL
 According to https://mysql.rjweb.org/doc.php/deletebig, To be ready for a crash, a transactional engine such as InnoDB will record what it is doing to a log file. To make that somewhat less costly, the log file is sequentially written. If the log files you have (there are usually 2) fill up because the delete is really big, then the undo information spills into the actual data blocks, leading to even more I/O.

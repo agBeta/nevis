@@ -12,3 +12,6 @@ We also install `eslint` npm package in the root. So VSCode will use exact same 
 Prettier is an *opnionated* code formatter, meaning we cannot customize it as we like. Some of format styles that are forced by prettier, emotionally hurts me. So we decided not to use prettier. It is fairly ok, because this repo is maintained by a single contributor.
 
 <br/>
+
+## unicorn
+Checkout https://github.com/sindresorhus/eslint-plugin-unicorn/tree/main. More than 100 powerful ESLint rules. We did not use it.
