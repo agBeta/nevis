@@ -12,7 +12,13 @@ Bill Souror accesses db in integration/e2e test. See https://github.com/dev-mast
 ## Fixtures
 Fixtures for unit tests is different from fixtures for integration and e2e test.
 
-## Test doesn't finished
+## Why not use pretest?
+Tried many ways. Spinning up the server in pretest seems to block the process and the process does not finish so that `npm test` could run. 
+https://stackoverflow.com/a/23987884/22969951. Even created a bash script. But it will destroy the whole purpose of having cross-env. 
+
+At last, the best way is actually creating two separate processes in separate terminals. One spin-up the server using nodemon. Then run node test runner afterwards in another terminal session.
+
+## Test doesn't finish
 
 The problem was setInterval inside our codeDb. But in case you really need to have some setInterval inside you code and want to clean them up, you can see https://stackoverflow.com/questions/8635502/how-do-i-clear-all-intervals. **Note** that based on the spec [https://html.spec.whatwg.org/#timers] does **not** guarantee any specific order for the handles, only that they are numeric and unique. Also **note** that returned ids are from same pool for setTimeout and setInterval (see https://stackoverflow.com/questions/9913719/are-cleartimeout-and-clearinterval-the-same.).
 
@@ -35,4 +41,3 @@ See [this part](https://nodejs.org/docs/latest/api/test.html#running-tests-from-
 
 ### How tests are processed?
 Although it might sound trivial but it is fundamental. Remember, tests pass if they don't fail. Tests created via the test module consist of a single function that is processed in one of three ways. Read the first lines from [official docs](https://nodejs.org/docs/latest/api/test.html#test-runner).
-

@@ -49,3 +49,8 @@ There are a few methods which use relative dates for which setting a random seed
 
 ## Joi
 We use it. But be careful about email. Note, don't use regex for email verification. See https://stackoverflow.com/a/1373724 and https://mailoji.com/.
+
+
+## Express response
+https://expressjs.com/en/api.html#res.send.
+The body parameter can be a Buffer object, a String, an object, Boolean, or an Array. But This method performs many useful tasks for simple non-streaming responses: For example, it automatically assigns the Content-Length HTTP response header field (unless previously defined) and provides automatic HEAD and HTTP cache freshness support.

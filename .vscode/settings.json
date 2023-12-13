@@ -15,6 +15,7 @@
         "nocheck",
         "signup",
         "TINYINT",
+        "uncategorized",
         "worktree",
         "worktrees"
     ],

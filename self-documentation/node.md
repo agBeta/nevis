@@ -1,6 +1,6 @@
 ## `__dirname` vs `cwd`
 
-`__dirname` is not the process directory path, it is the path of the current module's directory. So we use `process.cwd()` in our files router. For for information, see these links: [nodejs docs](https://nodejs.org/docs/latest/api/modules.html#__dirname) and this [stackoverflow answer](https://stackoverflow.com/a/16730379). `__dirname` is preferrable for some reasons.  
+`__dirname` is not the process directory path, it is the path of the current module's directory. So we use `process.cwd()` in our files router. For for information, see these links: [nodejs docs](https://nodejs.org/docs/latest/api/modules.html#__dirname) and this [stackoverflow answer](https://stackoverflow.com/a/16730379). `__dirname` is preferable for some reasons.  
 There seems to be some gotchas regarding how to obtain value of `__dirname` so that is will be correct both in Windows and Linux. You can read this [stackoverflow question](https://stackoverflow.com/questions/46745014/alternative-for-dirname-in-node-js-when-using-es6-modules). We are deploying our code on a linux server so we don't care so much.
 
 
@@ -23,3 +23,7 @@ Important note: make sure you set path alias also in jsconfig.json. See [typescr
 According to [stackoverflow](https://stackoverflow.com/questions/73817412/why-is-the-agent-option-not-available-in-node-native-fetch), fetch()'s HTTP stack (it uses a parallel, from-scratch HTTP stack rewrite called undici.) is entirely separate from the standard HTTP stack, it should not be surprising that the options you can supply to http.get et al don't work with fetch().
 See also https://www.npmjs.com/package/node-fetch#custom-agent.
 But we don't need agent options like Support self-signed certificate, only IPv4 or IPv6 or Custom DNS Lookup. So we use native fetch.
+
+
+## strict mode
+Module code is always strict mode code. But in comments says it is not exactly true. See https://stackoverflow.com/a/18417571/22969951.
