@@ -9,7 +9,8 @@ export function makeEndpointController({ codeService }) {
 
     // In order to prevent object creation overhead, declare schema here, not inside validateRequest.
     const schema = Joi.object({
-        email: Joi.string().email().max(80).required()
+        email: Joi.string().email().max(80).required(),
+        purpose: Joi.string().min(3).max(20)
     });
 
     return Object.freeze({
@@ -21,12 +22,13 @@ export function makeEndpointController({ codeService }) {
     async function handleRequest(/** @type HttpRequest */ httpRequest) {
         // @ts-ignore
         const /** @type {string} */ email = httpRequest.body.email;
+        // @ts-ignore
+        const /** @type {string} */ purpose = httpRequest.body.purpose;
 
         /** @todo TODO idempotent */
 
         const code = await codeService.generateCode();
-        console.log(code);
-        await codeService.storeInDbAndSendCode(email, code);
+        await codeService.storeInDbAndSendCode({ email, code, purpose });
         return {
             headers: { "Content-Type": "application/json" },
             statusCode: 201,
@@ -40,6 +42,13 @@ export function makeEndpointController({ codeService }) {
             return {
                 isValid: false,
                 httpErrorResponse: makeHttpError({ statusCode: 400, error: "Bad request: " + error.message })
+            };
+        }
+        // @ts-ignore
+        if (!["signup", "reset-password"].includes(httpRequest.body.purpose)) {
+            return {
+                isValid: false,
+                httpErrorResponse: makeHttpError({ statusCode: 400, error: "Bad request: purpose is not valid." })
             };
         }
         httpRequest.body = normalized;

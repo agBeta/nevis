@@ -5,7 +5,7 @@ import makeCodeDbAccess from "./codes-db.js";
 dotenv.config();
 
 const dbName = process.env.MYSQL_DB_NAME;
-if (!dbName) throw new AppError("Database connection must have a valid database name.");
+if (!dbName) throw new AppError("Database connection must have a valid database name.", "env-var");
 
 const connectionPool = mysql.createPool({
     host: "localhost",
@@ -23,6 +23,8 @@ const connectionPool = mysql.createPool({
     // This field also seems important.
     charset: "utf8mb4_unicode_ci"
 });
+
+/** @todo TODO connection error handling */
 
 const codeDb = makeCodeDbAccess({ dbConnectionPool: connectionPool });
 

@@ -134,8 +134,19 @@ export type PostFactory = (PostRawInformation) => Post;
 
 export type CodeService = {
     generateCode: () => Promise<string>,
-    storeInDbAndSendCode: (string, string) => Promise<void>,
+    storeInDbAndSendCode: ({ email: string, code: string, purpose: string }) => Promise<void>,
     verifyCode: (string, string) => Promise<boolean>
+};
+
+export type EmailService = {
+    send: ({ email: string, subject: string, body: string }) => Promise<void>
+}
+
+// --------------------- Data access -------------------------------
+
+export type CodeDataAccess = {
+    doInsert: ({ email: string, code: string, purpose: string }) => Promise<void>,
+    doFindAll: ({ email: string }) => Promise<any>
 };
 
 

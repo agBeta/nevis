@@ -18,22 +18,20 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
     });
 
     /**
-     * @param { { email?: string } } criteria
+     * @param { { email: string } } criteria
      */
-    async function doFindAll({ email } = {}) {
+    async function doFindAll({ email }) {
         const db = await dbConnectionPool;
-        const sqlCmd = "SELECT * FROM codes_tbl WHERE email = ? ;";
+        const sqlCmd = "SELECT * FROM codes_tbl WHERE email LIKE ? ;";
         const [rows,] = await db.execute(sqlCmd, [email]);
         if (!rows) return [];
         return /** @type {any[]} */(rows);
     }
 
     /**
-     * @param { { email?: string, code?: string } } properties
+     * @param { { email: string, code: string, purpose: string } } properties
      */
-    async function doInsert({ email, code }) {
-        if (!email) throw new InvalidError("email must be valid.");
-        if (!code) throw new InvalidError("code must be valid.");
+    async function doInsert({ email, code, purpose }) {
         const db = await dbConnectionPool;
 
         const expiresAt = new Date();
@@ -43,8 +41,8 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
             //  According to https://stackoverflow.com/a/20296312, using MySQL encrypt() is not recommended, since
             //  any data we pass to a MySQL query may end up in server log files.
             const hashedCode = await bcrypt.hash(code, 8);
-            const sqlCmd = "INSERT INTO codes_tbl (email, hashedCode, expiresAt) VALUES (?, ?, ?) ;";
-            await db.execute(sqlCmd, [email, hashedCode, expiresAt]);
+            const sqlCmd = "INSERT INTO codes_tbl (email, hashedCode, purpose, expiresAt) VALUES (?, ?, ?, ?) ;";
+            await db.execute(sqlCmd, [email, hashedCode, purpose, expiresAt]);
         }
         catch (error) {
             throw new OperationalError("Could not insert new code into database. " + error.message, "code-db");
