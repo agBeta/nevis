@@ -1,10 +1,17 @@
+import log from "./log.js";
+
 export class AppError extends Error {
     /**
      * @param {string} message
      */
-    constructor(message) {
+    constructor(message, keyword="uncategorized") {
         super(message);
         Error.captureStackTrace(this, AppError);
+        log({
+            level: "error",
+            keyword: keyword,
+            message: this.stack ?? this.message
+        });
     }
 }
 
@@ -26,8 +33,13 @@ export class OperationalError extends Error {
      * This error is caused by external resources, e.g. database connection/query fails, HTTP request fails, etc.
      * @param {string} message
      */
-    constructor(message) {
+    constructor(message, keyword="uncategorized") {
         super(message);
         Error.captureStackTrace(this, AppError);
+        log({
+            level: "error",
+            keyword: keyword,
+            message: this.stack ?? this.message
+        });
     }
 }
