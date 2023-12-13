@@ -27,6 +27,11 @@ export default function makeExpressCallback(controller) {
                     res.cookie(cookie.name, cookie.value, cookie.options);
                 });
             }
+
+            /** @todo TODO if size of response is large, it probably means we have a security leak, mainly SQL injection.
+             *  So return 500 instead.
+            */
+
             res.status(httpResponse.statusCode).send(httpResponse.body);
         }
         catch (e) {
