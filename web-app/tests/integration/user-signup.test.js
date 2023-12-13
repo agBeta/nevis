@@ -1,37 +1,32 @@
-import test from "node:test";
+import test, { describe, it } from "node:test";
 import assert from "node:assert";
+import { clearDb } from "../fixtures/db.js";
+import { makeFakeUser } from "../fixtures/user.js";
+import { postRequest } from "../fixtures/http-client.js";
 
 
-test("User Signup - Happy Flow", { concurrency: false, timeout: 8000, todo: true }, async (t) => {
+test("user signup", { concurrency: false, timeout: 8000 }, async (ctx) => {
+    // await ctx.before(async () => {
+    //     await clearDb("users");
+    // });
 
-    await t.test("should return 201 and send the generated code to the given email and store the generated code in codes db", async () => {
-        // post email to api
-        // check if email sending function is invoked
-        // check if code is added in the database
+    await describe("happy flow", async () => {
+        await it("creates a verification code and sends the code to the given email", async () => {
+            const user = makeFakeUser({});
+            ctx.diagnostic("dfdfdsfjsdjfsdjfsdjfjdsfjsdfjdfjsdjf".repeat(30));
+            const response = await postRequest("/api/auth/code", { email: user.email })
+                .then(raw => raw.json());
+            assert.strictEqual(response.statusCode, 201);
+        });
+        // describe.todo("GIVEN supplied verification code and user profile details are valid", () => {
+        //     it.todo("creates the user in db", async () => {
+
+        //     });
+        //     it.todo("sets session cookie");
+        //     it.todo("returns user id");
+        // });
     });
 
-    await t.test("should verify the given email and add the user to db", async () => {
-        // add a code,email to the code db
-        // post email,code,user details to api
-        // check if user is added to the database
-        // check if signupAt and lastLoginAt is correct
-    });
-
-    await t.test("should verify the given email and set session cookie", async () => {
-        // add a code,email to code db
-        // post email,code,user details to api
-        // check if session cookie is set
-        // check if hitting auth/ routes return user id
-    });
+    // it.todo("returns 400 and does not create code if no email is supplied");
+    // it.todo("returns 409 if given email already exists");
 });
-
-
-// describe("User Login", { concurrency: false, timeout: 8000 }, () => {
-//     it("should authenticate client with correct credentials and set session cookie", { todo: true }, async () => { });
-//     it("should return error when the client tries to login with incorrect credentials",{ todo: true }, async () => { });
-// });
-
-
-/**
- * @typedef {import("#types").WebAppServer} WebAppServer
- */
