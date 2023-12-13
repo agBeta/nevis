@@ -57,11 +57,9 @@ export type HttpCacheableResponse = HttpResponse & {
 
 
 // Based on https://stackoverflow.com/questions/41705559/dynamically-resolve-property-type-based-on-another-property-value-in-typescript.
-interface ResultOfValid { isValid: true };
-interface ResultOfInvalid { isValid: false, httpErrorResponse: HttpResponse };
+interface ResultOfValid { isValid: boolean = true };
+interface ResultOfInvalid { isValid: boolean = false, httpErrorResponse: HttpResponse };
 export type ValidationResult = ResultOfValid | ResultOfInvalid;
-// The following didn't work as expected and ts annoys in express-callback.
-// { isValid: boolean = true } | { isValid: boolean = false, httpErrorResponse: HttpResponse };
 
 
 // For reusable function interface, see https://stackoverflow.com/questions/55086068/jsdoc-for-reused-function-interface.

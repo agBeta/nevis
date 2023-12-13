@@ -14,7 +14,7 @@ export default function makeExpressCallback(controller) {
 
             const httpResponse = vldResult.isValid
                 ? (await controller.handleRequest(httpRequest))
-                : vldResult.httpErrorResponse;
+                : (/** @type {ResultOfInvalid} */ (vldResult)).httpErrorResponse;
 
             if (httpResponse.headers) {
                 res.set(httpResponse.headers);
@@ -50,4 +50,5 @@ export default function makeExpressCallback(controller) {
  * @typedef {import("../types").HttpRequest} HttpRequest
  * @typedef {import("#types").Controller} Controller
  * @typedef {import("#types").SetCookie} SetCookie
+ * @typedef {import("#types").ResultOfInvalid} ResultOfInvalid
 */
