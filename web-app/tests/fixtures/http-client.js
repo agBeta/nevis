@@ -11,6 +11,8 @@ export function postRequest(/** @type {string} */ url, /** @type {any} */ body) 
 
     return fetch(BASE_URL + url, {
         method: "POST",
+        // Headers are crucial. Never omit them.
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
     });
 }

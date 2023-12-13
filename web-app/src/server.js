@@ -21,10 +21,8 @@ app.use("/", filesRouter);
 const PORT = process.env.PORT;
 const server = createServer(app);
 
-if (process.env.NODE_ENV !== "test") {
-    server.listen(PORT, () => {
-        console.log(`Hello on port ${PORT}`);
-    });
-}
+server.listen(PORT, () => {
+    console.log(`Hello on port ${PORT}`);
+});
 
 export { server };

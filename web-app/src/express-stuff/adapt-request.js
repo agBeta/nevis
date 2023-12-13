@@ -41,7 +41,6 @@ export default function adaptRequest(req) {
         ip: { value: req.ip, },
         originalUrl: { value: req.originalUrl },
 
-
         body: {
             value: req.body,
             configurable: false,
@@ -50,7 +49,10 @@ export default function adaptRequest(req) {
         }
     });
 
-    /** @todo TODO find some workaround for this */
+    console.log(req.body);
+    Object.preventExtensions(adapted);
+
+    /** @todo TODO find some neat workaround instead of this ts ignore hack. */
     // @ts-ignore
     return adapted;
 }

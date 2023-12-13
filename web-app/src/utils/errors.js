@@ -3,8 +3,9 @@ import log from "./log.js";
 export class AppError extends Error {
     /**
      * @param {string} message
+     * @param {string} keyword
      */
-    constructor(message, keyword="uncategorized") {
+    constructor(message, keyword) {
         super(message);
         Error.captureStackTrace(this, AppError);
         log({
@@ -32,8 +33,9 @@ export class OperationalError extends Error {
     /**
      * This error is caused by external resources, e.g. database connection/query fails, HTTP request fails, etc.
      * @param {string} message
+     * @param {string} keyword
      */
-    constructor(message, keyword="uncategorized") {
+    constructor(message, keyword) {
         super(message);
         Error.captureStackTrace(this, AppError);
         log({

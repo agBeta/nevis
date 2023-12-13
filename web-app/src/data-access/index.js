@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import { AppError } from "#utils/errors.js";
-import makeCodeDbAccess from "./codes-db.js/index.js";
+import makeCodeDbAccess from "./codes-db.js";
 dotenv.config();
 
 const dbName = process.env.MYSQL_DB_NAME;
@@ -22,7 +22,6 @@ const connectionPool = mysql.createPool({
     timezone: "+03:30",
     // This field also seems important.
     charset: "utf8mb4_unicode_ci"
-    // We could declare our own typeCast for dates.
 });
 
 const codeDb = makeCodeDbAccess({ dbConnectionPool: connectionPool });

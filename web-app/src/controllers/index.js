@@ -1,6 +1,7 @@
-import { verificationService } from "../use-cases/index.js";
-import { makeEndpointController as makeVerificationCodeEndpointController } from "./auth-code.js/index.js";
+import { codeService } from "../use-cases/index.js";
+import { makeEndpointController as makePostAuthCodeController } from "./auth-code-post.js";
 
-const verificationController = makeVerificationCodeEndpointController({ verificationService });
 
-export { verificationController };
+const postAuthCode = makePostAuthCodeController({ codeService });
+
+export { postAuthCode };

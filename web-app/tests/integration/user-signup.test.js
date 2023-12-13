@@ -1,22 +1,23 @@
-import test, { describe, it } from "node:test";
+import test, { describe, it, before } from "node:test";
 import assert from "node:assert";
 import { clearDb } from "../fixtures/db.js";
 import { makeFakeUser } from "../fixtures/user.js";
 import { postRequest } from "../fixtures/http-client.js";
 
-
 test("user signup", { concurrency: false, timeout: 8000 }, async (ctx) => {
-    // await ctx.before(async () => {
+    // before(async () => {
     //     await clearDb("users");
     // });
 
     await describe("happy flow", async () => {
-        await it("creates a verification code and sends the code to the given email", async () => {
+        it("creates a verification code and sends the code to the given email", async () => {
             const user = makeFakeUser({});
-            ctx.diagnostic("dfdfdsfjsdjfsdjfsdjfjdsfjsdfjdfjsdjf".repeat(30));
-            const response = await postRequest("/api/auth/code", { email: user.email })
-                .then(raw => raw.json());
-            assert.strictEqual(response.statusCode, 201);
+
+            const raw = await postRequest("/api/auth/code", { email: user.email });
+            const response = await raw.json();
+
+            console.log(response);
+            assert.strictEqual(raw.status, 201);
         });
         // describe.todo("GIVEN supplied verification code and user profile details are valid", () => {
         //     it.todo("creates the user in db", async () => {

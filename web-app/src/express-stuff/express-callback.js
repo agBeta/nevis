@@ -1,10 +1,5 @@
 import adaptRequest from "./adapt-request.js";
-/**
- * @typedef {import("#types").ExpressRequest} ExpressRequest
- * @typedef {import("#types").ExpressResponse} ExpressResponse
- * @typedef {import("../types").HttpRequest} HttpRequest
- * @typedef {import("#types").Controller} Controller
-*/
+import log from "#utils/log.js";
 
 /**
  * @param {Controller} controller
@@ -15,7 +10,11 @@ export default function makeExpressCallback(controller) {
     return async function (/** @type ExpressRequest */ req, /** @type ExpressResponse */ res) {
         const httpRequest = adaptRequest(req);
         try {
-            const httpResponse = await controller(httpRequest);
+            const vldResult = controller.validateRequest(httpRequest);
+
+            const httpResponse = vldResult.isValid
+                ? (await controller.handleRequest(httpRequest))
+                : vldResult.httpErrorResponse;
 
             if (httpResponse.headers) {
                 res.set(httpResponse.headers);
@@ -23,7 +22,7 @@ export default function makeExpressCallback(controller) {
 
             if (httpResponse.cookies) {
                 // Do NOT use `for ... in` for Arrays. See https://stackoverflow.com/a/500531.
-                httpResponse.cookies.forEach(cookie => {
+                httpResponse.cookies.forEach(( /** @type {SetCookie} */ cookie) => {
                     res.cookie(cookie.name, cookie.value, cookie.options);
                 });
             }
@@ -32,12 +31,23 @@ export default function makeExpressCallback(controller) {
              *  So return 500 instead.
             */
 
-            res.status(httpResponse.statusCode).send(httpResponse.body);
+            res.status(httpResponse.statusCode).send(httpResponse.payload);
         }
         catch (e) {
-            /** @todo TODO log the error */
+            log({
+                level: "http",
+                keyword: "Response:5xx",
+                message: "500 from server."
+            });
             res.status(500).json({ error: "An unknown error occurred on the server." });
         }
     };
 }
 
+/**
+ * @typedef {import("#types").ExpressRequest} ExpressRequest
+ * @typedef {import("#types").ExpressResponse} ExpressResponse
+ * @typedef {import("../types").HttpRequest} HttpRequest
+ * @typedef {import("#types").Controller} Controller
+ * @typedef {import("#types").SetCookie} SetCookie
+*/

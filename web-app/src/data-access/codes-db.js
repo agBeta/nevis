@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { InvalidStateError, OperationalError } from "#utils/errors.js";
+import { InvalidError, OperationalError } from "#utils/errors.js";
 
 /**
  *
@@ -32,8 +32,8 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
      * @param { { email?: string, code?: string } } properties
      */
     async function doInsert({ email, code }) {
-        if (!email) throw new InvalidStateError("email must be valid.");
-        if (!code) throw new InvalidStateError("code must be valid.");
+        if (!email) throw new InvalidError("email must be valid.");
+        if (!code) throw new InvalidError("code must be valid.");
         const db = await dbConnectionPool;
 
         const expiresAt = new Date();
@@ -47,7 +47,7 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
             await db.execute(sqlCmd, [email, hashedCode, expiresAt]);
         }
         catch (error) {
-            throw new OperationalError("Could not insert new code into database.");
+            throw new OperationalError("Could not insert new code into database. " + error.message, "code-db");
         }
     }
 
