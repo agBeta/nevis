@@ -16,7 +16,6 @@ Also see Storing Boolean TINYINT in database.md.
 
 ## If you use raw sql query be careful of backticks vs single vs double quotation. See database.md.
 
-
 ## cuid2 vs nanoId vs UUID
 
 

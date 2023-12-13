@@ -34,6 +34,8 @@ Sometimes the test does not finished because of unclosed http connections or soc
 Also read Joshua wise and Golo Roden answers here https://stackoverflow.com/a/31504868.
 Connection timeout and keep-alive manifest iteself even in some packages, slowing down the test. See for example this jsdom issue (https://github.com/jsdom/jsdom/issues/2176). You can disable keep alive in express.static easily. It is described there.
 
+</br>
+
 ## Node test runner  
 
 ### Running tests from the CLI
@@ -41,3 +43,9 @@ See [this part](https://nodejs.org/docs/latest/api/test.html#running-tests-from-
 
 ### How tests are processed?
 Although it might sound trivial but it is fundamental. Remember, tests pass if they don't fail. Tests created via the test module consist of a single function that is processed in one of three ways. Read the first lines from [official docs](https://nodejs.org/docs/latest/api/test.html#test-runner).
+
+</br>
+
+## Test Timezone
+https://stackoverflow.com/questions/16448754/how-to-use-a-custom-time-in-browser-to-test-for-client-vs-server-time-difference/16449343#16449343.
+Unfortunately, JavaScript is only aware of the current time zone, as it is set by the operating system. There are no facilities to let the Date object use a different time zone in a particular context.

@@ -22,3 +22,6 @@ BTW, since we are now deep into this topic, it is worth knowing that there is a 
 
 ## Don't use 
 **Don't** use new Date().toISOString().slice(0, 19).replace('T', ' ') to insert into MySQL. According to Mr Coder comment in https://stackoverflow.com/questions/5129624/convert-js-date-time-to-mysql-datetime, It will throw away the timezone which is crucial piece of information.
+
+## Test Timezone
+See test.md file.
