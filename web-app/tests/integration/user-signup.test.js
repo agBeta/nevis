@@ -3,15 +3,22 @@ import assert from "node:assert";
 import * as DbFixture from "../fixtures/db.js";
 import { makeFakeUser } from "../fixtures/user.js";
 import { postRequest } from "../fixtures/http-client.js";
+import emailService from "../../src/use-cases/email-service.js";
 
-test("user signup", { concurrency: false, timeout: 8000 }, async (ctx) => {
+
+describe("user signup", { concurrency: false, timeout: 8000 }, () => {
 
     before(async () => {
         await DbFixture.clearDb("codes");
         await DbFixture.clearDb("users");
     });
 
-    await describe("happy flow", async () => {
+    describe("@sanity", () => {
+        assert.strictEqual(1, 1);
+        assert.notStrictEqual(1, 2);
+    });
+
+    describe("happy flow", async () => {
         it("creates a signup code and stores in db", async () => {
             const user = makeFakeUser({});
 
@@ -27,6 +34,17 @@ test("user signup", { concurrency: false, timeout: 8000 }, async (ctx) => {
 
             assert.strictEqual(correspondingRecords[0].purpose, "signup");
         });
+
+        // it("create a signup code and sends it via email", async (t) => {
+        //     const spyEmail = t.mock.method(emailService, "send", function spiedImp(){
+        //         console.log("hi".repeat(50));
+        //     }, { times: Infinity });
+        //     const user = makeFakeUser({});
+
+        //     const raw = await postRequest("/api/auth/code", { email: user.email, purpose: "signup" });
+        //     assert.strictEqual(raw.status, 201);
+        //     assert.strictEqual(spyEmail.mock.callCount(), 1);
+        // });
 
         // describe.todo("GIVEN supplied verification code and user profile details are valid", () => {
         //     it.todo("creates the user in db", async () => {

@@ -4,7 +4,7 @@ import { codeDb } from "../data-access/index.js";
 
 
 /** @version 1.0 This service transports generated code via email. We may use mobile phone in future versions. */
-const codeService = makeCodeService({ codeDb, emailService });
+const codeService = makeCodeService({ codeDb, sendEmail: emailService.send });
 
 export { codeService };
 

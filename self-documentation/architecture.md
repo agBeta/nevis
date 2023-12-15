@@ -14,7 +14,7 @@ First it is under data-access so the real semantic of data access is preserved.
 Second, from POV of services, it is considered a db. Services and user cases do not care the underlyings of user-db. 
 
 ## why not -generator for id
-First generator is something specific in world of programmign (i.e. yield).
+First generator is something specific in world of programming (i.e. yield).
 Second its job is not only generating, but also validating.
 
 
@@ -40,3 +40,7 @@ See database.md uuid.
 
 ## Why Joi inside controller?
 Want to see validation next to code. Less jump around and search fatigue. No overdoing of clean-architecture.
+
+
+## Why send-email must be injected to codeService and not implemented inside codeService itself?
+We may have a email service that has priority (high importance) settings for code emails. Also the email service might be heavy and might contain some retry logic or batching or any similar un-intuitive implementation. So definitely don't write send-email inside codeService.
