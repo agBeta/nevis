@@ -53,3 +53,10 @@ We use it. But be careful about email. Note, don't use regex for email verificat
 ## Express response
 https://expressjs.com/en/api.html#res.send.
 The body parameter can be a Buffer object, a String, an object, Boolean, or an Array. But This method performs many useful tasks for simple non-streaming responses: For example, it automatically assigns the Content-Length HTTP response header field (unless previously defined) and provides automatic HEAD and HTTP cache freshness support.
+
+## routes at runtime
+https://stackoverflow.com/questions/20857865/okay-to-add-a-route-to-node-js-express-while-listening.
+The main gotcha is going to be that routes are evaluated in the order they were added, so routes added at runtime will have a lower precedence than routes added earlier. This may or may not matter, depending on your API design.
+
+Although completely un-related but comment by Jacob gives a very good observation: https://stackoverflow.com/questions/24042697/node-js-routes-adding-route-handlers-to-an-already-instantiated-http-server:
+Disclaimer: I'm no Node developer, so read the following with that in mind. There is a small time window for which the listener is missing (between removeListener and on). As load (traffic) increases the risk of a request hitting the server when a listener has been removed while its replacement hasn't yet been registered also increases

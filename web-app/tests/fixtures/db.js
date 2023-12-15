@@ -1,34 +1,12 @@
-import mysql from "mysql2/promise";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-//  We won't any data-access implementation (i.e. src/data-access) here. It leads to coupling their implementation with
-//  test.
-
-const dbName = process.env.MYSQL_DB_NAME;
-if (!dbName) throw new Error("Database connection must have a valid database name.");
-
-const dbConnectionPool = mysql.createPool({
-    host: "localhost",
-    database: dbName.concat("_test"),
-    user: process.env.MYSQL_USERNAME,
-    password: process.env.MYSQL_PASSWORD,
-    connectionLimit: 3,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 10000,
-    timezone: "+03:30",
-    charset: "utf8mb4_unicode_ci"
-});
-
 
 /**
- * @param {"codes" | "auth_sessions" | "users" | "posts" | "all"} [name="all"]
+ * @param {MySQLConnectionPool} dbConnectionPool
+ * @param {"codes" | "auth_sessions" | "users" | "posts" | "all"} [table="all"]
  */
-export async function clearDb(name = "all") {
+export async function doClear(dbConnectionPool, table = "all") {
     const db = await dbConnectionPool;
 
-    switch (name) {
+    switch (table) {
         case "all":
             //  Although deleting users will be enough, since every other table has a foreign key to users_tbl. But who
             //  tests the test? Let's keep it simple and do all.
@@ -54,19 +32,29 @@ export async function clearDb(name = "all") {
 }
 
 
-export function closeConnections(){
+/**
+ * @param {MySQLConnectionPool} dbConnectionPool
+ */
+export function doCloseConnections(dbConnectionPool) {
     // Based on https://github.com/mysqljs/mysql/blob/master/Readme.md#terminating-connections.
     dbConnectionPool.end();
 }
 
 
 /**
+ * Returns all records whose email equals the given email
+ * @param {MySQLConnectionPool} dbConnectionPool
  * @param {string} email
  * @returns {Promise<any[]>}
  */
-export async function findInCodesDb(email){
+export async function doFindAllInCodesDb(dbConnectionPool, email) {
     const db = await dbConnectionPool;
     const [rows,] = await db.execute("SELECT * from codes_tbl WHERE email LIKE ? ;", [email]);
     if (!rows) return [];
     return /** @type {any[]} */ (rows);
 }
+
+
+/**
+ * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
+ */

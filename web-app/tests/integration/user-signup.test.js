@@ -1,16 +1,33 @@
-import test, { describe, it, before, after } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
-import * as DbFixture from "../fixtures/db.js";
+import * as http from "node:http";
+import { promisify } from "node:util";
+import makeDbConnectionPool from "../../src/data-access/connection.js";
+import { installRouter, makeExpressApp } from "../../src/express-stuff/server.js";
+import { router as authRouter } from "../../src/routes/auth-router.js";
+import * as DbFx from "../fixtures/db.js";
+import TEST_CONFIG from "../fixtures/configuration.js";
 import { makeFakeUser } from "../fixtures/user.js";
-import { postRequest } from "../fixtures/http-client.js";
-import emailService from "../../src/use-cases/email-service.js";
+import makeHttpClient from "../fixtures/http-client.js";
+import doListen from "../fixtures/listen.js";
+
+const PORT = TEST_CONFIG.uniqueTestPortFor["user-signup.test.js"];
+const agent = makeHttpClient({ port: PORT });
 
 
 describe("user signup", { concurrency: false, timeout: 8000 }, () => {
+    let /** @type {MySQLConnectionPool} */ db;
+    let /** @type {WebAppServer} */ server;
 
     before(async () => {
-        await DbFixture.clearDb("codes");
-        await DbFixture.clearDb("users");
+        db = makeDbConnectionPool();
+        await DbFx.doClear(db, "codes");
+        await DbFx.doClear(db, "users");
+
+        const app = makeExpressApp();
+        installRouter({ app, router: authRouter, pathPrefix: "/api/v1" });
+        server = http.createServer(app);
+        await doListen(server, PORT);
     });
 
     describe("@sanity", () => {
@@ -22,10 +39,10 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
         it("creates a signup code and stores in db", async () => {
             const user = makeFakeUser({});
 
-            const raw = await postRequest("/api/auth/code", { email: user.email, purpose: "signup" });
+            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
             assert.strictEqual(raw.status, 201);
 
-            const correspondingRecords = await DbFixture.findInCodesDb(user.email);
+            const correspondingRecords = await DbFx.doFindAllInCodesDb(db, user.email);
             assert.strictEqual(correspondingRecords.length == 1, true);
 
             const exp = correspondingRecords[0].expiresAt;
@@ -59,6 +76,13 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
     // it.todo("returns 409 if given email already exists");
 
     after(async () => {
-        await DbFixture.closeConnections();
+        await DbFx.doCloseConnections(db);
+        await promisify(server.close.bind(server))();
     });
 });
+
+
+/**
+ * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
+ * @typedef {import("#types").WebAppServer} WebAppServer
+ */

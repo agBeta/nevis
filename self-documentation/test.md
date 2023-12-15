@@ -4,6 +4,13 @@ Node test runner is native to node. Jest has so many polyfills to work also on t
 
 Also for cuid Jest uses jsdom, which builds a global object which doesn't comply with current standards. See https://github.com/paralleldrive/cuid2#using-in-jest.
 
+## Node Native Test runner downsides
+- Bad error log when assertion fails. You may use `spoke` package.
+- Not enough documentation, especially about setup / teardown.
+
+## Do spin up server before integ test
+You will not be able to mock then.
+
 </br>
 
 ## Integration
@@ -49,3 +56,7 @@ Although it might sound trivial but it is fundamental. Remember, tests pass if t
 ## Test Timezone
 https://stackoverflow.com/questions/16448754/how-to-use-a-custom-time-in-browser-to-test-for-client-vs-server-time-difference/16449343#16449343.
 Unfortunately, JavaScript is only aware of the current time zone, as it is set by the operating system. There are no facilities to let the Date object use a different time zone in a particular context.
+
+
+## Why setup inside `before` hook?
+See https://stackoverflow.com/a/71851612/22969951. if the setup is asynchronous, you can't do it inside describe block. Although it is for jest.

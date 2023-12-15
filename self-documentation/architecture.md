@@ -40,7 +40,7 @@ See database.md uuid.
 
 ## Why Joi inside controller?
 Want to see validation next to code. Less jump around and search fatigue. No overdoing of clean-architecture.
-
+validation near eye.
 
 ## Why send-email must be injected to codeService and not implemented inside codeService itself?
 We may have a email service that has priority (high importance) settings for code emails. Also the email service might be heavy and might contain some retry logic or batching or any similar un-intuitive implementation. So definitely don't write send-email inside codeService.
