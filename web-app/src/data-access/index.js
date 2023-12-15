@@ -6,6 +6,7 @@ dotenv.config();
 
 const dbName = process.env.MYSQL_DB_NAME;
 if (!dbName) throw new AppError("Database connection must have a valid database name.", "env-var");
+const dbPort = process.env.MYSQL_PORT ? Number(process.env.MYSQL_PORT) : 3306;
 
 const connectionPool = mysql.createPool({
     host: "localhost",
@@ -15,6 +16,7 @@ const connectionPool = mysql.createPool({
     ),
     user: process.env.MYSQL_USERNAME,
     password: process.env.MYSQL_PASSWORD,
+    port: dbPort,
     connectionLimit: 3,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
