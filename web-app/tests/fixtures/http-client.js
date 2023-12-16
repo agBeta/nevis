@@ -2,6 +2,9 @@
  * @param {{ port: number }} props
  */
 export default function makeHttpClient({ port }) {
+    if (!port) {
+        throw new Error("port is undefined or null.");
+    }
     const BASE_URL = `http://localhost:${port}`;
 
     return Object.freeze({

@@ -32,6 +32,10 @@ export async function doClear(dbConnectionPool, table = "all") {
 }
 
 
+export function addTestToCurrentlyUsing(testName) {
+
+}
+
 /**
  * @param {MySQLConnectionPool} dbConnectionPool
  */

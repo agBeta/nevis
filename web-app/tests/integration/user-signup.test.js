@@ -1,18 +1,34 @@
+import path from "node:path";
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import * as http from "node:http";
 import { promisify } from "node:util";
-import makeDbConnectionPool from "../../src/data-access/connection.js";
-import { installRouter, makeExpressApp } from "../../src/express-stuff/server.js";
-import { router as authRouter } from "../../src/routes/auth-router.js";
-import * as DbFx from "../fixtures/db.js";
-import TEST_CONFIG from "../fixtures/configuration.js";
-import { makeFakeUser } from "../fixtures/user.js";
-import makeHttpClient from "../fixtures/http-client.js";
-import doListen from "../fixtures/listen.js";
+import dotenv from "dotenv";
 
-const PORT = TEST_CONFIG.uniqueTestPortFor["user-signup.test.js"];
+dotenv.config({
+    path: path.resolve(new URL(".", import.meta.url).pathname, "..", "configs", "user-signup.env"),
+    override: true
+});
+//  When you import authRouter normally (i.e. not using await import(..) ), inside auth-router.js implementation
+//  it will import some modules from src/data-access. In data-access/index.js the code will try to create a dbConnectionPool
+//  but at that moment env variables aren't loaded yet, due to hoisting of import.
+//  In order to overcome this problem we make imports imperative using the import function.
+//  See hoisting imports in node.md in self-documentation.
+
+const makeDbConnectionPool = (await import("../../src/data-access/connection.js")).default;
+const { installRouter, makeExpressApp } = await import("../../src/express-stuff/server.js");
+const authRouter = (await import("../../src/routes/auth-router.js")).router;
+const DbFx = await import("../fixtures/db.js");
+const { makeFakeUser } = await import("../fixtures/user.js");
+const makeHttpClient = (await import("../fixtures/http-client.js")).default;
+const doListen = (await import("../fixtures/listen.js")).default;
+
+
+const PORT = Number(process.env.SERVER_PORT);
 const agent = makeHttpClient({ port: PORT });
+
+
+
 
 
 describe("user signup", { concurrency: false, timeout: 8000 }, () => {
@@ -20,7 +36,7 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
     let /** @type {WebAppServer} */ server;
 
     before(async () => {
-        db = makeDbConnectionPool();
+        db = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) });
         await DbFx.doClear(db, "codes");
         await DbFx.doClear(db, "users");
 
