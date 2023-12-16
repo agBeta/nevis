@@ -1,6 +1,6 @@
 ## Why Winston?
 
-We could use another logging library called `pino`. But then we had to use another tool, like [logrotate](https://github.com/logrotate/logrotate) to rotate our logs. There is a package called `pino-rotating-file` but it has only 22 stars on github. Compare it to `winston-daily-rotate-file`` which has over 800 starts on github and two million weekly downloads on npm. So winston is chosen as our logging library.  
+We could use another logging library called `pino`. But then we had to use another tool, like [logrotate](https://github.com/logrotate/logrotate) to rotate our logs. There is a package called `pino-rotating-file` but it has only 22 stars on github. Compare it to `winston-daily-rotate-file` which has over 800 starts on github and two million weekly downloads on npm. So winston is chosen as our logging library.  
 
 </br>
 

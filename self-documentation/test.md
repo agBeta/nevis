@@ -60,3 +60,6 @@ Unfortunately, JavaScript is only aware of the current time zone, as it is set b
 
 ## Why setup inside `before` hook?
 See https://stackoverflow.com/a/71851612/22969951. if the setup is asynchronous, you can't do it inside describe block. Although it is for jest.
+
+## mocks and hoisting
+We must be careful about mocks and imports. Unlike jest, in which it will take of mocks. See https://www.coolcomputerclub.com/posts/jest-hoist-await/. Also According to [jest docs](https://jestjs.io/docs/manual-mocks#using-with-es-module-imports): ... But often you need to instruct Jest to use a mock before modules use it. For this reason, Jest will automatically hoist jest.mock calls to the top of the module (before any imports) ...  
