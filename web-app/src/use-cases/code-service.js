@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
  * @param {{ codeDb: CodeDataAccess, emailService: EmailService }} injections
  * @returns {CodeService}
  */
-export default function makeCodeService({ codeDb, sendEmail }) {
+export default function makeCodeService({ codeDb, emailService }) {
 
     return Object.freeze({
         generateCode,
@@ -36,7 +36,7 @@ export default function makeCodeService({ codeDb, sendEmail }) {
             .concat(" ").concat("این کد برای مدت").concat(" " + "10" + " ").concat("دقیقه معتبر می‌باشد" + ".");
 
         // await emailService.send({ email, subject, body });
-        await sendEmail({ email, subject, body });
+        await emailService.send({ email, subject, body });
     }
 
     /**
@@ -44,6 +44,10 @@ export default function makeCodeService({ codeDb, sendEmail }) {
      * @returns {Promise<boolean>}
      */
     async function verifyCode({ email, code, purpose }) {
+        /**
+         * ! @todo plainCode vs hashedCode
+         *  don't do find all like below.
+         * */
         const results = await codeDb.doFindAll({ email });
         if (!results) return false;
         for (const el of results) {

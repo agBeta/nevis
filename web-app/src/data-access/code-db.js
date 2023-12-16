@@ -21,6 +21,7 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
      * @param { { email: string } } criteria
      */
     async function doFindAll({ email }) {
+        /** @todo TODO wrap inside try catch */
         const db = await dbConnectionPool;
         const sqlCmd = "SELECT * FROM codes_tbl WHERE email LIKE ? ;";
         const [rows,] = await db.execute(sqlCmd, [email]);
@@ -32,6 +33,7 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
      * @param { { email: string, code: string, purpose: string } } properties
      */
     async function doInsert({ email, code, purpose }) {
+        /** @todo wrap the whole inside try catch */
         const db = await dbConnectionPool;
 
         const expiresAt = new Date();
@@ -40,6 +42,10 @@ export default function makeCodeDbAccess({ dbConnectionPool }) {
         try {
             //  According to https://stackoverflow.com/a/20296312, using MySQL encrypt() is not recommended, since
             //  any data we pass to a MySQL query may end up in server log files.
+            /**
+             *
+             * ! @todo move this part to code-service
+             */
             const hashedCode = await bcrypt.hash(code, 8);
             const sqlCmd = "INSERT INTO codes_tbl (email, hashedCode, purpose, expiresAt) VALUES (?, ?, ?, ?) ;";
             await db.execute(sqlCmd, [email, hashedCode, purpose, expiresAt]);

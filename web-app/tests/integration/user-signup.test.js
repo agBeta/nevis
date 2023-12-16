@@ -110,13 +110,16 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
         });
 
 
-        // describe.todo("GIVEN supplied verification code and user profile details are valid", () => {
-        //     it.todo("creates the user in db", async () => {
+        describe.todo("GIVEN supplied code and user profile details are valid", () => {
 
-        //     });
-        //     it.todo("sets session cookie");
-        //     it.todo("returns user id");
-        // });
+            // First create user raw and insert a code into codeDb
+
+            it.todo("creates the user in db", async () => {
+
+            });
+            it.todo("sets session cookie");
+            it.todo("returns user id");
+        });
     });
 
     // it.todo("returns 400 and does not create code if no email is supplied");

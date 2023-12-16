@@ -14,17 +14,22 @@ const Id = Object.freeze({
     isValidId: isCuid
 });
 
-const makeUser = buildMakeUser({ Id });
+const makeUser = buildMakeUser({
+    Id,
+    isPasswordStrong: function (plainPassword) {
+        return plainPassword.length > 6 && /[a-zA-Z]/g.test(plainPassword);
+    }
+});
 
 const makePost = buildMakePost({
     Id,
-    sanitize: function(text) {
+    sanitize: function (text) {
         return sanitizeHtml(text, {
             disallowedTagsMode: "discard",
             allowedIframeHostnames: []
         });
     },
-    calcHash: function(text) {
+    calcHash: function (text) {
         return crypto.createHash("md5").update(text).digest("hex");
     }
 });

@@ -93,7 +93,8 @@ export type UserRawInformation = {
     displayName: string,
     birthYear: number,
     signupAt?: Timestamp,
-    lastLoginAt?: Timestamp
+    lastLoginAt?: Timestamp,
+    password: string,
 }
 export type User = {
     getId: () => string,
@@ -101,7 +102,8 @@ export type User = {
     getDisplayName: () => string,
     getBirthYear: () => number,
     getSignupAt: () => Timestamp,
-    getLastLoginAt: () => Timestamp
+    getLastLoginAt: () => Timestamp,
+    getPassword: () => string
 };
 
 export type UserFactory = (UserRawInformation) => User;
@@ -147,8 +149,13 @@ export type EmailService = {
 // --------------------- Data access -------------------------------
 
 export type CodeDataAccess = {
-    doInsert: ({ email: string, code: string, purpose: string }) => Promise<void>,
-    doFindAll: ({ email: string }) => Promise<any>
+    doInsert: ({ email: string, hashedCode: string, purpose: string }) => Promise<void>,
+    doFindAll: ({ email: string, hashedCode: string }) => Promise<any>
+};
+
+export type UserDataAccess = {
+    doInsert: (user: User & { getHashedPassword: () => string }) => Promise<void>,
+    doFindOneByEmail: ({ email: string }) => Promise<User|undefined>
 };
 
 

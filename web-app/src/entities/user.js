@@ -1,10 +1,13 @@
 import { InvalidError } from "#utils/errors.js";
 
 /**
- * @param {{ Id: import("#types").IdFacility }} injections
+ * @param {{
+ *      Id: import("#types").IdFacility,
+ *      isPasswordStrong: (plainPassword: string) => boolean
+ * }} injections
  * @returns {import("#types").UserFactory}
  */
-export default function buildMakeUser({ Id }) {
+export default function buildMakeUser({ Id, isPasswordStrong }) {
 
     return makeUser;
 
@@ -18,7 +21,8 @@ export default function buildMakeUser({ Id }) {
         displayName,
         birthYear,
         signupAt = Date.now(),
-        lastLoginAt = Date.now()
+        lastLoginAt = Date.now(),
+        password
     }) {
 
         // Early sign of putting application in invalid state helps us debug easier, before invalid object contaminates the rest.
@@ -49,6 +53,12 @@ export default function buildMakeUser({ Id }) {
         if (birthYear < 1200 || birthYear > 1500) {
             throw new InvalidError("User birthYear must greater than 1200 and less than 1500.");
         }
+        if (!password) {
+            throw new InvalidError("User must have a password.");
+        }
+        if (!isPasswordStrong(password)) {
+            throw new InvalidError("User password is weak.");
+        }
 
         return Object.freeze({
             getId: () => id,
@@ -56,7 +66,8 @@ export default function buildMakeUser({ Id }) {
             getDisplayName: () => displayName,
             getBirthYear: () => birthYear,
             getSignupAt: () => signupAt,
-            getLastLoginAt: () => lastLoginAt
+            getLastLoginAt: () => lastLoginAt,
+            getPassword: () => password
         });
     }
 }

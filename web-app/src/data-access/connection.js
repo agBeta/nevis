@@ -45,7 +45,8 @@ export default function makeDbConnectionPool({ port }) {
         timezone: "+03:30",
         // This field also seems important.
         charset: "utf8mb4_unicode_ci",
-        dateStrings: false
+        dateStrings: false,
+        namedPlaceholders: true
     });
 
     portOfAlreadyEstablishedPool = port;

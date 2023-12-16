@@ -10,8 +10,9 @@ const router = express.Router();
 router.use("/auth", express.json({ limit: "20kb" }));
 
 router.post("/auth/code", makeExpressCallback(postAuthCode));
+router.post("/auth/register", );
 
-router.post("/auth/register", underConstruction);
+
 router.post("/auth/login", underConstruction);
 // return authenticated user payload if session cookie is present
 router.get("/auth", underConstruction);
