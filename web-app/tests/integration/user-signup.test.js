@@ -1,5 +1,5 @@
 import path from "node:path";
-import { describe, it, before, after } from "node:test";
+import { describe, it, before, after, mock } from "node:test";
 import assert from "node:assert";
 import * as http from "node:http";
 import { promisify } from "node:util";
@@ -14,14 +14,31 @@ dotenv.config({
 //  but at that moment env variables aren't loaded yet, due to hoisting of import.
 //  In order to overcome this problem we make imports imperative using the import function.
 //  See hoisting imports in node.md in self-documentation.
-
 const makeDbConnectionPool = (await import("../../src/data-access/connection.js")).default;
 const { installRouter, makeExpressApp } = await import("../../src/express-stuff/server.js");
-const authRouter = (await import("../../src/routes/auth-router.js")).router;
 const DbFx = await import("../fixtures/db.js");
 const { makeFakeUser } = await import("../fixtures/user.js");
 const makeHttpClient = (await import("../fixtures/http-client.js")).default;
 const doListen = (await import("../fixtures/listen.js")).default;
+
+//  For the same reason explained above, mocking emailService MUST be done before importing the router. (See test.md)
+const emailService = (await import("../../src/use-cases/email-service.js")).default;
+
+const /** @type {string[]} */ emailAddressesSentTo = [];
+
+const spiedEmailService = mock.method(
+    emailService,
+    "send",
+    /** @param {*} param0  */
+    ({ email }) => {
+        /* ignore body, subject arguments */
+        // console.log("Pretending to send an email");
+        emailAddressesSentTo.push(email);
+    },
+    { times: Infinity }
+);
+
+const authRouter = (await import("../../src/routes/auth-router.js")).router;
 
 
 const PORT = Number(process.env.SERVER_PORT);
