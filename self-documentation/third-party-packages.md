@@ -14,7 +14,12 @@ For return value of `query` and `execute` see [here] https://github.com/sidorare
 You can also specify a function (field: any, next: () => void) => {} to do the type casting yourself.
 Also see Storing Boolean TINYINT in database.md.
 
-## If you use raw sql query be careful of backticks vs single vs double quotation. See database.md.
+## mysql2 Named placeholders
+https://github.com/sidorares/node-mysql2/blob/master/documentation/en/Extras.md#named-placeholders.
+connection.execute('select :x + :y as z', { x: 1, y: 2 } ...)
+
+## If you use raw sql query be careful of backticks vs single vs double quotation. 
+See database.md.
 
 ## cuid2 vs nanoId vs UUID
 

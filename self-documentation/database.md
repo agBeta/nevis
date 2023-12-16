@@ -102,6 +102,8 @@ https://stackoverflow.com/a/31692163.
 Also according to : https://dev.mysql.com/doc/refman/8.0/en/date-and-time-type-syntax.html.
 If explicit_defaults_for_timestamp is enabled, there is no automatic assignment of the DEFAULT CURRENT_TIMESTAMP or ON UPDATE CURRENT_TIMESTAMP attributes to any TIMESTAMP column. They must be included explicitly in the column definition. Also, any TIMESTAMP not explicitly declared as NOT NULL permits NULL values.
 
+</br>
+
 ## `TIMESTAMP` vs `DATETIME` in MySQL
 
 It's a useful fiction to think of a `TIMESTAMP` as taking the value you are setting and converting it from the current session time zone to UTC for storing and then converting it back to the current session time zone for displaying. According to [OReilly presentation](https://cdn.oreillystatic.com/en/assets/1/event/36/Time%20Zones%20and%20MySQL%20Presentation.pdf), MySQL uses the _timezone system variable_ (i.e. `/etc/localtime`) to convert. When retrieved, converts to current timezone value in the server. It means, if '2009-05-08 17:00:00' is stored when timezone is set to EST, and later the timezone is changed to CST, the value retrieved will be '2009-05-08 16:00:00'. Read [timezone support](https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html#time-zone-upgrades) from official docs. Also note, MySQL Server maintains **several** time zone settings. See [timezone variables](https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html#time-zone-variables) from official docs.
@@ -110,9 +112,13 @@ It's a useful fiction to think of a `TIMESTAMP` as taking the value you are sett
 
 Finally, The choice between TIMESTAMP or DATETIME is also related to the nature of the event: A video-conference (TIMESTAMP): All attendants should see a reference to an absolute instant of time adjusted to its timezone. But a local task time (DATETIME): I should do this task at 2014/03/31 9:00AM , no matters if that day I'm working in New York or Paris.
 
+</br>
+
 ## Time in EVENT
 
 according to https://dev.mysql.com/doc/refman/8.0/en/create-event.html.
+
+</br>
 
 ## mysql client commands.
 
@@ -129,7 +135,7 @@ If strict SQL mode is enabled, attempts to insert invalid ENUM values result in 
 https://stackoverflow.com/a/40551734. about modifying enum. It seems changing the order / removing enums will make those numbers undefined.
 Also see https://dba.stackexchange.com/questions/312263/are-enums-still-evil-in-mysql-8-0. Both answers are good.
 
-Side Note: Do not use FK instead of *small set of* enums. According to the comment by "Dai" in https://stackoverflow.com/a/1434338/22969951.
+Side Note: Do not use FK instead of _small set of_ enums. According to the comment by "Dai" in https://stackoverflow.com/a/1434338/22969951.
 Often enum values are defined in application code first (e.g. C# enum), whereas if they used a table FK reference then those supposedly static enum entries could be modified at runtime which would be undesirable (and SQL Server doesn't support the concept of immutable tables), finally if you have lots of enums with only a few values then you'll end-up adding lots of tables to your database. Not to mention extra IO reads due to FK constraint-checking when inserting/deleting data, whereas a CHECK CONSTRAINT is much faster and doesn't cause database object spam.
 
 </br>
@@ -180,13 +186,16 @@ According to https://mysql.rjweb.org/doc.php/deletebig, To be ready for a crash,
 
 The same person in https://stackoverflow.com/a/49703493: In InnoDB, a DELETE of any size is transactional. Deleting a million will be slow, mostly because of the need to prepare for a possible ROLLBACK.
 
+</br>
+
 ## pagination
 
 According to https://mysql.rjweb.org/doc.php/pagination (Very detailed article even talking about \<a\> tags to use for frontend):
-For this discussion, I am assuming  
-- The datetime field might have duplicates -- this can cause troubles  
-- The id field is unique  
-- The id field is close enough to datetime-ordered to be used instead of datetime.  
+For this discussion, I am assuming
+
+-   The datetime field might have duplicates -- this can cause troubles
+-   The id field is unique
+-   The id field is close enough to datetime-ordered to be used instead of datetime.
 
 Very efficient -- it does all the work in INDEX(topic, id):
 WHERE topic = 'xyz'
@@ -196,6 +205,15 @@ LIMIT 10,41.
 
 Note how all the = parts of the WHERE come first; then comes both the >= and ORDER BY, both on id. This means that the INDEX can be used for all the WHERE, plus the ORDER BY.
 
+</br>
+
 ## backticks vs brackets
 
 I would strongly recommend to avoid any object name that requires quoting. Using identifiers that do not require quoting will save you a lot of trouble in the long run. According to https://stackoverflow.com/questions/9719869/what-is-the-difference-between-the-backtick-and-the-square-bracket-in-sql-statem.
+
+</br>
+
+## multiple ports
+
+According to https://stackoverflow.com/questions/790242/how-to-add-a-port-to-mysql-server, You cannot bind mysqld to listen to multiple ports. The only way you can achieve this is with internal routing rules which would forward the target port to 3306. If you are on linux, you can achieve this using iptables.
+Although not very much related, but important to know: https://stackoverflow.com/questions/25905657/its-mysql-or-mysqld. mysqld is the MySQL server. https://dev.mysql.com/doc/refman/8.0/en/mysqld-server.html and https://dev.mysql.com/doc/refman/8.0/en/mysqld.html.

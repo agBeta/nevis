@@ -1,6 +1,6 @@
 import path from "node:path";
 import * as http from "node:http";
-// This must proceed the rest of imports.
+// This must precede the rest of imports.
 import "./config.js";
 import { installRouter, installMorgan, makeExpressApp } from "./express-stuff/server.js";
 import { router as authRouter } from "./routes/auth-router.js";

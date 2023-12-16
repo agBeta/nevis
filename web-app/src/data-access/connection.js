@@ -15,6 +15,8 @@ export default function makeDbConnectionPool({ port }) {
     //  This is why we need to return the same object if it is already created.
     //  Though, we need to pass port as an argument, so that (in theory) if multiple (test) processes try to connect to
     //  our (test) database `concurrently` or `in parallel`, we could be able to assign different port for each process.
+    //  Although it isn't that simple in practice (see mysql multiple port in database.md self-documentation).
+
     if (connectionPool && portOfAlreadyEstablishedPool === port) {
         return connectionPool;
     }
