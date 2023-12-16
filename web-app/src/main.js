@@ -1,11 +1,11 @@
 import path from "node:path";
 import * as http from "node:http";
-import dotenv from "dotenv";
+// This must proceed the rest of imports.
+import "./config.js";
 import { installRouter, installMorgan, makeExpressApp } from "./express-stuff/server.js";
 import { router as authRouter } from "./routes/auth-router.js";
 import { router as filesRouter } from "./routes/files-router.js";
 
-dotenv.config();
 const __dirname = new URL(".", import.meta.url).pathname;
 
 const app = makeExpressApp();
