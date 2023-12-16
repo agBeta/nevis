@@ -85,16 +85,30 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
             assert.strictEqual(correspondingRecords[0].purpose, "signup");
         });
 
-        // it("create a signup code and sends it via email", async (t) => {
-        //     const spyEmail = t.mock.method(emailService, "send", function spiedImp(){
-        //         console.log("hi".repeat(50));
-        //     }, { times: Infinity });
-        //     const user = makeFakeUser({});
+        it("creates a signup code and sends it via email (flaky)", async () => {
+            //  Warning: concurrency is turned off in this test suite. Otherwise this test might fail.
 
-        //     const raw = await postRequest("/api/auth/code", { email: user.email, purpose: "signup" });
-        //     assert.strictEqual(raw.status, 201);
-        //     assert.strictEqual(spyEmail.mock.callCount(), 1);
-        // });
+            //  Since in previous tests, send email might be called several times (all of them use the same
+            //  mocked send function), in order to de-couple this test we need to store current callCount.
+            const sendCallCountBeforeRunningThisTest = spiedEmailService.mock.callCount();
+
+            const user = makeFakeUser({});
+            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+
+            assert.strictEqual(raw.status, 201);
+            assert.strictEqual(spiedEmailService.mock.callCount(), sendCallCountBeforeRunningThisTest + 1);
+        });
+
+        it("create a signup code and sends it to the correct email", async () => {
+            const user = makeFakeUser({
+                email: "_some_specific_email_@gmail.com"
+            });
+            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+
+            assert.strictEqual(raw.status, 201);
+            assert.strictEqual(emailAddressesSentTo.includes(user.email), true);
+        });
+
 
         // describe.todo("GIVEN supplied verification code and user profile details are valid", () => {
         //     it.todo("creates the user in db", async () => {
