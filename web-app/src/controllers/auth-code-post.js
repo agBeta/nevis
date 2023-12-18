@@ -1,21 +1,24 @@
-import makeHttpError from "#utils/http-error.js";
 import Joi from "joi";
+import makeHttpError from "./http-error.js";
+import makeBasicValidateNormalize from "./validate-normalize.js";
 
-/**
- * @param {{ codeService: CodeService }} injections
- * @returns {Controller}
- */
-export function makeEndpointController({ codeService }) {
 
-    // In order to prevent object creation overhead, declare schema here, not inside validateRequest.
-    const schema = Joi.object({
-        email: Joi.string().email().max(80).required(),
-        purpose: Joi.string().min(3).max(20)
-    });
+export function makeEndpointController({
+    insert_code_into_db,
+    generateCode,
+    sendEmail,
+    createSecureHash,
+}) {
 
     return Object.freeze({
         handleRequest,
-        validateRequest
+
+        validateRequest: makeBasicValidateNormalize({
+            schemaOfBody: Joi.object({
+                email: Joi.string().email({ allowUnicode: true }).max(80).required(),
+                purpose: Joi.string().min(3).max(20).valid(["signup", "reset-password"])
+            })
+        })
     });
 
 
@@ -25,34 +28,25 @@ export function makeEndpointController({ codeService }) {
         // @ts-ignore
         const /** @type {string} */ purpose = httpRequest.body.purpose;
 
-        /** @todo TODO idempotent */
+        const code = await generateCode();
+        // Must also hash this short-lived code before storing in db. See comment at the end of this file.
+        const hashedCode = await createSecureHash(code);
+        const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes later
 
-        const code = await codeService.generateCode();
-        await codeService.storeInDbAndSendCode({ email, code, purpose });
+        // Don't remove already existing codes related to this email address. See comment at the end of this file.
+        await insert_code_into_db({ email, hashedCode, purpose, expiresAt });
+
+        const subject = "کد تایید";
+        const body = "کد تایید شما برابر".concat(" <strong>" + code + "</strong> ").concat("می‌باشد" + ".")
+            .concat(" ").concat("این کد برای مدت").concat(" " + "10" + " ").concat("دقیقه معتبر می‌باشد" + ".");
+
+        await sendEmail({ email, subject, body });
+
         return {
             headers: { "Content-Type": "application/json" },
             statusCode: 201,
             payload: JSON.stringify({ success: true })
         };
-    }
-
-    function validateRequest(/** @type HttpRequest */ httpRequest) {
-        const { value: normalized, error } = schema.validate(httpRequest.body, { abortEarly: true });
-        if (error) {
-            return {
-                isValid: false,
-                httpErrorResponse: makeHttpError({ statusCode: 400, error: "Bad request: " + error.message })
-            };
-        }
-        // @ts-ignore
-        if (!["signup", "reset-password"].includes(httpRequest.body.purpose)) {
-            return {
-                isValid: false,
-                httpErrorResponse: makeHttpError({ statusCode: 400, error: "Bad request: purpose is not valid." })
-            };
-        }
-        httpRequest.body = normalized;
-        return { isValid: true };
     }
 }
 
@@ -60,5 +54,15 @@ export function makeEndpointController({ codeService }) {
  * @typedef {import("#types").HttpRequest} HttpRequest
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
- * @typedef {import("#types").CodeService} CodeService
  */
+
+
+/*
+    If an attacker has read access to the database (SQL-injection), he could request a reset for any account he
+    wants, even for admin accounts. Because he can see the new generated token, he could take over this account.
+    Based on https://security.stackexchange.com/questions/86913/should-password-reset-tokens-be-hashed-when-stored-in-a-database.
+*/
+/*
+    We don't remove already existing codes related to this email address, and there is a good reason behind it.
+    See comments by [John] and [caw] below this SO answer https://security.stackexchange.com/a/31507.
+*/
