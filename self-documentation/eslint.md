@@ -15,3 +15,6 @@ Prettier is an *opnionated* code formatter, meaning we cannot customize it as we
 
 ## unicorn
 Checkout https://github.com/sindresorhus/eslint-plugin-unicorn/tree/main. More than 100 powerful ESLint rules. We did not use it.
+
+
+## no-await-in-loop

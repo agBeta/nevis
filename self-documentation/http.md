@@ -2,22 +2,34 @@
 
 See https://www.rfc-editor.org/rfc/rfc9110#field.last-modified. An origin server SHOULD send Last-Modified for any selected representation for which a last modification date can be reasonably and consistently determined, since its use in conditional requests and evaluating cache freshness ([CACHING]) can substantially reduce unnecessary transfers and significantly improve service availability and scalability.
 
-
 ## Status codes in HTTP
-https://www.rfc-editor.org/rfc/rfc7231#section-6.1.
 
+https://www.rfc-editor.org/rfc/rfc7231#section-6.1.
 
 </br>
 
 ## Allow Header in 405
+
 According to https://www.rfc-editor.org/rfc/rfc7231#section-7.4.1, An origin server MUST generate an Allow field in a 405 (Method Not Allowed) response and MAY do so in any other response.
 
-
 ## Why 409 for email already exists? Why not 400?
-Comment by Wrikken in https://stackoverflow.com/a/3826024:  400 => "The request could not be understood by the server due to malformed syntax". And the server understands perfectly, but is unable to comply due to a conflict. There is nothing wrong with the request & syntax, only a data problem. A 400 would instantly make me believe the whole mechanism I'm using is flawed, instead of just the data.  
-I return HTTP 409 with a Location header pointing to the existing/conflicting resource. –  Gili.
 
+Comment by Wrikken in https://stackoverflow.com/a/3826024: 400 => "The request could not be understood by the server due to malformed syntax". And the server understands perfectly, but is unable to comply due to a conflict. There is nothing wrong with the request & syntax, only a data problem. A 400 would instantly make me believe the whole mechanism I'm using is flawed, instead of just the data.  
+I return HTTP 409 with a Location header pointing to the existing/conflicting resource. – Gili.
 
 ## idempotent POST?
+
 https://stackoverflow.com/questions/33249708/can-a-restful-post-method-be-implemented-to-be-idempotent.
 If a POST creates a new resource, then it SHOULD send a 201 (Created) response containing a Location header identifying the created resource.
+
+## session id
+
+It is useless to encrypt it for cookie, see https://stackoverflow.com/questions/2840559/is-encrypting-session-id-or-other-authenticate-value-in-cookie-useful-at-all. But if the random number was not cryptographically secure, encrypting it with a server side key will produce better security. See AJ Henderson comment.
+
+
+## signed cookies And HTTP
+Good for time-limited-form-submission (anti-spam) without having to store any data on the server side.
+https://stackoverflow.com/questions/3240246/signed-session-cookies-a-good-idea.
+
+According to https://stackoverflow.com/a/3240427/22969951:
+They should be kept private, so that attackers cannot steal them and impersonate an authenticated user. Any request that performs an action that requires authorization should be tamper-proof. That is, the entire request must have some kind of integrity protection such as an HMAC so that its contents can't be altered. For web applications, these requirements lead inexorably to HTTPS.

@@ -36,3 +36,7 @@ Imports are hoisted, so your dotenv.config isn't being called until after the re
 A *much better* and comprehensive answer is here https://stackoverflow.com/a/42817956/22969951.
 Javascript imports are hoisted (but not Typescript!), so imported modules will initialize before any of the current modules initialization code gets to run. Fortunately imported modules are initialized in order, so a possible workaround is putting the config code in its own module.
 
+
+
+## camel case vs snake case
+https://stackoverflow.com/a/21511149/22969951. Based on donut comment, Apparently, snake_case is easier to read.

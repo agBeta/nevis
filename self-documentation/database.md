@@ -62,6 +62,13 @@ MOST IMPORTANT: Unless you are working in an embedded system where each byte cou
 
 </br>
 
+## Unique column and composite index.
+According to https://stackoverflow.com/a/9764392/22969951 :
+A unique key is a special case of index, acting like a regular index with added checking for uniqueness. Using SHOW INDEXES FROM customer you can see your unique keys are in fact B-tree type indexes. A composite index on (email, user_id) is enough, you don't need a separate index on email only - MySQL can use leftmost parts of a composite index. There may be some border cases where the size of an index can slow down your queries, but you should not worry about them until you actually run into them.
+As for testing index usage you **should** first fill your table with some data to make optimizer think it's actually worth to use that index.
+
+</br>
+
 ## MEMORY engine
 
 MEMORY tables cannot contain BLOB or TEXT columns.
@@ -71,18 +78,21 @@ See Characteristics of MEMORY Tables from https://dev.mysql.com/doc/refman/8.0/e
 ## Full-text search
 
 https://dev.mysql.com/doc/refman/8.0/en/fulltext-search.html.
-Do not alter the MySQL sources unless you know what you are doing.
+Don't alter the MySQL sources unless you know what you are doing.
 
 ## TEXT vs Varchar
 
 https://stackoverflow.com/a/25301046.
-You need to use TEXT when you want to create a table with two maximum-sized string columns, which means both of them may take 65535 characters. You cannot use two varchars with maximum size in a row at the same time because MySQL has limited the maximum row size, which is 65535. But you can use two TEXT in a row because TEXT only contributes 9 to 12 bytes toward the row size limit, TEXT's contents are stored separately from the rest of the row. –
-Searene
+You need to use TEXT when you want to create a table with two maximum-sized string columns, which means both of them may take 65535 characters. You cannot use two varchars with maximum size in a row at the same time because MySQL has limited the maximum row size, which is 65535. But you can use two TEXT in a row because TEXT only contributes 9 to 12 bytes toward the row size limit, TEXT's contents are stored separately from the rest of the row. – Searene
+
+</br>
 
 ## Store birthYear
 
 https://stackoverflow.com/questions/611105/mysql-type-for-storing-a-year-smallint-or-varchar-or-date.
 Also [David Aldridge's answer](https://stackoverflow.com/a/617556) in the same post gives a very insightful explanation to _avoid_ using numeric data types for elements _just because_ they are comprised only of digits.
+
+</br>
 
 ## Events
 
@@ -166,6 +176,8 @@ Also according to Rich James in https://stackoverflow.com/a/39714657/22969951, U
 
 According to thomasrutter comment in https://stackoverflow.com/a/3455478, for columns which are an ASCII-limited code only rather than real words (eg hashes, base64, standard country codes, etc), it may be a good idea to use the ascii_bin collation. If you use a utf-8 based collation it will reserve 3 or 4 bytes per character for CHAR columns instead of only 1.
 
+Also see https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem.
+
 </br>
 
 ## AUTO_INCREMENT limit
@@ -217,3 +229,8 @@ I would strongly recommend to avoid any object name that requires quoting. Using
 
 According to https://stackoverflow.com/questions/790242/how-to-add-a-port-to-mysql-server, You cannot bind mysqld to listen to multiple ports. The only way you can achieve this is with internal routing rules which would forward the target port to 3306. If you are on linux, you can achieve this using iptables.
 Although not very much related, but important to know: https://stackoverflow.com/questions/25905657/its-mysql-or-mysqld. mysqld is the MySQL server. https://dev.mysql.com/doc/refman/8.0/en/mysqld-server.html and https://dev.mysql.com/doc/refman/8.0/en/mysqld.html.
+
+
+## Maybe NoSQL (Mongo)?
+This answer gives a very good practical example of when MongoDb works faster and why: https://stackoverflow.com/a/9703513/22969951. Also talks about optimisation by denormalisation in the comment.
+Also this comment https://www.reddit.com/r/Database/comments/cx4r8r/comment/eyj8j25/.
