@@ -198,6 +198,8 @@ According to https://mysql.rjweb.org/doc.php/deletebig, To be ready for a crash,
 
 The same person in https://stackoverflow.com/a/49703493: In InnoDB, a DELETE of any size is transactional. Deleting a million will be slow, mostly because of the need to prepare for a possible ROLLBACK.
 
+Also according to [official docs](https://dev.mysql.com/doc/refman/8.0/en/delete.html) below "InnoDB Tables" section, there is a trick which uses RENAME and doesn't use DELETE at all.
+
 </br>
 
 ## pagination
