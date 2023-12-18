@@ -134,6 +134,13 @@ export type Post = {
 
 export type PostFactory = (PostRawInformation) => Post;
 
+export type Code = {
+    hashedCode: string,
+    email: string,
+    purpose: 'signup' | 'reset-pass',
+    expiresAt: number
+};
+
 // ---------------------- Services ---------------------------------
 
 export type CodeService = {
@@ -147,15 +154,5 @@ export type EmailService = {
 }
 
 // --------------------- Data access -------------------------------
-
-export type CodeDataAccess = {
-    doInsert: ({ email: string, hashedCode: string, purpose: string }) => Promise<void>,
-    doFindAll: ({ email: string, hashedCode: string }) => Promise<any>
-};
-
-export type UserDataAccess = {
-    doInsert: (user: User & { getHashedPassword: () => string }) => Promise<void>,
-    doFindOneByEmail: ({ email: string }) => Promise<User|undefined>
-};
 
 

@@ -26,7 +26,8 @@ const makePost = buildMakePost({
     sanitize: function (text) {
         return sanitizeHtml(text, {
             disallowedTagsMode: "discard",
-            allowedIframeHostnames: []
+            allowedIframeHostnames: [],
+            // disallow image unless user ispremium.
         });
     },
     calcHash: function (text) {

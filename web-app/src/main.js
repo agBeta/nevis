@@ -14,7 +14,7 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "client"));
 
 installMorgan({ app });
-installRouter({ app, router: authRouter, pathPrefix: "/api/v1" });
+installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
 
 app.use("/", filesRouter);
 
@@ -23,4 +23,10 @@ const server = http.createServer(app);
 
 server.listen(PORT, () => {
     console.log(`Hello on port ${PORT}`);
+});
+
+
+const Id = Object.freeze({
+    createId: init({ length: 24 }),
+    isValidId: isCuid
 });
