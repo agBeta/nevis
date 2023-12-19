@@ -16,7 +16,7 @@ export function makeEndpointController({
         validateRequest: makeBasicValidateNormalize({
             schemaOfBody: Joi.object({
                 email: Joi.string().email({ allowUnicode: true }).max(80).required(),
-                purpose: Joi.string().min(3).max(20).valid(["signup", "reset-password"])
+                purpose: Joi.string().min(3).max(20).valid("signup", "reset-password")
             })
         })
     });
