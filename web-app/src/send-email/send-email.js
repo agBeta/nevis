@@ -14,24 +14,24 @@ export default function makeSendEmail({
     mailServiceFromAddress
 }) {
 
-    // See https://github.com/DefinitelyTyped/DefinitelyTyped/issues/35847.
-    const transporter = nodemailer.createTransport(/** @type {TransportOptions} */({
-        host: mailServiceHost,
-        port: Number(mailServicePort),
-        tls: true,
-        auth: {
-            user: mailServiceUser,
-            pass: mailServicePassword,
-        }
-    }));
+    const transporter = process.env.NODE_ENV === "test" ? null :
+        // Need type casting to suppress ts errors. See https://github.com/DefinitelyTyped/DefinitelyTyped/issues/35847.
+        nodemailer.createTransport(/** @type {TransportOptions} */({
+            host: mailServiceHost,
+            port: Number(mailServicePort),
+            tls: true,
+            auth: {
+                user: mailServiceUser,
+                pass: mailServicePassword,
+            }
+        }));
 
-    return Object.freeze({
-        sendEmail
-    });
+
+    return sendEmail;
 
     /**
      * @param {{ email: string, subject: string, body: string }} properties
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
     async function sendEmail({ email, subject, body }) {
 
@@ -48,6 +48,7 @@ export default function makeSendEmail({
             /** @todo TODO add logic to prevent being rate limited */
 
             try {
+                // @ts-ignore
                 await transporter.sendMail({
                     from: mailServiceFromAddress,
                     to: email,
