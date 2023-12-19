@@ -114,6 +114,10 @@ If explicit_defaults_for_timestamp is enabled, there is no automatic assignment 
 
 </br>
 
+## Using INT column with UNIX_TIMESTAMP vs TIMESTAMP
+https://stackoverflow.com/questions/7029127/using-mysqls-timestamp-vs-storing-timestamps-directly.
+https://stackoverflow.com/questions/29865762/store-date-as-unix-timestamp-or-timestamp-data-type-in-mysql.
+
 ## `TIMESTAMP` vs `DATETIME` in MySQL
 
 It's a useful fiction to think of a `TIMESTAMP` as taking the value you are setting and converting it from the current session time zone to UTC for storing and then converting it back to the current session time zone for displaying. According to [OReilly presentation](https://cdn.oreillystatic.com/en/assets/1/event/36/Time%20Zones%20and%20MySQL%20Presentation.pdf), MySQL uses the _timezone system variable_ (i.e. `/etc/localtime`) to convert. When retrieved, converts to current timezone value in the server. It means, if '2009-05-08 17:00:00' is stored when timezone is set to EST, and later the timezone is changed to CST, the value retrieved will be '2009-05-08 16:00:00'. Read [timezone support](https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html#time-zone-upgrades) from official docs. Also note, MySQL Server maintains **several** time zone settings. See [timezone variables](https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html#time-zone-variables) from official docs.
