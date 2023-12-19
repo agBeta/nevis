@@ -34,7 +34,7 @@ export default function makeDbConnectionPool({ port }) {
 
     connectionPool = mysql.createPool({
         host: "localhost",
-        database: dbName.concat(process.env.NODE_ENV == "test" ? "_test" : ""),
+        database: dbName,
         user: process.env.MYSQL_USERNAME,
         password: process.env.MYSQL_PASSWORD,
         port: port,
