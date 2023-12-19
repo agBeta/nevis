@@ -15,7 +15,7 @@ import { makeEndpointController as makePostAuthCodeController } from "./auth-cod
 import { makeEndpointController as makePostSignupController } from "./auth-signup-post.js";
 
 // Create functions on which our controllers rely, so that we can inject them.
-const sendEmail = makeSendEmail({
+export const sendEmail = makeSendEmail({
     mailServiceHost: process.env.MAIL_HOST,
     mailServicePort: process.env.MAIL_PORT,
     mailServiceUser: process.env.MAIL_SMTP_USERNAME,

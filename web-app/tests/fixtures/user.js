@@ -4,14 +4,15 @@ faker.seed(789);
 
 /**
  * Creates a fake user from POV of api consumer.
- * NOTE, it is different from makeFakeUser in src/unit-fixtures/user.js.
+ * NOTE, it is different from makeFakeUser in src/data-access/fixtures/user.js.
  * @param {*} overrides
  */
 export function makeFakeUser(overrides) {
     const user = {
         email: faker.internet.email(),
+        password: faker.internet.password({ length: 10 }),
         displayName: faker.person.fullName(),
-        birthYear: faker.number.int({ min: 1330, max: 1395 })
+        birthYear: faker.number.int({ min: 1330, max: 1395 }),
     };
     return {
         ...user,

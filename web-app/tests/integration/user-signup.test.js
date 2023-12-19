@@ -21,27 +21,31 @@ const { makeFakeUser } = await import("../fixtures/user.js");
 const makeHttpClient = (await import("../fixtures/http-client.js")).default;
 const doListen = (await import("../fixtures/listen.js")).default;
 
-//  For the same reason explained above, mocking emailService MUST be done before importing the router. (See test.md)
-const emailService = (await import("../../src/use-cases/email-service.js")).default;
+//  Mocking email sending MUST be done before importing the router, for the same reason explained above. (See test.md)
+//  NOTE: NOTE: If you mock sendEmail in other test suites and run them concurrently, you would encounter some unexpected
+//  behavior due to race condition. At the moment we aren't mocking sendEmail anywhere else, so it is ok. But we aware.
+const sendEmail = (await import("../../src/controllers/index.js")).sendEmail;
 
-const /** @type {string[]} */ emailAddressesSentTo = [];
+/** Email addresses to whom we sent an email during this test suite.
+ * @see comment above sendEmail regarding concurrency issues.
+ * @type {string[]}
+ */
+const emailAddressesSentTo = [];
 
-const spiedEmailService = mock.method(
-    emailService,
-    "send",
+const spiedSendEmail = mock.fn(sendEmail,
     /** @param {*} param0  */
-    ({ email }) => {
-        /* ignore body, subject arguments */
+    ({ email } /* ignoring body, subject arguments */) => {
         // console.log("Pretending to send an email");
         emailAddressesSentTo.push(email);
     },
     { times: Infinity }
 );
 
+// Now sendEmail is mocked, we can safely import any router that eventually exploits sendEmail.
 const authRouter = (await import("../../src/routes/auth-router.js")).router;
 
 
-const PORT = Number(process.env.SERVER_PORT);
+const PORT = Number(process.env.PORT);
 const agent = makeHttpClient({ port: PORT });
 
 
@@ -58,7 +62,7 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
         await DbFx.doClear(db, "users");
 
         const app = makeExpressApp();
-        installRouter({ app, router: authRouter, pathPrefix: "/api/v1" });
+        installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
         server = http.createServer(app);
         await doListen(server, PORT);
     });
@@ -69,7 +73,7 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
     });
 
     describe("happy flow", async () => {
-        it("creates a signup code and stores in db", async () => {
+        it("creates a signup code and stores it in db", async () => {
             const user = makeFakeUser({});
 
             const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });

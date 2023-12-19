@@ -1,3 +1,5 @@
+//  We won't use any of data-access exported functions in our tests. Tests need different queries that some of them
+//  aren't implemented in data-access. Also it would be a very bad idea to couple tests to data-access implementation.
 
 /**
  * @param {MySQLConnectionPool} dbConnectionPool
@@ -14,6 +16,7 @@ export async function doClear(dbConnectionPool, table = "all") {
             await db.execute("DELETE from codes_tbl;", []);
             await db.execute("DELETE from posts_tbl;", []);
             await db.execute("DELETE from users_tbl;", []);
+            await db.execute("ALTER TABLE posts_tbl AUTO_INCREMENT = 1;");
             break;
 
         case "codes":
@@ -24,6 +27,7 @@ export async function doClear(dbConnectionPool, table = "all") {
             break;
         case "posts":
             await db.execute("DELETE from posts_tbl;", []);
+            await db.execute("ALTER TABLE posts_tbl AUTO_INCREMENT = 1;");
             break;
         case "auth_sessions":
             await db.execute("DELETE from auth_sessions_tbl;", []);
@@ -31,12 +35,11 @@ export async function doClear(dbConnectionPool, table = "all") {
     }
 }
 
-
-export function addTestToCurrentlyUsing(testName) {
-
-}
-
 /**
+ * This function is closely associated with the fact that each test runs on its own database, hence different database
+ * name and difference connection pool. If some tests would be running via the same connection pool (even if they don't
+ * encounter polluted data by other tests or race conditions), as soon as one of them finished, the pool will be closed.
+ * Anyway, be ware of these situations.
  * @param {MySQLConnectionPool} dbConnectionPool
  */
 export function doCloseConnections(dbConnectionPool) {
