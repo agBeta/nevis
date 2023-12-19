@@ -56,7 +56,16 @@ export function doCloseConnections(dbConnectionPool) {
  */
 export async function doFindAllInCodesDb(dbConnectionPool, email) {
     const db = await dbConnectionPool;
-    const [rows,] = await db.execute("SELECT * from codes_tbl WHERE email LIKE ? ;", [email]);
+    const [rows,] = await db.execute(`
+            SELECT
+                hashed_code AS hashedCode
+              , email , purpose
+              , UNIX_TIMESTAMP(expires_at) * 1000 AS expiresAt
+            FROM codes_tbl
+            WHERE email LIKE ?
+            ;
+        `,
+    [email]);
     if (!rows) return [];
     return /** @type {any[]} */ (rows);
 }

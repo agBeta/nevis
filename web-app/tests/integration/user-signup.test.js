@@ -83,8 +83,9 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
             assert.strictEqual(correspondingRecords.length == 1, true);
 
             const exp = correspondingRecords[0].expiresAt;
-            assert.strictEqual(exp instanceof Date, true);
-            assert.strictEqual(exp.getTime() > Date.now() + 5 * 60 * 1000, true);
+            assert.strictEqual(typeof exp === "number", true);
+            // code should expire in 5 minutes. We check for 4 minutes.
+            assert.strictEqual(exp > Date.now() + 4 * 60 * 1000, true);
 
             assert.strictEqual(correspondingRecords[0].purpose, "signup");
         });
@@ -94,13 +95,13 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
 
             //  Since in previous tests, send email might be called several times (all of them use the same
             //  mocked send function), in order to de-couple this test we need to store current callCount.
-            const sendCallCountBeforeRunningThisTest = spiedEmailService.mock.callCount();
+            const sendCallCountBeforeRunningThisTest = spiedSendEmail.mock.callCount();
 
             const user = makeFakeUser({});
             const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
 
             assert.strictEqual(raw.status, 201);
-            assert.strictEqual(spiedEmailService.mock.callCount(), sendCallCountBeforeRunningThisTest + 1);
+            assert.strictEqual(spiedSendEmail.mock.callCount(), sendCallCountBeforeRunningThisTest + 1);
         });
 
         it("create a signup code and sends it to the correct email", async () => {
