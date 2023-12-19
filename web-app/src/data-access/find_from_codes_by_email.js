@@ -13,7 +13,7 @@ export default function make_find_from_codes_by_email({ dbConnectionPool }) {
               hashedCode
             , email
             , purpose
-            , expiresAt
+            , UNIX_TIMESTAMP(expires_at) * 1000 as expiresAt
         FROM
             codes_tbl
         WHERE
