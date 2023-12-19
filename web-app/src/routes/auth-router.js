@@ -8,7 +8,7 @@ import {
 const router = express.Router();
 
 // middleware
-router.use("/auth", express.json({ limit: "20kb" }));
+router.use("/", express.json({ limit: "20kb" }));
 
 
 router.post("/code", makeExpressCallback(postAuthCode));
