@@ -38,3 +38,7 @@ Javascript imports are hoisted (but not Typescript!), so imported modules will i
 ## camel case vs snake case
 
 https://stackoverflow.com/a/21511149. Based on donut comment, Apparently, snake_case is easier to read.
+
+
+## console.log memory leak and stringify
+https://stackoverflow.com/questions/12996129/memory-leak-when-logging-complex-objects.

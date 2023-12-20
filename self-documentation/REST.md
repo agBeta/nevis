@@ -68,3 +68,52 @@ https://stackoverflow.com/questions/3240246/signed-session-cookies-a-good-idea.
 
 According to https://stackoverflow.com/a/3240427:
 They should be kept private, so that attackers cannot steal them and impersonate an authenticated user. Any request that performs an action that requires authorization should be tamper-proof. That is, the entire request must have some kind of integrity protection such as an HMAC so that its contents can't be altered. For web applications, these requirements lead inexorably to HTTPS.
+
+
+
+## important thing about REST
+Let's give you the answer right now: We don't care. We made some ad-hoc decisions. 
+**BUT...** It is important to be aware of trade-offs, and hidden costs behind these decision.
+
+Imagine /posts?page=1 (ignore bad pagination style for now). Imagine each post has authorId (i.e. userId). To prevent N+1 problem it is usually recommended to attach name and avatar picture of authorId directly to the post. This [youtube video](https://www.youtube.com/watch?v=JxeTegu4dD8) the presenter recommends the aforementioned optimizations to prevent N+1 problem. But regarding this ad-hoc decision, there a comment by @ugentu:
+---start of comment---
+Thanks for the great review of the main concepts! Sounds valuable as a base. 
+But can't mention that "Optimisation" advice is completely out of REST principles. One of the REST principles is, roughly speaking, resource-per-URI. Violating it with such entities folding, you may achieve quick improvement, but with a big price to pay later.
+
+I have at least three reasons not to go with folded entities:
+1) Cache inconsistency: In your example, If any of the Users updates a name, you'll need to invalidate all Posts-related cache. It may look as not a big deal in this particular scenario, but if you expend this approach - you may come up with inconsistent caching all over your API because all entities are somehow relates\included to one another.
+ 
+2) Inconsistency in approach: Let's imagine that the user has a dependency on "subscriptions". Should we include it as well? Should we include Subscription dependencies as well? Feels not too optimal, isn't it? So what are the limit levels to fold? You may say that it depends on the situation,  but it's actually not - it is just better not to include related entities in the response.
+
+Some more examples are if the entity has many dependencies. What if we have Comments? Reactions? Should we fetch it and return it all the time?
+What if your folded data is big? Imagine you are fetching 100 posts for one user, and all the posts will contain the same copy of User data.
+What If another 10 other Clients don't care about Users of the Posts at all, but are served with a redundant chunk of payload? 
+
+When you have no strict pattern - you'll need to make ad-hoc decisions for each case, which leads to a messy API shape, hard both to use and maintain. 
+ 
+3) Data type inconsistency - a nightmare when you shape folded entities in different ways, based on the use case. 
+Like, in the context of the posts we are interested in First Name + Last name + Avatar URL.
+In the profile\admin  context, we want all the details, like phone, email, address, etc.
+It means that at Client we have two "kinds" of User TS interface\type - full and limited. So, should we define them separately? Otherwise - generalize them, so make all the fields that may be absent in any of the two options - nullable? This means null-checks and cast issues all over the app. Again, seems not a big deal when we have only 2 "variants". But in reality - we easily can over-"optimize" to have really different shapes of the same entity, with different "folded" entities depending on the usage context, and things go crazy.
+
+And final - it just violates the Dependencies Inversion and Interface Segregation principles of SOLID. In this way, you are making API know about how the Client uses that data, so API depends on the Client.
+
+Sure, there are some scenarios when you may naturally want to include the folded items, because of really strict non-functional requirements.
+But those are exclusions, and shouldn't be the default tip to follow. 
+
+If you have such requirements - probably you want to consider:
+1) Prefetching
+2) BFF layer  - where you'll define client-specific API contracts, and will have a place to collect data from different sources and aggregate them in a client-friendly structure)
+3) GraphQL - which is designed for such scenarios.
+---end of comment---
+
+From another comment: Optimizing REST services is challenging and depends heavily on how you're going to use them. Always including child records can be a bad practice.  
+
+From another comment: ...You advice is effective for HTTP interactions but from a REST perspective is confusing / harmful. 
+If minimizing HTTP calls is optimal for your use cases and you want to aggregate data across entities, look at something else, i.e. OData, GraphQL, etc.  
+
+
+
+**But...** there is another comment which shows the other side of trade-off:
+@sfulibarri
+The biggest mistake any dev can make when building a REST API is spending hours and hours agonizing over if every little thing is 'RESTful' or not. Just get it working, you will understand more about the problem space as you work and be able to make better decisions. Trying to design for some extremely vague principals of 'RESTfulness' from the get go will only cause you pain and more often than not, unless you are building an explicitly public API, the only thing that matters is that your endpoints provide the needed functionality and behave according to the documentation. Most of the worst API's I have ever had to work with in my career were just clearly designed to be 'RESTful' for the sake of being 'RESTful' and it was a nightmare to use them. 
