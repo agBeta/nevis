@@ -9,3 +9,6 @@ export default function makeHttpError({ statusCode, error }) {
         payload: JSON.stringify({ success: false, error })
     };
 }
+
+
+// Bill Souror places files like not-found.js in controllers folder. See https://github.com/dev-mastery/comments-api/tree/master.
