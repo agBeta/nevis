@@ -3,6 +3,11 @@ import makeHttpError from "./http-error.js";
 import makeBasicValidateNormalize from "./validate-normalize.js";
 
 
+/**
+ * This /auth/code endpoint controller isn't idempotent. Just for simplicity.
+ * @param {*} param0
+ * @returns
+ */
 export function makeEndpointController({
     insert_code_into_db,
     generateCode,

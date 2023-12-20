@@ -6,7 +6,6 @@ import makeBasicValidateNormalize from "./validate-normalize.js";
 export function makeEndpointController({
     find_from_codes_by_email,
     remove_codes_by_email,
-    find_from_users_by_email,
     insert_user_into_db,
     compareHash,
     createSecureHash,
@@ -58,13 +57,29 @@ export function makeEndpointController({
             });
         }
 
-        // Remove all codes related this email.
-        // No need to await.
+        //  Remove all codes related this email.
+        //  No need to await.
         remove_codes_by_email({ email: email });
 
-        const existings = await find_from_users_by_email({ email: email });
 
-        if (existings.length > 0) {
+        //  Don't check beforehand if the email exists in database or not. We may have loads of traffic or even
+        //  application running on several servers. Many signup requests with the same email might be processed
+        //  at the same time.
+        //  Although eventually only one them manages to insert a new record, but all others will throw an error and
+        //  respond with 5xx status, but then we miss the chance to return 409 status (which is the correct one)
+        //  for those failed requests.
+        //    --->  ❌️  existings = await find_from_users_by_email({ email: email });
+        //    --->      if (existings.length > 0) { .... }
+
+
+        const hashedPassword = await createSecureHash(password);
+        const id = generateCollisionResistentId();
+
+        try {
+
+        }
+        catch (err) {
+            // if email exists
             return {
                 headers: {
                     "Location": "/login",
@@ -74,10 +89,6 @@ export function makeEndpointController({
                 payload: JSON.stringify({ success: false, error: "Email is already registered and verified." })
             };
         }
-
-        const hashedPassword = await createSecureHash(password);
-        const id = generateCollisionResistentId();
-
         await insert_user_into_db({
             id,
             email,

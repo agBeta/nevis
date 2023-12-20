@@ -11,10 +11,11 @@ import {
     insert_user_into_db,
 } from "../data-access/index.js";
 
+import makeGenerateActionAndRespond from "./action.js";
 import { makeEndpointController as makePostAuthCodeController } from "./auth-code-post.js";
 import { makeEndpointController as makePostSignupController } from "./auth-signup-post.js";
 
-// Create functions on which our controllers rely, so that we can inject them.
+// 1️⃣️ Create functions on which our controllers rely, so that we can inject them.
 export const sendEmail = makeSendEmail({
     mailServiceHost: process.env.MAIL_HOST,
     mailServicePort: process.env.MAIL_PORT,
@@ -30,9 +31,31 @@ const generateCollisionResistentId = init({
     // less collision between different hosts. Based on https://github.com/paralleldrive/cuid2#configuration.
     fingerprint: (process.env.APP_ID || "app-default"),
 });
+// Better to have different pool of ids for generating actionIds.
+const anotherGCRI = init({
+    length: 24,
+    fingerprint: randomBytes(4).toString("hex"),
+});
+
+const generateActionAndRespond = makeGenerateActionAndRespond({ generateCollisionResistentId: anotherGCRI });
 
 
-// Now we create instances of controller by injecting necessary dependencies for each one.
+// 2️⃣️ Now we create controllers by injecting necessary dependencies for each one.
+
+
+//  But before creating other controllers, let's create a generic controller to handle action creation on ANY
+//  endpoint. In future, we may decide to assign specific controller (responsible for action creation) which is
+//  fine-designed based on the particular endpoint. Like not allowing action for some resource based on httpRequest
+//  userId, path, etc.
+
+/** Generic controller (for any endpoint) to create action  */
+const postAction = Object.freeze({
+    handleRequest: generateActionAndRespond,
+    validateRequest: () => ({ isValid: true })
+});
+
+
+
 const postAuthCode = makePostAuthCodeController({
     insert_code_into_db,
     //  Don't use Math.random() or timestamp. See https://stackoverflow.com/a/14869745 for a detailed explanation.
@@ -46,7 +69,6 @@ const postAuthCode = makePostAuthCodeController({
 const postSignup = makePostSignupController({
     find_from_codes_by_email,
     remove_codes_by_email,
-    find_from_users_by_email,
     insert_user_into_db,
     compareHash: bcrypt.compare,
     createSecureHash,
@@ -55,6 +77,7 @@ const postSignup = makePostSignupController({
 
 
 export {
+    postAction,
     postAuthCode,
     postSignup,
 };
