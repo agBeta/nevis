@@ -4,6 +4,12 @@ https://stackoverflow.com/a/43987579.
 https://stackoverflow.com/a/63981812.
 https://stackoverflow.com/questions/1276/how-big-can-a-mysql-database-get-before-performance-starts-to-degrade.
 
+# `autocommit` and transactions
+https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_autocommit.
+According to https://dev.mysql.com/doc/refman/8.0/en/commit.html :
+With START TRANSACTION, `autocommit` remains disabled until you end the transaction with COMMIT or ROLLBACK. The autocommit mode then reverts to its previous state.
+https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_consistent_read.
+
 ## Referential Actions
 
 https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html.

@@ -51,6 +51,10 @@ Also in the comments: I'm all for good style, but your solution includes an addi
 https://stackoverflow.com/a/26175863.
 Database level This is the preferred solution. You obtain the lock on the record in the database before you update. SQL provides an option for selecting the record for update.
 SELECT \* FROM BUS_SEATS WHERE BUS_ID = 1 FOR UPDATE;
+
+Also there is an interesting trick (although probably not quite practical in most cases), session lock. (Only possible with single process) Enabling sessions and using session will cause implicit locking between requests from the same user (session). Session["TRIGGER_LOCKING"] = true;  
+But it seems this trick can be used if we have layer 4 load balancer.
+
 </br>
 
 ## session id
