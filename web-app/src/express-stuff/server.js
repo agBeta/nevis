@@ -34,7 +34,7 @@ export function installMorgan({ app }) {
             ].join(" ");
         },
         {
-            //  According to the comment by Devon Sams in https://stackoverflow.com/a/28824464/22969951 and
+            //  According to the comment by Devon Sams in https://stackoverflow.com/a/28824464/0 and
             //  https://github.com/expressjs/morgan#morganformat-options.
             stream: {
                 write: function (str) {

@@ -62,6 +62,7 @@ export function makeEndpointController({
     wants, even for admin accounts. Because he can see the new generated token, he could take over this account.
     Based on https://security.stackexchange.com/questions/86913/should-password-reset-tokens-be-hashed-when-stored-in-a-database.
 */
+
 /*
     We don't remove already existing codes related to this email address, and there is a good reason behind it.
     See comments by [John] and [caw] below this SO answer https://security.stackexchange.com/a/31507.

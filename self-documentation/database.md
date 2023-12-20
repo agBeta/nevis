@@ -1,6 +1,8 @@
-## MySQL is a good choice
+## MySQL choice
+MySQL is good enough. Don't go into the rabbit hole of database any further. No need to over-engineer.
 https://stackoverflow.com/a/43987579.
 https://stackoverflow.com/a/63981812.
+https://stackoverflow.com/questions/1276/how-big-can-a-mysql-database-get-before-performance-starts-to-degrade.
 
 ## Referential Actions
 

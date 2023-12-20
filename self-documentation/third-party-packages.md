@@ -90,4 +90,4 @@ Alternatives are not dev ready yet. They don't traverse parent directories, don'
     https://github.com/nodejs/node/issues/49148.  
 
 -   using bash `source`:
-    https://stackoverflow.com/a/19530367/0. source (or simply, .) is a built-in command in Unix shells (Bash, etc.) to read and execute commands from the given file, in the current shell.
+    https://stackoverflow.com/a/19530367. source (or simply, .) is a built-in command in Unix shells (Bash, etc.) to read and execute commands from the given file, in the current shell.

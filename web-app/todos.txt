@@ -1,5 +1,5 @@
 // @todo test alert('1') for displayName --> maybe in e2e
 
-// use scrypt instead of bcrypt. See  https://stackoverflow.com/a/49447738/22969951. Also LFLFM comment.
+// use scrypt instead of bcrypt. See  https://stackoverflow.com/a/49447738. Also LFLFM comment.
 
 // Swagger auth/code --> we do not tell email is already in use. We do not leak info.

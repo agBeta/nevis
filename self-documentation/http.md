@@ -39,7 +39,7 @@ Quoting from https://docs.google.com/document/d/1s0joc0yb6kXpXZGfdE9SRutoPQuK9RV
 For any given request, a client, in the absence of a definitive result, may not know if the request fell in the water on its way, or if the response fell in the water on its way back.  
 If the don’t get a response to a PUT or DELETE, how do they replay the request without wiping out other people’s modifications that may have happened between times?
 Also from document: ... To be thorough, a good please-be-patient response should contain an expected delay and/or a cancel link ...
-https://stackoverflow.com/a/35429135/0.
+https://stackoverflow.com/a/35429135/.
 Also comment by bbsimonbb (author of article above): "Awfully" is a bit strong ! Responses will be tiny, a fraction of a kilobyte. If you had huge volumes, you could use an ACID key value store (couchDB?) just for storing respones. The payments web-service where I first used this pattern has been ticking away happily for 15 years atop a SQL Server DB. It's so simple to develop, to integrate with and to support that I find myself agog at the other answers to this problem. You can't not have noticed: Among all the RESTful discussion of how you should deal with this, no-one talks about their experience, their problems, their volumes. – bbsimonbb
 
 According to the answer (same link above): Other people often suggest you create the resource with an empty POST, then, once the client has the id of the newly created resource, he can do an "idempotent" update to fill it. This is nice, but you will likely need to make DB columns nullable that wouldn't otherwise be, and your updates are **only** idempotent **if** no-one else is trying to update at the same time.
@@ -48,7 +48,7 @@ Also in the comments: I'm all for good style, but your solution includes an addi
 
 ### Race condition (like in ticket reservation system)
 
-https://stackoverflow.com/a/26175863/0.
+https://stackoverflow.com/a/26175863.
 Database level This is the preferred solution. You obtain the lock on the record in the database before you update. SQL provides an option for selecting the record for update.
 SELECT \* FROM BUS_SEATS WHERE BUS_ID = 1 FOR UPDATE;
 </br>
@@ -62,5 +62,5 @@ It is useless to encrypt it for cookie, see https://stackoverflow.com/questions/
 Good for time-limited-form-submission (anti-spam) without having to store any data on the server side.
 https://stackoverflow.com/questions/3240246/signed-session-cookies-a-good-idea.
 
-According to https://stackoverflow.com/a/3240427/0:
+According to https://stackoverflow.com/a/3240427:
 They should be kept private, so that attackers cannot steal them and impersonate an authenticated user. Any request that performs an action that requires authorization should be tamper-proof. That is, the entire request must have some kind of integrity protection such as an HMAC so that its contents can't be altered. For web applications, these requirements lead inexorably to HTTPS.

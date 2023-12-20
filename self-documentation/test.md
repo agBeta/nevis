@@ -73,7 +73,7 @@ Unfortunately, JavaScript is only aware of the current time zone, as it is set b
 
 ## Why setup inside `before` hook?
 
-See https://stackoverflow.com/a/71851612/0. if the setup is asynchronous, you can't do it inside describe block. Although it is for jest.
+See https://stackoverflow.com/a/71851612. if the setup is asynchronous, you can't do it inside describe block. Although it is for jest.
 
 ## mocks and hoisting
 

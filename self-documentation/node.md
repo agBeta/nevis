@@ -23,7 +23,7 @@ But we don't need agent options like Support self-signed certificate, only IPv4 
 
 ## strict mode
 
-Module code is always strict mode code. But in comments says it is not exactly true. See https://stackoverflow.com/a/18417571/0.
+Module code is always strict mode code. But in comments says it is not exactly true. See https://stackoverflow.com/a/18417571.
 
 ## change env variables
 
@@ -32,9 +32,9 @@ https://stackoverflow.com/questions/59971381/change-env-variables-at-runtime.
 ## hoisted imports and env variables
 
 Imports are hoisted, so your dotenv.config isn't being called until after the rest of your imports. According to https://stackoverflow.com/questions/74905685/environment-variables-only-working-when-dotenv-is-imported-and-configured-in-eac.
-A _much better_ and comprehensive answer is here https://stackoverflow.com/a/42817956/0.
+A _much better_ and comprehensive answer is here https://stackoverflow.com/a/42817956.
 Javascript imports are hoisted (but not Typescript!), so imported modules will initialize before any of the current modules initialization code gets to run. Fortunately imported modules are initialized in order, so a possible workaround is putting the config code in its own module.
 
 ## camel case vs snake case
 
-https://stackoverflow.com/a/21511149/0. Based on donut comment, Apparently, snake_case is easier to read.
+https://stackoverflow.com/a/21511149. Based on donut comment, Apparently, snake_case is easier to read.
