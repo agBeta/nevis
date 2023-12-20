@@ -1,3 +1,7 @@
+## MySQL is a good choice
+https://stackoverflow.com/a/43987579.
+https://stackoverflow.com/a/63981812.
+
 ## Referential Actions
 
 https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html.
@@ -63,7 +67,7 @@ MOST IMPORTANT: Unless you are working in an embedded system where each byte cou
 </br>
 
 ## Unique column and composite index.
-According to https://stackoverflow.com/a/9764392/22969951 :
+According to https://stackoverflow.com/a/9764392. :
 A unique key is a special case of index, acting like a regular index with added checking for uniqueness. Using SHOW INDEXES FROM customer you can see your unique keys are in fact B-tree type indexes. A composite index on (email, user_id) is enough, you don't need a separate index on email only - MySQL can use leftmost parts of a composite index. There may be some border cases where the size of an index can slow down your queries, but you should not worry about them until you actually run into them.
 As for testing index usage you **should** first fill your table with some data to make optimizer think it's actually worth to use that index.
 
@@ -149,7 +153,7 @@ If strict SQL mode is enabled, attempts to insert invalid ENUM values result in 
 https://stackoverflow.com/a/40551734. about modifying enum. It seems changing the order / removing enums will make those numbers undefined.
 Also see https://dba.stackexchange.com/questions/312263/are-enums-still-evil-in-mysql-8-0. Both answers are good.
 
-Side Note: Do not use FK instead of _small set of_ enums. According to the comment by "Dai" in https://stackoverflow.com/a/1434338/22969951.
+Side Note: Do not use FK instead of _small set of_ enums. According to the comment by "Dai" in https://stackoverflow.com/a/1434338.
 Often enum values are defined in application code first (e.g. C# enum), whereas if they used a table FK reference then those supposedly static enum entries could be modified at runtime which would be undesirable (and SQL Server doesn't support the concept of immutable tables), finally if you have lots of enums with only a few values then you'll end-up adding lots of tables to your database. Not to mention extra IO reads due to FK constraint-checking when inserting/deleting data, whereas a CHECK CONSTRAINT is much faster and doesn't cause database object spam.
 
 </br>
@@ -172,7 +176,7 @@ But according MySQL docs itself, Although UUID() values are intended to be uniqu
 Also...
 According to Mike McCoy comment in https://stackoverflow.com/questions/11026061/is-uuid-randomuuid-suitable-for-use-as-a-one-time-password, Actually, the [RFC explicitly cautions](https://datatracker.ietf.org/doc/html/rfc4122#section-6) against using UUIDs as security tokens: "Do not assume that UUIDs are hard to guess; they should not be used as security capabilities (identifiers whose mere possession grants access), for example." A UUID4 generated with a secure RNG will be nearly impossible to guess, but the standard explicitly allows insecure RNGs(!). tools.ietf.org/html/rfc4122#section-6 (Apologies for resurrecting a very old comment, but security is everyone's concern.) –
 
-Also according to Rich James in https://stackoverflow.com/a/39714657/22969951, UUIDs, at the scale you are talking about, will not just slow down the system, but actually kill it.
+Also according to Rich James in https://stackoverflow.com/a/39714657, UUIDs, at the scale you are talking about, will not just slow down the system, but actually kill it.
 
 </br>
 
@@ -238,5 +242,5 @@ Although not very much related, but important to know: https://stackoverflow.com
 
 
 ## Maybe NoSQL (Mongo)?
-This answer gives a very good practical example of when MongoDb works faster and why: https://stackoverflow.com/a/9703513/22969951. Also talks about optimisation by denormalisation in the comment.
+This answer gives a very good practical example of when MongoDb works faster and why: https://stackoverflow.com/a/9703513. Also talks about optimisation by denormalisation in the comment.
 Also this comment https://www.reddit.com/r/Database/comments/cx4r8r/comment/eyj8j25/.

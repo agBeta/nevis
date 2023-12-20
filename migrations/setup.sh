@@ -2,7 +2,7 @@
 # First creates a database and a database user. 
 # Then performs all migrations specified in the current folder step-by-step.
 
-# Skeleton of first part (creating database and user) is copied from https://stackoverflow.com/a/33474729/22969951.
+# Skeleton of first part (creating database and user) is copied from https://stackoverflow.com/a/33474729.
 # Though some changes are made.
 
 # The part (i.e. performing migrations sql files) is based on these links:
@@ -11,7 +11,7 @@
 # https://stackoverflow.com/questions/14505047/loop-through-all-the-files-with-a-specific-extension.
 
 
-# Based on https://stackoverflow.com/a/5947802/22969951.
+# Based on https://stackoverflow.com/a/5947802.
 RED='\033[0;31m'
 Blue='\033[0;34m' 
 Blue_bg='\033[44m'

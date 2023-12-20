@@ -46,7 +46,6 @@ And like phone numbers, emails can get re-used. Jsmith@somecompany.com can easil
 From https://stackoverflow.com/questions/6761403/how-to-get-the-next-auto-increment-id-in-mysql.
 I didn't downvote it, but the problem with attempting to use the last auto incrementing value is that it might not be the last one by the time you come to use it - no matter how quickly the SELECT and subsequent INSERT is carried out.
 
-
 ### cuid and jest
 
 See https://github.com/paralleldrive/cuid2#using-in-jest. Jest uses jsdom, which builds a global object which doesn't comply with current standards. There is a known issue in Jest when jsdom environment is used. The results of new TextEncoder().encode() and new Uint8Array() are different.
@@ -82,12 +81,13 @@ The main gotcha is going to be that routes are evaluated in the order they were 
 Although completely un-related but comment by Jacob gives a very good observation: https://stackoverflow.com/questions/24042697/node-js-routes-adding-route-handlers-to-an-already-instantiated-http-server:
 Disclaimer: I'm no Node developer, so read the following with that in mind. There is a small time window for which the listener is missing (between removeListener and on). As load (traffic) increases the risk of a request hitting the server when a listener has been removed while its replacement hasn't yet been registered also increases
 
-
 ## dotenv and alternative
+
 Alternatives are not dev ready yet. They don't traverse parent directories, don't support multiline values, etc. But just for information:
-- built-in env in nodejs:
-https://dev.to/dotenv/nodejs-2060-includes-built-in-support-for-env-files-50mh.
-https://github.com/nodejs/node/issues/49148.  
-  
-- using bash `source`: 
-https://stackoverflow.com/a/19530367/22969951. source (or simply, .) is a built-in command in Unix shells (Bash, etc.) to read and execute commands from the given file, in the current shell.
+
+-   built-in env in nodejs:
+    https://dev.to/dotenv/nodejs-2060-includes-built-in-support-for-env-files-50mh.
+    https://github.com/nodejs/node/issues/49148.  
+
+-   using bash `source`:
+    https://stackoverflow.com/a/19530367/0. source (or simply, .) is a built-in command in Unix shells (Bash, etc.) to read and execute commands from the given file, in the current shell.
