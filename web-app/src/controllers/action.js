@@ -13,12 +13,13 @@
  * also be done easily by database transactions and setting the correct isolation level, without introducing concept
  * of "action"). Anyway, this is just an idea in theory, and may have some flaws in its logic.
  *
+ * @param {{ generateActionId: () => string }} param0
  */
-export default function makeGenerateActionAndRespond({ generateCollisionResistentId }) {
+export default function makeGenerateActionAndRespond({ generateActionId }) {
 
     // NOTE: The function doesn't involve downstream parties. It should run quickly.
-    return function makeActionAndRespond(httpRequest) {
-        const actionId = generateCollisionResistentId();
+    return function makeActionAndRespond(/**@type {import("#types").HttpRequest}*/ httpRequest) {
+        const actionId = generateActionId();
         return {
             headers: {
                 "Content-Type": "application/json",

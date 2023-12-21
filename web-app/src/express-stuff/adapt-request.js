@@ -12,10 +12,31 @@ export default function adaptRequest(req) {
     Object.defineProperties(adapted, {
         path: { value: req.path },
         method: { value: req.method },
-        // e.g. we hit /user/10 (pattern /user/:id) pathParams will be {id: '10'}
-        pathParams: { value: req.params },
+
+        // e.g. we hit /user/10 (pattern /user/:id) pathParams will be {id: '10'} in Express.
+        pathParams: {
+            value: req.params,
+            configurable: true,
+            writable: true,
+            //  Downstream parties used for validation and normalization, probably need to iterate over the object
+            //  using for..in loop or Object.keys().
+            enumerable: true,
+        },
+
+        body: {
+            value: req.body,
+            configurable: true,
+            writable: true,
+            enumerable: true,
+        },
+
         // e.g. we hit /user?name=John&page=2 queryParams will be {name: 'John', page: '2'}
-        queryParams: { value: req.query },
+        queryParams: {
+            value: req.query,
+            configurable: true,
+            writable: true,
+            enumerable: true,
+        },
 
         // See following links:
         //   http://expressjs.com/en/4x/api.html#res.cookie
@@ -40,13 +61,6 @@ export default function adaptRequest(req) {
         */
         ip: { value: req.ip, },
         originalUrl: { value: req.originalUrl },
-
-        body: {
-            value: req.body,
-            configurable: false,
-            // This one differs from other properties.
-            writable: true
-        }
     });
 
     console.log(req.body);

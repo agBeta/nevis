@@ -1,6 +1,7 @@
 import Joi from "joi";
 import makeHttpError from "./http-error.js";
 import makeBasicValidateNormalize from "./validate-normalize.js";
+import log from "#utils/log.js";
 
 
 export function makeEndpointController({
@@ -25,6 +26,9 @@ export function makeEndpointController({
                 birthYear: Joi.number().integer().min(1300).max(1402).required(),
                 // must have code. we only register users with verified emails
                 code: Joi.string().max(10).required(),
+            }),
+            schemaOfPathParams: Joi.object({
+                actionId: Joi.string().min(10).max(50)
             })
         })
     });
@@ -59,14 +63,18 @@ export function makeEndpointController({
 
         //  Remove all codes related this email.
         //  No need to await.
-        remove_codes_by_email({ email: email });
+        remove_codes_by_email({ email: email })
+            .catch(() => {
+                // Logging the error, though data-access layer musth have already written some logs.
+                log({ level: "error", keyword: "remove-code", message: `failed to remove codes for ${email}` });
+            });
 
 
         //  Don't check beforehand if the email exists in database or not. We may have loads of traffic or even
-        //  application running on several servers. Many signup requests with the same email might be processed
-        //  at the same time.
-        //  Although eventually only one them manages to insert a new record, but all others will throw an error and
-        //  respond with 5xx status, but then we miss the chance to return 409 status (which is the correct one)
+        //  application running on several servers. There is slim chance of many signup requests with the same email
+        //  being processed at the same time.
+        //  Although eventually only one of them manages to insert a new record, but all others will throw an error and
+        //  respond with 5xx status, but then we miss the chance to return 409 status (which is the correct status)
         //  for those failed requests.
         //    --->  ❌️  existings = await find_from_users_by_email({ email: email });
         //    --->      if (existings.length > 0) { .... }
@@ -76,7 +84,17 @@ export function makeEndpointController({
         const id = generateCollisionResistentId();
 
         try {
+            await insert_user_into_db({
+                id,
+                email,
+                hashedPassword,
+                displayName,
+                birthYear,
+                signupAt: Date.now()
+            });
 
+            // Now let's make the user logged in automatically.
+            
         }
         catch (err) {
             // if email exists
@@ -89,14 +107,7 @@ export function makeEndpointController({
                 payload: JSON.stringify({ success: false, error: "Email is already registered and verified." })
             };
         }
-        await insert_user_into_db({
-            id,
-            email,
-            hashedPassword,
-            displayName,
-            birthYear,
-            signupAt: Date.now()
-        });
+
     }
 }
 

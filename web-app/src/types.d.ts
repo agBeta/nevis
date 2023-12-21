@@ -15,8 +15,8 @@ export type WebAppServer = Server;
 export type HttpRequest = {
     readonly path: string,
     readonly method: string,
-    readonly pathParams: { [key: string]: string },
-    readonly queryParams:  { [key: string]: unknown },
+    pathParams: { [key: string]: string },
+    queryParams:  { [key: string]: unknown },
     /* How you should read it: unknown is I don't know; any is I don't care. */
     readonly cookies: { [key: string]: string },
     readonly headers: { [key: string]: string | undefined },
@@ -50,9 +50,9 @@ export type HttpResponse = {
 };
 
 
-export type HttpCacheableResponse = HttpResponse & {
+export type HttpGETResponse = HttpResponse & {
     headers: {
-        "Last-Modified": string,
+        "Cache-Control": string,
         [key: string]: string
     }
 };

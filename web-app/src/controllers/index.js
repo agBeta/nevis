@@ -13,7 +13,7 @@ import {
 
 import makeGenerateActionAndRespond from "./action.js";
 import { makeEndpointController as makePostAuthCodeController } from "./auth-code-post.js";
-import { makeEndpointController as makePostSignupController } from "./auth-signup-post.js";
+import { makeEndpointController as makePostSignupController } from "./auth-signup-put.js/index.js";
 
 // 1️⃣️ Create functions on which our controllers rely, so that we can inject them.
 export const sendEmail = makeSendEmail({
@@ -23,7 +23,7 @@ export const sendEmail = makeSendEmail({
     mailServicePassword: process.env.MAIL_SMTP_PASSWORD,
     mailServiceFromAddress: process.env.MAIL_FROM_ADDRESS,
 });
-const createSecureHash = async function(/**@type {string}*/ plain) {
+const createSecureHash = async function (/**@type {string}*/ plain) {
     return bcrypt.hash(plain, 9);
 };
 const generateCollisionResistentId = init({
@@ -31,13 +31,12 @@ const generateCollisionResistentId = init({
     // less collision between different hosts. Based on https://github.com/paralleldrive/cuid2#configuration.
     fingerprint: (process.env.APP_ID || "app-default"),
 });
-// Better to have different pool of ids for generating actionIds.
-const anotherGCRI = init({
-    length: 24,
-    fingerprint: randomBytes(4).toString("hex"),
-});
+// Generating actionIds MUST be quick, actionIds are short-lived (unlike ids we use to store entities in db).
+const generateActionId = function () {
+    return randomBytes(10).toString("hex");
+};
 
-const generateActionAndRespond = makeGenerateActionAndRespond({ generateCollisionResistentId: anotherGCRI });
+const generateActionAndRespond = makeGenerateActionAndRespond({ generateActionId });
 
 
 // 2️⃣️ Now we create controllers by injecting necessary dependencies for each one.

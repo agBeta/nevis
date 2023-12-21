@@ -15,7 +15,8 @@ router.use("/", express.json({ limit: "20kb" }));
 router.post("/code", makeExpressCallback(postAuthCode));
 
 router.post("/signup", makeExpressCallback(postAction));
-router.post("/signup/action/:actionId", makeExpressCallback(postSignup));
+router.put("/signup/action/:actionId", makeExpressCallback(postSignup));
+router.get("/")
 
 
 export { router };
