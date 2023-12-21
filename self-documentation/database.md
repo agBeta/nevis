@@ -4,6 +4,10 @@ https://stackoverflow.com/a/43987579.
 https://stackoverflow.com/a/63981812.
 https://stackoverflow.com/questions/1276/how-big-can-a-mysql-database-get-before-performance-starts-to-degrade.
 
+# Choosing the right PK
+great post: https://dev.to/vdorot/choose-the-right-primary-key-to-save-a-large-amount-of-disk-io-1o1l.
+
+
 # `autocommit` and transactions
 https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_autocommit.
 According to https://dev.mysql.com/doc/refman/8.0/en/commit.html :

@@ -33,6 +33,17 @@ See database.md.
 
 ## cuid2
 
+### K-sortable 
+First read this section. https://github.com/segmentio/ksuid?tab=readme-ov-file#why-use-ksuids.
+Read the comment and https://dev.to/rhymes/what-would-you-use-as-a-sortable-globally-unique-id-5akb#comment-f3m1 and the reply comment after that.
+Also https://dev.to/rhymes/what-would-you-use-as-a-sortable-globally-unique-id-5akb#comment-f4ha.
+Now read this part: https://github.com/paralleldrive/cuid2?tab=readme-ov-file#note-on-k-sortablesequentialmonotonically-increasing-ids.
+
+https://firebase.blog/posts/2015/02/the-2120-ways-to-ensure-unique_68/
+
+great for uuid v4 and v7 in different RDBMS:
+https://dev.to/vdorot/uuids-are-bad-for-database-index-performance-enter-uuid7-4pbj
+
 ### cuid2 vs nanoId vs UUID
 
 https://dev.to/harshhhdev/uuidguid-cuid-nanoid-whats-the-difference-5dj1.

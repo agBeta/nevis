@@ -22,7 +22,60 @@ I return HTTP 409 with a Location header pointing to the existing/conflicting re
 
 </br>
 
-## Fundamental
+## 422 for path invalid (especially invalid actionId)  
+
+422 was web-dav, but now is in standard http spec. See https://www.rfc-editor.org/rfc/rfc9110#name-422-unprocessable-content.
+It seems semantically the best choice for invalid path params when body is ok. Look what it says: "Unprocessable Content". It is self-explanatory. 
+According to this answer https://stackoverflow.com/questions/44915255/is-it-ok-return-http-status-404-in-the-post, it is BAD idea to return 404 in such situations (i.e. when path params are not valid). But it is ok to send 400. 
+
+Also more about why 422 is better than 400, see "leo_cape" comment and " 
+Philippe Gioseffi" comment below [this SO answer](https://stackoverflow.com/a/52363900/22969951).
+
+According to https://stackoverflow.com/a/21488282, The most important thing is that you:
+- Use the response code(s) consistently.
+- Include as much additional information in the response body as you can to help the developer(s) using your API figure out what's going on.
+
+## Don't use 1xx responses
+https://stackoverflow.com/a/51255297.
+
+</br>
+
+## Exposing userId and postId
+It seems ok. It is not data security risk. But might be business intelligence security risk. See https://stackoverflow.com/a/32144572.
+
+Exposing hashed ids for data security is complete pointless. See https://stackoverflow.com/a/32144572/. Unless you encrypt or hash your ids Using session id as a salt. But is an over-kill and also creates its own problems. See https://stackoverflow.com/a/10036069.
+
+
+</br>
+
+## Fundamentals
+
+### Cache
+Cacheable methods and status codes: [MDN Cacheable](https://developer.mozilla.org/en-US/docs/Glossary/Cacheable).
+
+Also https://jakearchibald.com/2016/caching-best-practices/.
+Note that you can purge cache on Cloudflare, but it could still be cached elsewhere between client and server, e.g. by your ISP or the end-user's ISP. ---> Archibald's answer: Not, since I serve over HTTPS.
+
+A very good detailed answer on GET cache (and also when it isn't idempotent). https://stackoverflow.com/a/65038716. Also read comment by  
+tmdesigned. Quoting from answer:
+... Deviating from them sets yourself up for failure in many ways. (For instance, there are different security expectations for requests based on method. A browser may treat a GET request as "simple" from a CORS perspective, while it would never treat a PATCH request as such.).
+
+
+According to https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching:
+However, in recent years, as HTTPS has become more common and client/server communication has become encrypted, proxy caches in the path can only tunnel a response and can't behave as a cache, in many cases. So in that scenario, there is no need to worry about outdated proxy cache implementations that cannot even see the response.
+Also read about private cache in the same article. Don't blindly use public,max-age=... .
+
+Also read about Managed caches: For example, the following `Cache-Control: no-store` can be specified to opt-out of a private cache or proxy cache, while using your own strategy to cache only in a managed cache. 
+
+Also about [Heuristic caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#heuristic_caching), Quoting:
+... even if no Cache-Control is given, responses will get stored and reused if certain conditions are met.
+How long to reuse is up to the implementation (i.e. browser), but the specification recommends about 10% (in this case 0.1 year) of the time after storing.
+
+Expires or max-age --> As summary, use max-age.
+
+https://stackoverflow.com/questions/58428814/should-i-add-cache-control-no-cache-to-get-endpoints-of-my-rest-api.
+
+</br>
 
 ### Idempotent POST, PUT
 
@@ -126,3 +179,16 @@ If minimizing HTTP calls is optimal for your use cases and you want to aggregate
 **But...** there is another comment which shows the other side of trade-off:
 @sfulibarri
 The biggest mistake any dev can make when building a REST API is spending hours and hours agonizing over if every little thing is 'RESTful' or not. Just get it working, you will understand more about the problem space as you work and be able to make better decisions. Trying to design for some extremely vague principals of 'RESTfulness' from the get go will only cause you pain and more often than not, unless you are building an explicitly public API, the only thing that matters is that your endpoints provide the needed functionality and behave according to the documentation. Most of the worst API's I have ever had to work with in my career were just clearly designed to be 'RESTful' for the sake of being 'RESTful' and it was a nightmare to use them. 
+
+
+
+</br>
+
+## Unknown aspects of scaling
+These are **not** quite related to this project. But they open you eyes.
+This comment by Kasey Speakman is great: https://dev.to/rhymes/what-would-you-use-as-a-sortable-globally-unique-id-5akb#comment-f6em.
+
+Good SO answer: https://stackoverflow.com/a/47155318.
+
+Sharding & IDs at Instagram: https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c.
+
