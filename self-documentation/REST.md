@@ -4,6 +4,7 @@ See https://www.rfc-editor.org/rfc/rfc9110#field.last-modified. An origin server
 
 ## Status codes in HTTP
 
+https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml#http-status-codes-1.
 https://www.rfc-editor.org/rfc/rfc7231#section-6.1.
 The one below obsoletes the above.
 https://www.rfc-editor.org/rfc/rfc9110#name-status-codes.
@@ -22,14 +23,12 @@ I return HTTP 409 with a Location header pointing to the existing/conflicting re
 
 </br>
 
-## 422 for path invalid (especially invalid actionId)
+## 404 vs 400 vs 422
 
 422 was web-dav, but now is in standard http spec. See https://www.rfc-editor.org/rfc/rfc9110#name-422-unprocessable-content.
-It seems semantically the best choice for invalid path params when body is ok. Look what it says: "Unprocessable Content". It is self-explanatory.
 inspired by this answer https://stackoverflow.com/questions/44915255/is-it-ok-return-http-status-404-in-the-post, 404 is better maybe.
 
-Also more about why 422 is better than 400, see "leo_cape" comment and "
-Philippe Gioseffi" comment below [this SO answer](https://stackoverflow.com/a/52363900/22969951).
+Also more about why 422 is better than 400 in some situation, see "leo_cape" comment and "Philippe Gioseffi" comment below [this SO answer](https://stackoverflow.com/a/52363900/22969951).
 
 According to https://stackoverflow.com/a/21488282, The most important thing is that you:
 
@@ -47,10 +46,20 @@ https://stackoverflow.com/a/51255297.
 
 systemPAUSE Nice answer. One small point: if you are not going to be returning a response body to a successful operation, I would suggest using a 204 exclusively. Some clients (jQuery Ajax, for example) will choke if they are expecting a non-zero length response but don't get it. You can see an example of this in https://stackoverflow.com/questions/20928929/jquery-ajax-call-executes-error-on-200/20929815. – nick_w
 
+## A good question for batch job and a good comment
+https://stackoverflow.com/questions/9794696/which-http-status-code-means-not-ready-yet-try-again-later?noredirect=1&lq=1.
+comment Andy Dennie: by First, if thingy 1234 does not yet have any GET-able representation, in what sense does it exist as a resource (from the client's perspective)? The fact that, internal to the server there is a queued job to create 1234, doesn't seem to imply that resource 1234 exists. Second, where did the client get the URI .../thingyblob/1234? The server probably shouldn't have provided that URI to the client until the resource was actually GET-able. 
+
 ## DELETE 
 https://www.rfc-editor.org/rfc/rfc7231#section-4.3.5.
 The server may archive the resource. It just have to destroy mapping. rfc says so.
 Also it is Idempotent, according to [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE).
+
+
+## 418 teapot
+With the onset of IoT, this protocol may actually be a viable protocol at some point. If I ever made an IoT teapot, you can rest assured this protocol would be used. – Brandon Miller comment. See https://stackoverflow.com/questions/52340027/is-418-im-a-teapot-really-an-http-response-code.
+
+But https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.19, Therefore, the 418 status code is reserved in the IANA HTTP Status Code Registry. This indicates that the status code cannot be assigned to other applications currently. If future circumstances require its use (e.g., exhaustion of 4NN status codes), it can be re-assigned to another use.
 
 
 ## PUT
@@ -99,6 +108,28 @@ How long to reuse is up to the implementation (i.e. browser), but the specificat
 Expires or max-age --> As summary, use max-age.
 
 https://stackoverflow.com/questions/58428814/should-i-add-cache-control-no-cache-to-get-endpoints-of-my-rest-api.
+
+Also it is important to know that response will be cached only if it meets some criteria. Read more on RFC https://datatracker.ietf.org/doc/html/rfc9111#name-storing-responses-in-caches.
+
+image might be cached even without response last-modified. See https://stackoverflow.com/a/5478460.
+https://stackoverflow.com/a/5500176.
+
+According to https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control: You **should add** the private directive for user-personalized content, **especially** for responses received after login and for sessions managed via cookies. If you forget to add private to a response with personalized content, then that response can be stored in a shared cache and end up being reused for multiple users, which can cause personal information to leak.
+
+Cache private sometimes is not respected. See KrekkieD comment in https://stackoverflow.com/a/9884934.
+Also this https://stackoverflow.com/a/9886945.
+
+Also this https://stackoverflow.com/questions/64331735/how-to-prevent-http-caching-of-rest-calls-in-browser.
+Also this is great https://stackoverflow.com/questions/29246444/fetch-how-do-you-make-a-non-cached-request. and https://stackoverflow.com/a/31993927.
+
+### Cache-control in client
+
+Also https://stackoverflow.com/questions/14541077/why-is-cache-control-attribute-sent-in-request-header-client-to-server. Cache-Control: no-cache is generally used in a request header (sent from web browser to server) to force validation of the resource in the intermediate proxies.
+Also https://stackoverflow.com/questions/42652931/why-use-cache-control-header-in-request/42653090#42653090.
+An example where the client's request is not honoured is the CloudFlare cache which ignores you to avoid DoS attacks as described here ... – sparrowt --> like is https://community.cloudflare.com/t/request-no-cache-header-is-ignored-by-cloudflare/201653.
+
+Also be ware of dns lookup in client-side caching for specific directives. See great SO answer here https://stackoverflow.com/questions/23603023/file-caching-query-string-vs-last-modified?noredirect=1&lq=1.
+ 
 
 </br>
 

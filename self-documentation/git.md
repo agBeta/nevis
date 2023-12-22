@@ -68,10 +68,28 @@ If you only want to know which files changed in the latest commit, run `git show
 If you want to know unstaged changes (i.e. what *could* be in the next commit), run  `git diff` . If you want to know staged changes (i.e. already `git add`ed and *will* be in the next commit) use `--staged` flag at the end.
 
 </br>
+https://git-scm.com/book/en/v2/Git-Tools-Interactive-Staging.
+`git add -i`  --> `u`  --> `2,3` --> enter again.
+You can also do Staging Patches (identical to `git add -p`) with letter `p`.
+
+</br>
+## From Git book
+### Creating a Branch from a Stash
+See https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning.
+
+### Searching
+https://git-scm.com/book/en/v2/Git-Tools-Searching
+If, for example, we want to find out when the ZLIB_BUF_MAX constant was originally introduced, we can use the -S option (colloquially referred to as the Git “pickaxe” option) to tell Git to show us only those commits that changed the number of occurrences of that string.
+`git log -S ZLIB_BUF_MAX --oneline`
+
+https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified.
+https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging.
+
+</br>
 
 ## Undo commits
 Follow these step:  
-1. In order to have a rescure plan in case of any disasterous action, you may want to save (also see Note 1 below) the hash of current HEAD (Although `ORIG_HEAD` helps us, but we may jump around a lot). So run `git rev-parse --verify HEAD`. So now, the hash is saved in our bash history and we can `checkout` or `reset` or `branch happy <hash>` to this commit hash in case of disaster (it won't be garbage collected any time soon, accoding to [git docs](https://git-scm.com/docs/git-gc#Documentation/git-gc.txt-gcreflogExpireUnreachable)).  
+1. In order to have a rescure plan in case of any disastrous action, you may want to save (also see Note 1 below) the hash of current HEAD (Although `ORIG_HEAD` helps us, but we may jump around a lot). So run `git rev-parse --verify HEAD`. So now, the hash is saved in our bash history and we can `checkout` or `reset` or `branch happy <hash>` to this commit hash in case of disaster (it won't be garbage collected any time soon, accoding to [git docs](https://git-scm.com/docs/git-gc#Documentation/git-gc.txt-gcreflogExpireUnreachable)).  
 Note 1: You don't have to save the hash of current HEAD in bash history, because `git reflog show` will display old values of a reference.  
 Note 2: If you want to undo only **the last commit** then stashing is a better rescue alternative (run `git stash save --include-untracked "WIP: save changes in case of disaster"`).  
 
