@@ -19,7 +19,7 @@ According to https://www.rfc-editor.org/rfc/rfc7231#section-7.4.1, An origin ser
 
 Comment by Wrikken in https://stackoverflow.com/a/3826024: 400 => "The request could not be understood by the server due to malformed syntax". And the server understands perfectly, but is unable to comply due to a conflict. There is nothing wrong with the request & syntax, only a data problem. A 400 would instantly make me believe the whole mechanism I'm using is flawed, instead of just the data.
 
-I return HTTP 409 with a Location header pointing to the existing/conflicting resource. – Gili.
+Also read https://stackoverflow.com/a/70371989.
 
 </br>
 
