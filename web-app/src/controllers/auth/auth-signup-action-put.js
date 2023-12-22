@@ -18,6 +18,9 @@ export function makeEndpointController({
         handleRequest,
 
         validateRequest: makeBasicValidateNormalize({
+            schemaOfPathParams: Joi.object({
+                actionId: Joi.string().min(10).max(50)
+            }),
             schemaOfBody: Joi.object({
                 email: Joi.string().email({ allowUnicode: true }).max(80).required(),
                 displayName: Joi.string().min(2).max(80).alphanum().required(),
@@ -26,9 +29,6 @@ export function makeEndpointController({
                 birthYear: Joi.number().integer().min(1300).max(1402).required(),
                 // must have code. we only register users with verified emails
                 code: Joi.string().max(10).required(),
-            }),
-            schemaOfPathParams: Joi.object({
-                actionId: Joi.string().min(10).max(50)
             })
         })
     });
@@ -94,7 +94,7 @@ export function makeEndpointController({
             });
 
             // Now let's make the user logged in automatically.
-            
+
         }
         catch (err) {
             // if email exists
