@@ -4,11 +4,20 @@ https://stackoverflow.com/a/43987579.
 https://stackoverflow.com/a/63981812.
 https://stackoverflow.com/questions/1276/how-big-can-a-mysql-database-get-before-performance-starts-to-degrade.
 
-# Choosing the right PK
+## Choosing the right PK
 great post: https://dev.to/vdorot/choose-the-right-primary-key-to-save-a-large-amount-of-disk-io-1o1l.
+Also see cuid2 vs nanoId vs UUID from third-party-packages.md self-documentation.
 
+### Don't use email as PK
 
-# `autocommit` and transactions
+From https://stackoverflow.com/questions/3804108/use-email-address-as-primary-key.
+And like phone numbers, emails can get re-used. Jsmith@somecompany.com can easily belong to John Smith one year and Julia Smith two years later. + many other reasons...
+
+From https://stackoverflow.com/questions/6761403/how-to-get-the-next-auto-increment-id-in-mysql.
+I didn't downvote it, but the problem with attempting to use the last auto incrementing value is that it might not be the last one by the time you come to use it - no matter how quickly the SELECT and subsequent INSERT is carried out.
+Also 
+
+## `autocommit` and transactions
 https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_autocommit.
 According to https://dev.mysql.com/doc/refman/8.0/en/commit.html :
 With START TRANSACTION, `autocommit` remains disabled until you end the transaction with COMMIT or ROLLBACK. The autocommit mode then reverts to its previous state.

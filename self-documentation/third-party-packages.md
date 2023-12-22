@@ -49,13 +49,7 @@ https://dev.to/vdorot/uuids-are-bad-for-database-index-performance-enter-uuid7-4
 https://dev.to/harshhhdev/uuidguid-cuid-nanoid-whats-the-difference-5dj1.
 https://stackoverflow.com/questions/71977961/are-there-any-downsides-to-using-nanoid-for-primary-key.
 
-From https://stackoverflow.com/questions/3804108/use-email-address-as-primary-key.
-And like phone numbers, emails can get re-used. Jsmith@somecompany.com can easily belong to John Smith one year and Julia Smith two years later.
-
--   many other reasons.
-
-From https://stackoverflow.com/questions/6761403/how-to-get-the-next-auto-increment-id-in-mysql.
-I didn't downvote it, but the problem with attempting to use the last auto incrementing value is that it might not be the last one by the time you come to use it - no matter how quickly the SELECT and subsequent INSERT is carried out.
+Also see using email as primary key from database.md self-documentation.
 
 ### cuid and jest
 
