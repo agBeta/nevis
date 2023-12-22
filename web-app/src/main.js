@@ -10,6 +10,7 @@ const __dirname = new URL(".", import.meta.url).pathname;
 
 const app = makeExpressApp();
 app.set("trust proxy", true);
+app.set("case sensitive routing", false);
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "client"));
 

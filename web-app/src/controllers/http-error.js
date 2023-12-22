@@ -4,9 +4,13 @@
  */
 export default function makeHttpError({ statusCode, error }) {
     return {
-        headers: { "Content-Type": "application/json" },
+        headers:{
+            "Content-Type": "application/json",
+            // Bad practice, but ok for now.
+            "Cache-Control": "no-store",
+        },
         statusCode,
-        payload: JSON.stringify({ success: false, error })
+        payload: JSON.stringify({ success: false, error }),
     };
 }
 

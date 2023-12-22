@@ -15,6 +15,7 @@ import {
 import { makeEndpointController as make_generic_action_creation_controller } from "./action-post.js";
 import { makeEndpointController as make_generic_action_check_status_controller } from "./action-get.js";
 import { makeEndpointController as make_auth_code_POST_controller } from "./auth/auth-code-post.js";
+import { makeEndpointController as make_auth_signup_action_PUT_controller } from "./auth/auth-signup-action-put.js";
 
 
 
@@ -65,6 +66,7 @@ const auth_signup_action_PUT = make_auth_signup_action_PUT_controller({
     find_from_codes_by_email,
     remove_codes_by_email,
     insert_user_into_db,
+    find_action_by_id,
     compareHash: bcrypt.compare,
     createSecureHash,
     generateCollisionResistentId,

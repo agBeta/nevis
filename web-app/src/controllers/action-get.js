@@ -1,9 +1,11 @@
 import Joi from "joi";
 import makeBasicValidateNormalize from "./validate-normalize.js";
+import makeHttpError from "./http-error.js";
 
 /**
  * Creates a generic controller for any GET endpoint that ends in .../action/:actionId to return current status
  * of the action.
+ * @returns {Controller}
  */
 export function makeEndpointController({ find_action_by_id }) {
 
@@ -17,22 +19,47 @@ export function makeEndpointController({ find_action_by_id }) {
     });
 
     async function handleRequest(/**@type {HttpRequest}*/ httpRequest) {
-        // The function doesn't involve downstream parties. It should run quickly.
+        const action = await find_action_by_id(httpRequest.pathParams.actionId);
 
-        return {
-            headers: {
-                "Content-Type": "application/json",
-                // Probably the best place to use Location header, according to:
-                // https://www.rfc-editor.org/rfc/rfc9110#section-10.2.2.
-                "Location": httpRequest.path + `/action/${actionId}`
-            },
-            statusCode: 201,
-            payload: JSON.stringify({ success: true, actionId })
-        };
+        if (!action) {
+            return makeHttpError({ statusCode: 404, error: "Not found." });
+        }
+
+        if (action.currentState === "processing") {
+            const payload = {
+                currentState: action.currentState,
+                expectedToCompleteBefore: action.expectedToCompleteBefore ?? null,
+            };
+            return {
+                //  202 isn't cached by default (see https://developer.mozilla.org/en-US/docs/Glossary/Cacheable)
+                //  but just in case.
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-store",
+                },
+                statusCode: 202,
+                payload: JSON.stringify(payload)
+            };
+        }
+        else {
+            const payload = {
+                currentState: "done",
+            };
+            return {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-store",
+                },
+                statusCode: 200,
+                payload: JSON.stringify(payload)
+            };
+        }
+
     }
 }
 
 
 /**
  * @typedef {import("#types").HttpRequest} HttpRequest
+ * @typedef {import("#types").Controller} Controller
  */

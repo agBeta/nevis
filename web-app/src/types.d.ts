@@ -15,7 +15,7 @@ export type WebAppServer = Server;
 export type HttpRequest = {
     readonly path: string,
     readonly method: string,
-    pathParams: { [key: string]: string },
+    pathParams: { [key: string]: unknown },
     queryParams:  { [key: string]: unknown },
     /* How you should read it: unknown is I don't know; any is I don't care. */
     readonly cookies: { [key: string]: string },
@@ -45,16 +45,12 @@ export type SetCookie = {
 export type HttpResponse = {
     statusCode: number,
     payload: any,
-    headers: { [key: string]: string },
-    cookies?: SetCookie[],
-};
-
-
-export type HttpGETResponse = HttpResponse & {
-    headers: {
+    headers: { 
+        "Content-Type": string,
         "Cache-Control": string,
         [key: string]: string
-    }
+    },
+    cookies?: SetCookie[],
 };
 
 
