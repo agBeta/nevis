@@ -2,15 +2,17 @@ import Joi from "joi";
 import makeHttpError from "../http-error.js";
 import makeBasicValidateNormalize from "../validate-normalize.js";
 import log from "#utils/log.js";
+import { InvalidError } from "#utils/errors.js";
 
-
+/**
+ * POST /auth/signup endpoint controller isn't idempotent. Just for simplicity.
+ * @param {*} param0
+ * @returns {Controller}
+ */
 export function makeEndpointController({
     find_from_codes_by_email,
     remove_codes_by_email,
-    insert_user_into_db,
-    find_action_by_id,
-    insert_action,
-    update_action,
+    insert_user,
     compareHash,
     createSecureHash,
     generateCollisionResistentId,
@@ -21,9 +23,6 @@ export function makeEndpointController({
         handleRequest,
 
         validateRequest: makeBasicValidateNormalize({
-            schemaOfPathParams: Joi.object({
-                actionId: Joi.string().min(10).max(50)
-            }),
             schemaOfBody: Joi.object({
                 email: Joi.string().email({ allowUnicode: true }).max(80).required(),
                 displayName: Joi.string().min(2).max(80).alphanum().required(),
@@ -38,48 +37,6 @@ export function makeEndpointController({
 
 
     async function handleRequest(/** @type HttpRequest */ httpRequest) {
-
-        const requestArrivalTimestamp = Date.now();
-        const action = await find_action_by_id(httpRequest.path);
-
-        if (!action) {
-            await insert_action({
-                id: httpRequest.path,
-                currentState: "processing",
-                expectedToCompleteBefore: requestArrivalTimestamp + 1000,
-                // On endpoints that require heavier process in downstream parties, you may specify larger number.
-            });
-        }
-        else {
-            //  if the action has already completed, the server just replays the initial response. If the
-            //  resource has been subsequently modified or replaced by someone else, our client gets her
-            //  original confirmation, without wiping out subsequent changes.
-            if (action.currentState === "done") {
-                return action.httpResponse;
-            }
-            else {
-                //  In progress, please be patient.
-                return {
-                    //  It's a pity we can't use marvelous 420 here.
-                    statusCode: 429,
-                    //  Make sure this response won't get cached on the client. Although 429 is not cached by default.
-                    headers: {
-                        "Content-Type": "application/json",
-                        //  Wait 1 second. You may change or even make it dynamic if you can calculate expected time, etc.
-                        "Retry-After": "1",
-                        "Cache-Control": "no-store",
-                    },
-                    //  According to https://www.rfc-editor.org/rfc/rfc6585#section-4, response should include details
-                    //  explaining the condition.
-                    payload: JSON.stringify({
-                        error: "Your request has been received. Please be patient.",
-                        // ? successful indeed
-                        success: true,
-                    })
-                };
-            }
-        }
-
         // @ts-ignore
         const /** @type {string} */ email = httpRequest.body.email;
         // @ts-ignore
@@ -115,34 +72,44 @@ export function makeEndpointController({
             });
 
 
+        // Due to race conditions, don't check beforehand if the email exists in database or not. See comment at the
+        // end of this file for information.
         const hashedPassword = await createSecureHash(password);
         const id = generateCollisionResistentId();
-
-        // Due to race conditions, don't check beforehand if the email exists in database or not.
-
         try {
-            await insert_user_into_db({
+            await insert_user({
                 id,
                 email,
                 hashedPassword,
                 displayName,
                 birthYear,
-                signupAt: requestArrivalTimestamp
+                signupAt: Date.now(),
             });
-
-            // Now let's make the user logged in automatically.
-
-        }
-        catch (err) {
-            // if email exists
+            // For simplicity we don't redirect, and don't set session cookie.
             return {
                 headers: {
-                    "Location": "/login",
                     "Content-Type": "application/json",
+                    "Cache-Control": "no-store",
                 },
-                statusCode: 409,
-                payload: JSON.stringify({ success: false, error: "Email is already registered and verified." })
+                statusCode: 201,
+                payload: JSON.stringify({ success: true, message: "User is successfully created and email is verified." }),
             };
+        }
+        catch (err) {
+            if (err instanceof InvalidError) {
+                // It means email already exists.
+                return makeHttpError({
+                    statusCode: 409,
+                    error: "Email is already taken and verified.",
+                });
+            }
+            else {
+                // Just send 5xx. Logging is already done inside downstream parties.
+                return makeHttpError({
+                    statusCode: 500,
+                    error: "An unknown error occurred on the server.",
+                });
+            }
         }
 
     }

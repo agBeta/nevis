@@ -1,15 +1,14 @@
 import Joi from "joi";
-import makeHttpError from "./http-error.js";
-import makeBasicValidateNormalize from "./validate-normalize.js";
+import makeBasicValidateNormalize from "../validate-normalize.js";
 
 
 /**
- * This /auth/code endpoint controller isn't idempotent. Just for simplicity.
+ * POST /auth/code endpoint controller isn't idempotent. Just for simplicity.
  * @param {*} param0
- * @returns
+ * @returns {Controller}
  */
 export function makeEndpointController({
-    insert_code_into_db,
+    insert_code,
     generateCode,
     sendEmail,
     createSecureHash,
@@ -39,7 +38,7 @@ export function makeEndpointController({
         const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes later
 
         // Don't remove already existing codes related to this email address. See comment at the end of this file.
-        await insert_code_into_db({ email, hashedCode, purpose, expiresAt });
+        await insert_code({ email, hashedCode, purpose, expiresAt });
 
         const subject = "کد تایید";
         const body = "کد تایید شما برابر".concat(" <strong>" + code + "</strong> ").concat("می‌باشد" + ".")
@@ -48,7 +47,10 @@ export function makeEndpointController({
         await sendEmail({ email, subject, body });
 
         return {
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+            },
             statusCode: 201,
             payload: JSON.stringify({ success: true })
         };
