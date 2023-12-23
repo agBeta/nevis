@@ -17,6 +17,8 @@ From https://stackoverflow.com/questions/6761403/how-to-get-the-next-auto-increm
 I didn't downvote it, but the problem with attempting to use the last auto incrementing value is that it might not be the last one by the time you come to use it - no matter how quickly the SELECT and subsequent INSERT is carried out.
 Also 
 
+</br>
+
 ## `autocommit` and transactions
 https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_autocommit.
 According to https://dev.mysql.com/doc/refman/8.0/en/commit.html :
@@ -265,3 +267,8 @@ Although not very much related, but important to know: https://stackoverflow.com
 ## Maybe NoSQL (Mongo)?
 This answer gives a very good practical example of when MongoDb works faster and why: https://stackoverflow.com/a/9703513. Also talks about optimisation by denormalisation in the comment.
 Also this comment https://www.reddit.com/r/Database/comments/cx4r8r/comment/eyj8j25/.
+
+
+## image in db
+https://stackoverflow.com/questions/9722603/storing-image-in-database-directly-or-as-base64-data.
+Also second answer of the same post https://stackoverflow.com/a/9723588.

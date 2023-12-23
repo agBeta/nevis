@@ -11,7 +11,20 @@ https://www.rfc-editor.org/rfc/rfc9110#name-status-codes.
 
 </br>
 
-## Allow Header in 405
+## application/json
+
+According to the standard for json, you are not actually allowed to use latin1 for the encoding of the contents. JSON content must be encoded as unicode, be it UTF-8, UTF-16, or UTF-32 (big or little endian). – Daniel Luna
+From https://stackoverflow.com/questions/9254891/what-does-content-type-application-json-charset-utf-8-really-mean.
+https://www.rfc-editor.org/rfc/rfc7158#section-8.1.
+The newer version: https://www.rfc-editor.org/rfc/rfc8259.
+
+</br>
+## keep-alive 
+https://stackoverflow.com/questions/61273417/node-js-express-js-set-keep-alive.
+
+</br>
+
+## `Allow` Header in 405
 
 According to https://www.rfc-editor.org/rfc/rfc7231#section-7.4.1, An origin server MUST generate an Allow field in a 405 (Method Not Allowed) response and MAY do so in any other response.
 
@@ -22,6 +35,11 @@ Comment by Wrikken in https://stackoverflow.com/a/3826024: 400 => "The request c
 Also read https://stackoverflow.com/a/70371989.
 
 </br>
+
+## session is not restful
+
+https://stackoverflow.com/a/7099156.
+https://stackoverflow.com/questions/7099087/why-is-form-based-authentication-not-considered-restful
 
 ## 404 vs 400 vs 422
 
@@ -35,33 +53,38 @@ According to https://stackoverflow.com/a/21488282, The most important thing is t
 -   Use the response code(s) consistently.
 -   Include as much additional information in the response body as you can to help the developer(s) using your API figure out what's going on.
 
+</br>
 ## already logged in
 https://stackoverflow.com/questions/18263796/http-status-for-already-logged-in. Mentions a good point about REST.
 
+</br>
 ## Don't use 1xx responses
 
 https://stackoverflow.com/a/51255297.
 
+</br>
 ## Don't use 200 without response
 
 systemPAUSE Nice answer. One small point: if you are not going to be returning a response body to a successful operation, I would suggest using a 204 exclusively. Some clients (jQuery Ajax, for example) will choke if they are expecting a non-zero length response but don't get it. You can see an example of this in https://stackoverflow.com/questions/20928929/jquery-ajax-call-executes-error-on-200/20929815. – nick_w
 
+</br>
 ## A good question for batch job and a good comment
 https://stackoverflow.com/questions/9794696/which-http-status-code-means-not-ready-yet-try-again-later?noredirect=1&lq=1.
-comment Andy Dennie: by First, if thingy 1234 does not yet have any GET-able representation, in what sense does it exist as a resource (from the client's perspective)? The fact that, internal to the server there is a queued job to create 1234, doesn't seem to imply that resource 1234 exists. Second, where did the client get the URI .../thingyblob/1234? The server probably shouldn't have provided that URI to the client until the resource was actually GET-able. 
+comment Andy Dennie: by First, if thingy 1234 does not yet have any GET-able representation, in what sense does it exist as a resource (from the client's perspective)? The fact that, internal to the server there is a queued job to create 1234, doesn't seem to imply that resource 1234 exists. Second, where did the client get the URI .../thingyblob/1234? The server probably shouldn't have provided that URI to the client until the resource was actually GET-able.
 
+</br>
 ## DELETE 
 https://www.rfc-editor.org/rfc/rfc7231#section-4.3.5.
 The server may archive the resource. It just have to destroy mapping. rfc says so.
 Also it is Idempotent, according to [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE).
 
-
+</br>
 ## 418 teapot
 With the onset of IoT, this protocol may actually be a viable protocol at some point. If I ever made an IoT teapot, you can rest assured this protocol would be used. – Brandon Miller comment. See https://stackoverflow.com/questions/52340027/is-418-im-a-teapot-really-an-http-response-code.
 
 But https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.19, Therefore, the 418 status code is reserved in the IANA HTTP Status Code Registry. This indicates that the status code cannot be assigned to other applications currently. If future circumstances require its use (e.g., exhaustion of 4NN status codes), it can be re-assigned to another use.
 
-
+</br>
 ## PUT
 I think one cannot stress enough the fact that PUT is idempotent: if the network is botched and the client is not sure whether his request made it through, it can just send it a second (or 100th) time, and it is guaranteed by the HTTP spec that this has exactly the same effect as sending once. –  Jörg W Mittag. (Also see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT).
 
@@ -70,7 +93,6 @@ If I'm not mistaken, what we should be stressing is that PUT is defined to be id
 from the other side of the fence: PUT if the client determines the resulting resource's address, POST if the server does it. – DanMan
 
 All comments above are from https://stackoverflow.com/questions/630453/what-is-the-difference-between-post-and-put-in-http.
- 
 
 </br>
 
@@ -129,7 +151,6 @@ Also https://stackoverflow.com/questions/42652931/why-use-cache-control-header-i
 An example where the client's request is not honoured is the CloudFlare cache which ignores you to avoid DoS attacks as described here ... – sparrowt --> like is https://community.cloudflare.com/t/request-no-cache-header-is-ignored-by-cloudflare/201653.
 
 Also be ware of dns lookup in client-side caching for specific directives. See great SO answer here https://stackoverflow.com/questions/23603023/file-caching-query-string-vs-last-modified?noredirect=1&lq=1.
- 
 
 </br>
 
@@ -177,6 +198,20 @@ But it seems this trick can be used if we have layer 4 load balancer.
 
 It is useless to encrypt it for cookie, see https://stackoverflow.com/questions/2840559/is-encrypting-session-id-or-other-authenticate-value-in-cookie-useful-at-all. But if the random number was not cryptographically secure, encrypting it with a server side key will produce better security. See AJ Henderson comment.
 
+### hashing session id
+
+https://security.stackexchange.com/questions/244696/how-to-securely-store-and-use-session-ids.
+https://security.stackexchange.com/a/97840. If session identifier is randomly chosen from sufficiently
+big space (something like 12 bytes should be more then enough) then any non-invertible hash function (even md5)
+will be secure, and there will be no need for salt (rainbow tables of this size are infeasible). To expand, problem
+when storing password hash is that passwords usually have very low entropy (unlike tokens, like session id for
+example).
+https://security.stackexchange.com/questions/24850/choosing-a-session-id-algorithm-for-a-client-server-relationship?rq=1.
+
+Now https://blog.shevlyagin.com/2021/10/28/fastest-node-js-hashing-algorithm-for-large-strings/.
+https://stackoverflow.com/questions/3183841/base64-vs-hex-for-sending-binary-content-over-the-internet-in-xml-doc.
+
+</br>
 ## signed cookies And HTTP
 
 Good for time-limited-form-submission (anti-spam) without having to store any data on the server side.
