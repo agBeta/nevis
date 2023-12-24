@@ -16,6 +16,8 @@ Read more about all different HEADs [here](https://stackoverflow.com/questions/1
 
 5. If you want to see the difference between your remote and local repository in any branch, then **inside** your desired worktree (e.g. `main`) directory run `git log origin/main..main`. Note, order is important. For more information read [this stackoverflow answer](https://stackoverflow.com/questions/7057950/commit-differences-between-local-and-remote).
 
+6. If you want to check your are indeed inside a worktree: `git rev-parse --is-inside-work-tree` should return true. Notice `git rev-parse --is-inside-git-dir` should return false.
+
 </br>
 
 ## Undo all uncomitted changes
@@ -94,3 +96,13 @@ Note 1: You don't have to save the hash of current HEAD in bash history, because
 Note 2: If you want to undo only **the last commit** then stashing is a better rescue alternative (run `git stash save --include-untracked "WIP: save changes in case of disaster"`).  
 
 2. Then `git reset --mixed HEAD~2`. Your working area is still untouched, at the moment. But if you instead use `--hard` flag, your working area will be overwritten.
+
+
+</br>
+
+## commit hash of remote (useful for rebase)
+`git branch -r` causes the remote-tracking branches to be listed, and option -a shows both local and remote branches.
+`git rev-parse $(git branch -r --sort=committerdate | tail -1) `
+
+## git rev-parse
+A satisfying way to think of it: https://stackoverflow.com/a/28249368.
