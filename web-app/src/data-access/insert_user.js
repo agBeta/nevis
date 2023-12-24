@@ -1,4 +1,4 @@
-import { OperationalError } from "#utils/errors.js";
+import { InvalidError, OperationalError } from "#utils/errors.js";
 
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool}} props
@@ -35,6 +35,9 @@ export default function make_insert_user({ dbConnectionPool }) {
             ]);
         }
         catch (error) {
+            if (error?.sqlMessage?.includes?.("UNQ_user_email")){
+                throw new InvalidError("email already exists.");
+            }
             throw new OperationalError(error.message, "db__insert_user");
         }
     }
