@@ -4,24 +4,24 @@ import log from "#utils/log.js";
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool, cacheClient: RedisClient|null }} props
  */
-export default function make_find_from_sessions_by_hashedSessionId({ dbConnectionPool, cacheClient }) {
+export default function make_find_session_record_by_hashedSessionId({ dbConnectionPool, cacheClient }) {
     const sqlCmd = `
         SELECT
               hashed_session_id AS hashedSessionId
             , user_id AS userId
             , UNIX_TIMESTAMP(expires_at) * 1000 AS expiresAt
-        FROM sessions_tbl
+        FROM session_tbl
         WHERE hashed_session_id = ?
         ;
     `;
 
-    return find_from_sessions_by_hashedSessionId;
+    return find_session_record_by_hashedSessionId;
 
     /**
      * @param {{ hashedSessionId: string} } param0
      * @returns {Promise<Session|null>}
      */
-    async function find_from_sessions_by_hashedSessionId({ hashedSessionId }) {
+    async function find_session_record_by_hashedSessionId({ hashedSessionId }) {
         let /**@type {Session|null}*/ resultFromCache = /*to suppress ts warning*/null;
         try {
             resultFromCache = await ask_cache(hashedSessionId);
