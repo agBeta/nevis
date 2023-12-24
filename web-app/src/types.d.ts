@@ -1,6 +1,7 @@
 import { Request, Response, CookieOptions, Express, Router } from "express";
 import { Pool, Connection } from "mysql2/promise";
 import { Server } from "http";
+import { RedisClientType, RedisFunctions, RedisScripts, RedisModules } from "redis";
 
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;
@@ -9,6 +10,8 @@ export type ExpressRouter = Router;
 
 export type MYSQLConnection = Promise<Connection>;
 export type MySQLConnectionPool = Pool;
+
+export type RedisClient = RedisClientType & RedisFunctions & RedisScripts & RedisModules;
 
 export type WebAppServer = Server;
 
@@ -130,6 +133,7 @@ export type Post = {
 
 export type PostFactory = (PostRawInformation) => Post;
 
+//
 export type Code = {
     hashedCode: string,
     email: string,
