@@ -2,5 +2,7 @@
     "recommendations": [
         "editorconfig.editorconfig",
         "obrejla.netbeans-light-theme",
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-british-english",
     ]
 }
