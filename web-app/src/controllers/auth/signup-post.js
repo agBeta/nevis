@@ -49,6 +49,7 @@ export function makeEndpointController({
         const /** @type {number} */ birthYear = httpRequest.body.birthYear;
 
 
+        // todo type
         const records = await find_from_codes_by_email({ email: email });
 
         const isCredentialsValid = records.some(async (el) => {
