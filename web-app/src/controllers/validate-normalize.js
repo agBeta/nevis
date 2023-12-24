@@ -27,7 +27,7 @@ export default function makeBasicValidateNormalize({ schemaOfBody, schemaOfPathP
                     httpErrorResponse: makeHttpError({
                         //  404 is semantically the best choice, for all GET and POST requests as well as PUT action
                         //  requests. Basically it says, there is no such endpoint to begin with.
-                        //  Read more in REST.md from self-documentation.
+                        //  Read more about this reasoning in REST.md from self-documentation.
                         statusCode: 404,
                         error: "Not found.",
                     })
