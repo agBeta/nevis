@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS auth_sessions_tbl (
-    session_id CHAR(48) NOT NULL,
+    hashed_session_id CHAR(24) NOT NULL,
     user_id CHAR(24),
     expires_at TIMESTAMP NOT NULL,
 
