@@ -1,5 +1,3 @@
-import { OperationalError } from "#utils/errors.js";
-
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool }} props
  */
@@ -25,19 +23,10 @@ export default function make_find_code_records_by_email({ dbConnectionPool }) {
      * @returns {Promise<Code[]>}
      */
     async function find_code_records_by_email({ email }) {
-        try {
-            const db = await dbConnectionPool;
-            const [rows,] = await db.execute(sqlCmd, [email]);
-            if (!rows) return [];
-            return /** @type {Code[]} */ (rows);
-        }
-        catch (error) {
-            let msg = error.message;
-            if (error.sqlMessage) {
-                msg = msg + error.sqlMessage;
-            }
-            throw new OperationalError(msg, "db__find_code_by_email");
-        }
+        const db = await dbConnectionPool;
+        const [rows,] = await db.execute(sqlCmd, [email]);
+        if (!rows) return [];
+        return /** @type {Code[]} */ (rows);
     }
 }
 

@@ -75,11 +75,12 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
             const result = rows[0];
             return result;
         }
-        catch (err) {
-            if (err instanceof AppError) {
-                throw err;
+        catch (error) {
+            let msg = error.message;
+            if (error.sqlMessage) {
+                msg = msg + error.sqlMessage;
             }
-            throw new OperationalError(err.message, "db__find_session");
+            throw new OperationalError(msg, "db");
         }
         // Notice, expiresAt from MySQL database isn't timestamp.
     }

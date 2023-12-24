@@ -27,7 +27,7 @@ const redisClient = await /*IIFE*/(async function /* --> */ precedeWithoutCacheI
 /** Query name is chosen with care. See factory function for reasoning behind this naming. */
 const find_from_codes_by_email = make_find_from_codes_by_email({ dbConnectionPool });
 
-/** @version enhanced by cache */
+/** @version enhanced by cache @description note the name is singular */
 const find_from_sessions_by_hashedSessionId = make_find_from_sessions_by_hashedSessionId({
     dbConnectionPool,
     cacheClient: redisClient,

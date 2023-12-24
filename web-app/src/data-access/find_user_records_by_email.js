@@ -1,16 +1,13 @@
-import { OperationalError } from "#utils/errors.js";
-
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool }} props
  */
-export default function make_find_from_users_by_email({ dbConnectionPool }) {
+export default function make_find_user_records_by_email({ dbConnectionPool }) {
 
-    return find_from_users_by_email;
+    return find_user_records_by_email;
 
-    async function find_from_users_by_email({ email }, omitPassword=true) {
-        try {
-            const db = await dbConnectionPool;
-            const sqlCmd = `
+    async function find_user_records_by_email({ email }, omitPassword = true) {
+        const db = await dbConnectionPool;
+        const sqlCmd = `
                 SELECT
                       id
                     , email
@@ -19,18 +16,14 @@ export default function make_find_from_users_by_email({ dbConnectionPool }) {
                     , signup_at AS signupAt
                     ${omitPassword ? "" : ", hashed_password AS hashedPassword"}
                 FROM
-                    users_tbl
+                    user_tbl
                 WHERE
                     email = ?
                 ;
             `;
-            const [rows,] = await db.execute(sqlCmd, [email]);
-            if (!rows) return [];
-            return (rows);
-        }
-        catch (error) {
-            throw new OperationalError(error.message, "db__find_from_users_by_email");
-        }
+        const [rows,] = await db.execute(sqlCmd, [email]);
+        if (!rows) return [];
+        return (rows);
     }
 }
 

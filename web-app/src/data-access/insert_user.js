@@ -6,7 +6,7 @@ import { InvalidError, OperationalError } from "#utils/errors.js";
 export default function make_insert_user({ dbConnectionPool }) {
 
     const sqlCmd = `
-        INSERT INTO users_tbl (
+        INSERT INTO user_tbl (
               id
             , email
             , hashed_password
@@ -36,9 +36,9 @@ export default function make_insert_user({ dbConnectionPool }) {
         }
         catch (error) {
             if (error?.sqlMessage?.includes?.("UNQ_user_email")){
-                throw new InvalidError("email already exists.");
+                throw new InvalidError("Email already exists.");
             }
-            throw new OperationalError(error.message, "db__insert_user");
+            throw new OperationalError(error.message, "db");
         }
     }
 }
