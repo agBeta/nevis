@@ -1,6 +1,8 @@
 import path from "node:path";
 import express from "express";
 
+// todo nonce
+
 //  Note, there seems to be some gotchas regarding how to correctly obtain __dirname correctly both in Linux and
 //  Windows. See node.md in self-documentation.
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -16,7 +18,7 @@ router.use("/public", express.static(path.resolve(__dirname, "..", "client", "pu
 
 router.get("/*", (req, res) => {
     res.render("index", {
-        
+
     });
 });
 
