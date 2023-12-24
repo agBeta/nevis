@@ -43,7 +43,10 @@ export default function adaptRequest(req) {
         //   http://expressjs.com/en/4x/api.html#req.cookies
         //   http://expressjs.com/en/resources/middleware/cookie-parser.html
         //   https://stackoverflow.com/a/40135050.
-        cookies: { value: req.cookies, },
+        cookies: {
+            value: req.cookies,
+            enumerable: true,
+        },
 
         headers: {
             value: Object.freeze({
