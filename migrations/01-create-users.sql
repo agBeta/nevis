@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users_tbl (
+CREATE TABLE IF NOT EXISTS user_tbl (
     id CHAR(24) PRIMARY KEY,
     email VARCHAR(80) NOT NULL,
     -- Column data type for hashedCode is based on https://stackoverflow.com/a/5881429.
@@ -15,17 +15,17 @@ ENGINE=INNODB
 ;
 
 -- See timestamp auto-update in database.md from self-documentation.
-ALTER TABLE users_tbl MODIFY 
+ALTER TABLE user_tbl MODIFY 
     signup_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE users_tbl MODIFY
+ALTER TABLE user_tbl MODIFY
     display_name VARCHAR(80)
         CHARACTER SET utf8mb4 
         COLLATE utf8mb4_unicode_ci;
 
 
 -- Why? See comment at the end.
-ALTER TABLE users_tbl MODIFY
+ALTER TABLE user_tbl MODIFY
     email VARCHAR(80)
         CHARACTER SET utf8mb4 
         COLLATE utf8mb4_0900_as_cs;

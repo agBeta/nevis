@@ -7,7 +7,7 @@ CREATE EVENT e_delete_expired_codes
     COMMENT 'Removes codes that are expired and can no longer be used to signup or reset password'
     DO
         BEGIN
-            DELETE FROM `codes_tbl`
+            DELETE FROM `code_tbl`
             WHERE `expires_at` < CURRENT_TIMESTAMP();
         END$$
 

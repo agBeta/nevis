@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS blogs_tbl (
+CREATE TABLE IF NOT EXISTS blog_tbl (
     id CHAR(24) PRIMARY KEY,
     author_id CHAR(24),
 
@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS blogs_tbl (
     created_at TIMESTAMP NOT NULL,
     modified_at TIMESTAMP NOT NULL,
     
-    INDEX idx_blogs_author_id (author_id),
-    INDEX idx_blogs_topic_order_id (blog_topic, order_id),
+    INDEX idx_blog_author_id (author_id),
+    INDEX idx_blog_topic_order_id (blog_topic, order_id),
     INDEX idx_order_id (order_id),
     
-    CONSTRAINT fk_blogs_author_id FOREIGN KEY (author_id) 
+    CONSTRAINT fk_blog_author_id FOREIGN KEY (author_id) 
         REFERENCES users_tbl(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
@@ -26,9 +26,9 @@ ENGINE=INNODB
 ;
 
 
-ALTER TABLE blogs_tbl MODIFY COLUMN
+ALTER TABLE blog_tbl MODIFY COLUMN
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE blogs_tbl MODIFY
+ALTER TABLE blog_tbl MODIFY
     modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
