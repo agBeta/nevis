@@ -167,13 +167,16 @@ Detection of duplicates is a kludge, and can get very complicated. Genuine disti
 **Very very good technique**
 Quoting from https://docs.google.com/document/d/1s0joc0yb6kXpXZGfdE9SRutoPQuK9RVa77f92xsXzrM/edit:
 For any given request, a client, in the absence of a definitive result, may not know if the request fell in the water on its way, or if the response fell in the water on its way back.  
-If the don’t get a response to a PUT or DELETE, how do they replay the request without wiping out other people’s modifications that may have happened between times?
+If they don’t get a response to a PUT or DELETE, how do they replay the request without wiping out other people’s modifications that may have happened between times?
 Also from document: ... To be thorough, a good please-be-patient response should contain an expected delay and/or a cancel link ...
 https://stackoverflow.com/a/35429135/.
-Also comment by bbsimonbb (author of article above): "Awfully" is a bit strong ! Responses will be tiny, a fraction of a kilobyte. If you had huge volumes, you could use an ACID key value store (couchDB?) just for storing respones. The payments web-service where I first used this pattern has been ticking away happily for 15 years atop a SQL Server DB. It's so simple to develop, to integrate with and to support that I find myself agog at the other answers to this problem. You can't not have noticed: Among all the RESTful discussion of how you should deal with this, no-one talks about their experience, their problems, their volumes. – bbsimonbb
+Someone else: ... thanks, but it'd be awfully heavy weight for servers to implement since they'd have to maintain a history of all the actions performed and the responses they generated.  
+Response comment by bbsimonbb (author of article above): "Awfully" is a bit strong ! Responses will be tiny, a fraction of a kilobyte. If you had huge volumes, you could use an ACID key value store (couchDB? ⤵📔) just for storing responses. The payments web-service where I first used this pattern has been ticking away happily for 15 years atop a SQL Server DB. It's so simple to develop, to integrate with and to support that I find myself agog at the other answers to this problem. You can't not have noticed: Among all the RESTful discussion of how you should deal with this, no-one talks about their experience, their problems, their volumes. – bbsimonbb
 
 Also another answer (from the same person) in another post: https://stackoverflow.com/a/35453041.
 I say that I prefer server generated ids because it increases the likelihood of clients behaving responsibly. There are no guarantees, but the developers calling your api want to "do the right thing" just as much as you do, as a general rule. With this pattern, unambiguous interaction is at least possible. Directly addressing unsafe requests to "real" resources has led us into a world of pain and kludges.
+
+📔 Current project doesn't need to store history of all responses of idempotent requests. It just expires the action link after some amount of time. Just like payment verification systems or tapsi payment callback page. Especially in currently designed pattern of our project, client can GET the action in case of any error to see if it is expired. But one can imagine there might be a situation that it is necessary to store all responses. Like for example, the client cannot GET a action id (like for security reasons or if GET will initiate a slow method in downstream parties (like database is tuned to be write-only), etc.), and/or action ids aren't kept in some database (but are self-signed like JWT, etc.), and/or re-POST-ing in the same action id link will decrease something like credit or score of the user (like a user is only allowed to consume X amount of power/instructions from the server). Anyway in this project it is completely UNnecessary to store all responses of idempotent requests. But it doesn't argue against the idea of storing history of all.
 
 According to the answer (same link above): Other people often suggest you create the resource with an empty POST, then, once the client has the id of the newly created resource, he can do an "idempotent" update to fill it. This is nice, but you will likely need to make DB columns nullable that wouldn't otherwise be, and your updates are **only** idempotent **if** no-one else is trying to update at the same time.
 
@@ -280,3 +283,8 @@ This comment by Kasey Speakman is great: https://dev.to/rhymes/what-would-you-us
 Good SO answer: https://stackoverflow.com/a/47155318.
 
 Sharding & IDs at Instagram: https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c.
+
+
+## Naming conventions
+https://stackoverflow.com/a/18450653. You should use hyphens in a crawlable web application URL. Why? Because the hyphen separates words (so that a search engine can index the individual words).
+

@@ -19,6 +19,18 @@ Also
 
 </br>
 
+## Table naming convention
+
+This answer needs more praise. It discusses a bunch of practical reasons that I apply to why I prefer singular names. The alternate discussions about proper language in reference to sets are just philosophical and are obscuring the real point. Singular just works better. – Jason
+The answer: https://stackoverflow.com/a/5841297.
+
+Also comment by – joshperry to another answer in the same thread. I voted down and I'll tell you why, because I disagree. ORM by it's very nature is about mapping. Every ORM tool that I've ever used supports specifying the table name to be used for an entity when it is different from the entity's name. This is important because the whole reason we map to relational databases is so that we can easily make ad-hoc queries and reports with different shapes than our object model. Otherwise we'd all just be using object/document databases by now. 
+
+## why `find_code_records_by_email.js`?
+This name above is the best choice. First it is better than `find_codes_..` because things can have irregular plurals or not plural at all. Also it is better than `find_code_..` as this one implies as if we are only retrieving code (actually hashed_code) column from the db, but in reality we are retrieving all columns (of matched rows). we are retrieving records not fields. 
+
+</br>
+
 ## `autocommit` and transactions
 https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_autocommit.
 According to https://dev.mysql.com/doc/refman/8.0/en/commit.html :
