@@ -1,12 +1,12 @@
 import makeDbConnectionPool from "./connection.js";
 import makeRedisClient from "./cache-connection.js";
-import make_find_from_codes_by_email from "./find_from_codes_by_email.js";
-import make_find_from_sessions_by_hashedSessionId from "./find_from_sessions_by_hashedSessionId.js";
-import make_find_from_users_by_email from "./find_from_users_by_email.js";
+import make_find_code_records_by_email from "./find_code_records_by_email.js";
+import make_find_session_record_by_hashedSessionId from "./find_session_record_by_hashedSessionId.js";
+import make_find_user_records_by_email from "./find_user_records_by_email.js";
 import make_insert_code from "./insert_code.js";
 import make_insert_session from "./insert_session.js";
 import make_insert_user from "./insert_user.js";
-import make_remove_codes_by_email from "./remove_codes_by_email.js";
+import make_remove_code_records_by_email from "./remove_code_records_by_email.js";
 
 const dbConnectionPool = makeDbConnectionPool({
     port: process.env.MYSQL_PORT ? Number(process.env.MYSQL_PORT) : 3306
@@ -25,15 +25,15 @@ const redisClient = await /*IIFE*/(async function /* --> */ precedeWithoutCacheI
 //  cache query for db query separately.
 
 /** Query name is chosen with care. See factory function for reasoning behind this naming. */
-const find_from_codes_by_email = make_find_from_codes_by_email({ dbConnectionPool });
+const find_code_records_by_email = make_find_code_records_by_email({ dbConnectionPool });
 
 /** @version enhanced by cache @description note the name is singular */
-const find_from_sessions_by_hashedSessionId = make_find_from_sessions_by_hashedSessionId({
+const find_session_record_by_hashedSessionId = make_find_session_record_by_hashedSessionId({
     dbConnectionPool,
     cacheClient: redisClient,
 });
 
-const find_from_users_by_email = make_find_from_users_by_email({ dbConnectionPool });
+const find_user_records_by_email = make_find_user_records_by_email({ dbConnectionPool });
 
 const insert_code = make_insert_code({ dbConnectionPool });
 
@@ -41,17 +41,17 @@ const insert_session = make_insert_session({ dbConnectionPool });
 
 const insert_user = make_insert_user({ dbConnectionPool });
 
-const remove_codes_by_email = make_remove_codes_by_email({ dbConnectionPool });
+const remove_code_records_by_email = make_remove_code_records_by_email({ dbConnectionPool });
 
 
 export {
-    find_from_codes_by_email,
-    find_from_sessions_by_hashedSessionId,
-    find_from_users_by_email,
+    find_code_records_by_email,
+    find_session_record_by_hashedSessionId,
+    find_user_records_by_email,
     insert_code,
     insert_session,
     insert_user,
-    remove_codes_by_email,
+    remove_code_records_by_email,
 };
 
 /**
