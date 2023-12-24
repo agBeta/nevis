@@ -67,22 +67,13 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
 
     /** @returns {Promise<Session|null>} */
     async function ask_db(/**@type {string}*/ hashedSessionId) {
-        try {
-            const db = await dbConnectionPool;
-            const [rows,] = await db.execute(sqlCmd, [hashedSessionId]);
-            if (!rows) return null;
-            // @ts-ignore
-            const result = rows[0];
-            return result;
-        }
-        catch (error) {
-            let msg = error.message;
-            if (error.sqlMessage) {
-                msg = msg + error.sqlMessage;
-            }
-            throw new OperationalError(msg, "db");
-        }
-        // Notice, expiresAt from MySQL database isn't timestamp.
+        const db = await dbConnectionPool;
+        const [rows,] = await db.execute(sqlCmd, [hashedSessionId]);
+        if (!rows) return null;
+        // @ts-ignore
+        const result = rows[0];
+        // Note, expiresAt from MySQL database isn't timestamp (i.e. number) but we are using UNIX_TIMESTAMP in query.
+        return result;
     }
 
     /** @returns {Promise<Session|null>} */
@@ -93,7 +84,6 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
         const stringified = await cacheClient.GET(`session:${hashedSessionId}`);
         if (!stringified) return null;
         const s = JSON.parse(stringified);
-        console.log("-".repeat(20), typeof s.expiresAt);
         return s;
     }
 
@@ -104,7 +94,7 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
      */
     async function put_inside_cache({ hashedSessionId, userId, expiresAt }) {
         if (!cacheClient) return;
-        const value = JSON.stringify({hashedSessionId, userId, expiresAt});
+        const value = JSON.stringify({ hashedSessionId, userId, expiresAt });
         await cacheClient.SET(`session:${hashedSessionId}`, value);
     }
 
