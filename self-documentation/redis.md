@@ -142,3 +142,8 @@ Gracefully close a client's connection to Redis, by sending the QUIT command to 
 https://github.com/redis/node-redis/blob/master/docs/isolated-execution.md.
 
 redisClient.setex("photo:123", 3600 /*1 hour*/, JSON.stringify(data));
+
+</br>
+## Redis when key expires
+https://stackoverflow.com/questions/11810020/how-to-handle-session-expire-basing-redis/11815594#11815594.
+https://stackoverflow.com/questions/59729331/is-there-a-anyway-to-make-redis-key-value-decrease-by-1-over-time.

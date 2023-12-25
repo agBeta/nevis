@@ -288,3 +288,6 @@ Sharding & IDs at Instagram: https://instagram-engineering.com/sharding-ids-at-i
 ## Naming conventions
 https://stackoverflow.com/a/18450653. You should use hyphens in a crawlable web application URL. Why? Because the hyphen separates words (so that a search engine can index the individual words).
 
+
+## misc but useful
+https://stackoverflow.com/questions/2239405/hateoas-absolute-or-relative-urls

@@ -124,6 +124,13 @@ Don't alter the MySQL sources unless you know what you are doing.
 https://stackoverflow.com/a/25301046.
 You need to use TEXT when you want to create a table with two maximum-sized string columns, which means both of them may take 65535 characters. You cannot use two varchars with maximum size in a row at the same time because MySQL has limited the maximum row size, which is 65535. But you can use two TEXT in a row because TEXT only contributes 9 to 12 bytes toward the row size limit, TEXT's contents are stored separately from the rest of the row. – Searene
 
+
+https://stackoverflow.com/questions/2023481/mysql-large-varchar-vs-text.
+This answer is not correct for InnoDB. Both VARCHAR and BLOB/TEXT are stored inline with other columns if the value on a given row fits in the page size (16KB and each page must hold at least two rows). If the string is too large for that, it overflows to additional pages. See mysqlperformanceblog.com/2010/02/09/blob-storage-in-innodb for a detailed explanation. – Bill Karwin
+
+The row length limit is 65,535 bytes [ dev.mysql.com/doc/refman/5.0/en/column-count-limit.html ]. If your column is utf8-encoded, that means a 3000-character varchar column can take up to 9000 bytes. – Jan Fabry
+
+
 </br>
 
 ## Store birthYear
