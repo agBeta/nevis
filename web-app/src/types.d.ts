@@ -72,6 +72,9 @@ export type Controller = {
     // to enforce validation for any controller
     validateRequest: (httpRequest: HttpRequest) => ValidationResult,
     handleRequest: (httpRequest: HttpRequest) => HttpResponse | Promise<HttpResponse>
+} | {
+    validateRequest: (httpRequest: AuthenticatedHttpRequest) => ValidationResult,
+    handleRequest: (httpRequest: AuthenticatedHttpRequest) => HttpResponse | Promise<HttpResponse>
 }
 
 
