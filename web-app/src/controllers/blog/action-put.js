@@ -11,6 +11,7 @@ export function makeEndpointController({
     find_action_by_actionId,
     update_action,
     generateCollisionResistentId,
+    sanitizeText,
     insert_blog,
 }) {
 
@@ -76,11 +77,11 @@ export function makeEndpointController({
         const blogId = generateCollisionResistentId();
 
         // @ts-ignore
-        const /**@type {string}*/ blogTitle = httpRequest.body.blogTitle;
+        const /**@type {string}*/ blogTitle = sanitizeText(httpRequest.body.blogTitle).trim();
         // @ts-ignore
-        const /**@type {string}*/ blogBody = httpRequest.body.blogBody;
+        const /**@type {string}*/ blogBody = sanitizeText(httpRequest.body.blogBody).trim();
         // @ts-ignore
-        const /**@type {string}*/ blogTopic = httpRequest.body.blogTopic;
+        const /**@type {string}*/ blogTopic = sanitizeText(httpRequest.body.blogTopic).trim();
 
         // In future versions we may ask an AI to moderate and review content of the blog. But for now...
         const isPublished = true;
