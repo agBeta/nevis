@@ -46,7 +46,8 @@ export default function makeDbConnectionPool({ port }) {
         // This field also seems important.
         charset: "utf8mb4_unicode_ci",
         dateStrings: false,
-        namedPlaceholders: true
+        namedPlaceholders: true,
+        multipleStatements: true,
     });
 
     portOfAlreadyEstablishedPool = port;
