@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS auth_session_tbl (
     PRIMARY KEY (session_id),
     
     CONSTRAINT fk_auth_session_user_id FOREIGN KEY (user_id) 
-        REFERENCES users_tbl(id)
+        REFERENCES user_tbl(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )
