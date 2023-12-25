@@ -4,23 +4,31 @@ import { init } from "@paralleldrive/cuid2";
 
 import makeSendEmail from "../send-email/send-email.js";
 import {
-    find_from_sessions_by_hashedSessionId,
-    find_from_codes_by_email,
-    find_from_users_by_email,
+    count_number_of_blog_post_actions_by_userId,
+    find_action_by_actionId,
+    find_blog_record_by_blogId,
+    find_blog_records_paginated,
+    find_code_records_by_email,
+    find_session_record_by_hashedSessionId,
+    find_user_records_by_email,
+    insert_action,
+    insert_blog,
     insert_code,
     insert_user,
     insert_session,
-    remove_codes_by_email,
+    remove_code_records_by_email,
+    update_action,
 } from "../data-access/index.js";
 
-import { makeEndpointController as make_generic_action_creation_controller } from "./action-post.js";
-import { makeEndpointController as make_generic_action_check_status_controller } from "./action-get.js";
 import { makeEndpointController as make_auth_code_POST_controller } from "./auth/code-post.js";
 import { makeEndpointController as make_auth_signup_POST_controller } from "./auth/signup-post.js";
 import { makeEndpointController as make_auth_login_POST_controller } from "./auth/login-post.js";
 import { makeEndpointController as make_auth_authenticated_as_GET_controller } from "./auth/authenticated_as-get.js";
 
-
+import { makeEndpointController as make_blog_POST_action_creation_controller } from "./blog/action-create.js";
+import { makeEndpointController as make_blog_action_PUT } from "./blog/action-put.js";
+import { makeEndpointController as make_blog_blogId_GET } from "./blog/blogId-get.js";
+import { makeEndpointController as make_blog_paginated_GET } from "./blog/paginated-get.js";
 
 // 1️⃣️ Create functions on which our controllers rely, so that we can inject them.
 
@@ -54,11 +62,18 @@ const generateSecureId = init({
     length: 32,
     fingerprint: crypto.randomBytes(4).toString("hex"),
 });
+//  Mainly used for generating actionIds. Must be quick. By current design of our API, actionIds are
+//  short-lived (unlike ids that we use to store records forever in db), so it doesn't have to collision
+//  resistent.
+const generateFastId = function () {
+    return crypto.randomBytes(16).toString("hex");
+};
 
 
 
 // 2️⃣️ Now we create controllers by injecting necessary dependencies for each one.
 
+// 🔒
 const auth_code_POST = make_auth_code_POST_controller({
     insert_code,
     generateCode: function () {
@@ -70,8 +85,8 @@ const auth_code_POST = make_auth_code_POST_controller({
 });
 
 const auth_signup_POST = make_auth_signup_POST_controller({
-    find_from_codes_by_email,
-    remove_codes_by_email,
+    find_code_records_by_email,
+    remove_code_records_by_email,
     insert_user,
     compareHash: bcrypt.compare,
     createSecureHash,
@@ -79,33 +94,43 @@ const auth_signup_POST = make_auth_signup_POST_controller({
 });
 
 const auth_login_POST = make_auth_login_POST_controller({
-    find_from_users_by_email,
+    find_user_records_by_email,
     insert_session,
     generateSecureId,
 });
 
 const auth_authenticated_as_GET = make_auth_authenticated_as_GET_controller({
-    find_from_sessions_by_hashedSessionId,
+    find_session_record_by_hashedSessionId,
     createFastHash,
 });
 
 
-const generic_action_creation_POST = make_generic_action_creation_controller({
-    // Generating actionId MUST be quick. actionIds are short-lived (unlike ids that we use to store records in db).
-    // So keep it simple and forget about collision resistance. It's a rabbit hole.
-    generateActionId: function () {
-        return crypto.randomBytes(12).toString("hex");
-    }
+// 📝
+const blog_POST_action_creation = make_blog_POST_action_creation_controller({
+    generateFastId,
+    count_number_of_blog_post_actions_by_userId,
+    insert_action,
 });
-const generic_action_status_GET = make_generic_action_check_status_controller({ find_action_by_id });
 
+const blog_action_PUT = make_blog_action_PUT({
+    find_action_by_actionId,
+    update_action,
+    generateCollisionResistentId,
+    insert_blog,
+});
+
+const blog_blogId_GET = make_blog_blogId_GET({ find_blog_record_by_blogId });
+
+const blog_paginated_GET = make_blog_paginated_GET({ find_blog_records_paginated });
 
 
 export {
-    generic_action_creation_POST,
-    generic_action_status_GET,
     auth_code_POST,
     auth_signup_POST,
     auth_login_POST,
     auth_authenticated_as_GET,
+    blog_action_PUT,
+    blog_blogId_GET,
+    blog_paginated_GET,
+    blog_POST_action_creation,
 };
