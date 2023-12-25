@@ -7,7 +7,7 @@ const NAME_OF_SESSION_COOKIE = "__Host-nevis_sessionId";
  * @returns {Controller}
  */
 export function makeEndpointController({
-    find_from_sessions_by_hashedSessionId,
+    find_session_record_by_hashedSessionId,
     createFastHash,
 }) {
 
@@ -50,7 +50,7 @@ export function makeEndpointController({
         // the name reminds us not to save it directly inside server.
 
         const hashedSessionId = createFastHash(plainSessionId);
-        const session = await find_from_sessions_by_hashedSessionId({ hashedSessionId });
+        const session = await find_session_record_by_hashedSessionId({ hashedSessionId });
 
         if (!session) {
             return makeHttpError({

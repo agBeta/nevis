@@ -8,7 +8,7 @@ import makeBasicValidateNormalize from "../validate-normalize.js";
  * @returns {Controller}
  */
 export function makeEndpointController({
-    find_from_users_by_email,
+    find_user_records_by_email,
     insert_session,
     compareHash,
     generateSecureId,
@@ -35,7 +35,7 @@ export function makeEndpointController({
         // @ts-ignore
         const /**@type {boolean}*/ rememberMe = httpRequest.body.rememberMe;
 
-        const records = await find_from_users_by_email({ email });
+        const records = await find_user_records_by_email({ email });
         if (!records) {
             return makeHttpError({
                 statusCode: 401,

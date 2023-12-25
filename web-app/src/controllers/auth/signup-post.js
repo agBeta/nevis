@@ -10,8 +10,8 @@ import { InvalidError } from "#utils/errors.js";
  * @returns {Controller}
  */
 export function makeEndpointController({
-    find_from_codes_by_email,
-    remove_codes_by_email,
+    find_code_records_by_email,
+    remove_code_records_by_email,
     insert_user,
     compareHash,
     createSecureHash,
@@ -50,7 +50,7 @@ export function makeEndpointController({
 
 
         // todo type
-        const records = await find_from_codes_by_email({ email: email });
+        const records = await find_code_records_by_email({ email: email });
 
         const isCredentialsValid = records.some(async (el) => {
             return await compareHash(code, el.hashedCode);
@@ -66,7 +66,7 @@ export function makeEndpointController({
 
         //  Remove all codes related this email.
         //  No need to await.
-        remove_codes_by_email({ email: email })
+        remove_code_records_by_email({ email: email })
             .catch(() => {
                 // Logging the error, though data-access layer musth have already written some logs.
                 log({ level: "error", keyword: "remove-code", message: `failed to remove codes for ${email}` });
