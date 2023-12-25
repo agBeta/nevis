@@ -66,10 +66,18 @@ export default function adaptRequest(req) {
         originalUrl: { value: req.originalUrl },
     });
 
-    console.log(req.body);
-    Object.preventExtensions(adapted);
+    // @ts-ignore
+    if (req.authenticatedAs /**meaning it passed through auth middleware*/) {
+        Object.defineProperty(adapted, "userId", {
+            // @ts-ignore
+            value: req.authenticatedAs,
+            enumerable: true,
+            configurable: false,
+            writable: false,
+        });
+    }
 
-    /** @todo TODO find some neat workaround instead of this ts ignore hack. */
+    Object.preventExtensions(adapted);
     // @ts-ignore
     return adapted;
 }
