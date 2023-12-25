@@ -29,6 +29,10 @@ In addition, For someone outside dev team, it would be easier for him to find an
 
 See database.md.
 
+### multiple queries
+https://github.com/sidorares/node-mysql2/issues/1889#issuecomment-1467614420.
+https://stackoverflow.com/questions/48181991/how-to-do-multiple-mysql-queries-in-one-line-in-node-js.
+
 </br>
 
 ## cuid2

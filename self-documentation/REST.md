@@ -288,6 +288,11 @@ Sharding & IDs at Instagram: https://instagram-engineering.com/sharding-ids-at-i
 ## Naming conventions
 https://stackoverflow.com/a/18450653. You should use hyphens in a crawlable web application URL. Why? Because the hyphen separates words (so that a search engine can index the individual words).
 
+## Redirect 3xx
+Why 301 for blog_GET? https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections#permanent_redirections.
+Also https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/301.
+Use the 301 code only as a response for GET or HEAD methods .
+
 
 ## misc but useful
 https://stackoverflow.com/questions/2239405/hateoas-absolute-or-relative-urls

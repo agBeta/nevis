@@ -236,6 +236,9 @@ https://stackoverflow.com/questions/11264447/what-is-the-limit-of-auto-increment
 The limit of an auto_increment column is the size of the column. For unsigned int it is 4294967295.
 Also https://stackoverflow.com/questions/46365450/what-to-do-if-the-auto-increment-value-reaches-its-limit.
 
+But we aware according to https://stackoverflow.com/a/11515613: Do note, however, that UNSIGNED is MySQL-specific and not a standard SQL feature. This means that using UNSIGNED can make a future migration to a different RDBMS more complicated or cause you difficulties when using software libraries targeting standard SQL such as SQLAlchemy. I think this should be a part of the answer. – minexew
+ 
+
 ## AUTO_INCREMENT Handling in InnoDb
 
 See https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html. `innodb_autoinc_lock_mode` variable.
@@ -268,6 +271,8 @@ ORDER BY id ASC
 LIMIT 10,41.
 
 Note how all the = parts of the WHERE come first; then comes both the >= and ORDER BY, both on id. This means that the INDEX can be used for all the WHERE, plus the ORDER BY.
+
+Also this link is good. https://dev.to/appwrite/this-is-why-you-should-use-cursor-pagination-4nh5.
 
 </br>
 
