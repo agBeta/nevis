@@ -1,6 +1,4 @@
-/**
- * @param {{ dbConnectionPool: MySQLConnectionPool }} props
- */
+/** @param {{ dbConnectionPool: MySQLConnectionPool }} props */
 export default function make_find_code_records_by_email({ dbConnectionPool }) {
 
     const sqlCmd = `
@@ -12,7 +10,7 @@ export default function make_find_code_records_by_email({ dbConnectionPool }) {
         FROM
             code_tbl
         WHERE
-            email LIKE ?
+            email = ?
         ;
     `;
 
