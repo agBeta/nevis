@@ -84,78 +84,47 @@ export type Timestamp = number;
 
 // Synonyms for services: utility, facility. Not to confuse with so-called 'services' in REST API design.
 
-export type IdFacility = {
-    createId: () => string,
-    isValidId: (string) => boolean
-};
 
-export type UserRawInformation = {
-    id?: string,
-    email: string,
-    displayName: string,
-    birthYear: number,
-    signupAt?: Timestamp,
-    lastLoginAt?: Timestamp,
-    password: string,
-}
-export type User = {
-    getId: () => string,
-    getEmail: () => string,
-    getDisplayName: () => string,
-    getBirthYear: () => number,
-    getSignupAt: () => Timestamp,
-    getLastLoginAt: () => Timestamp,
-    getPassword: () => string
-};
+// --------------------- Data access -------------------------------
+// RFD stands for Retrieved From Database.
 
-export type UserFactory = (UserRawInformation) => User;
-
-
-export type PostRawInformation = {
-    id?: string,
-    authorId: string,
-    postTitle: string,
-    postBody: string,
-    isPublished?: boolean,
-    createdAt?: Timestamp,
-    modifiedAt?: Timestamp
-};
-export type Post = {
-    getId: () => string,
-    getAuthorId: () => string | "deleted",
-    getPostTitle: () => string,
-    getPostBody: () => string,
-    isDeleted: () => boolean,
-    markDeleted: () => void,
-    getCreatedAt: () => Timestamp,
-    getModifiedAt: () => Timestamp,
-    isPublished: () => boolean,
-    publish: () => void,
-    unPublish: () => void
-}
-
-export type PostFactory = (PostRawInformation) => Post;
-
-//
-export type Code = {
+export type CodeRFD = {
     hashedCode: string,
     email: string,
     purpose: 'signup' | 'reset-pass',
     expiresAt: number
 };
 
-// ---------------------- Services ---------------------------------
-
-export type CodeService = {
-    generateCode: () => Promise<string>,
-    storeInDbAndSendCode: ({ email: string, code: string, purpose: string }) => Promise<void>,
-    verifyCode: (string, string) => Promise<boolean>
+export type BlogRFD = {
+    id: string,
+    authorId: string,
+    blogTitle: string,
+    blogBody: string,
+    blogTopic: string,
+    imageUrl: string,
+    // Note, it isn't number (i.e. timestamp) but native js date object.
+    createdAt: Date,
+    modifiedAs: Date,
+};
+export type BlogRFDv2 = {
+    id: string,
+    authorId: string,
+    authorDisplayName: string,
+    blogTitle: string,
+    createdAt: Date,
+    orderId: number,
 };
 
-export type EmailService = {
-    send: ({ email: string, subject: string, body: string }) => Promise<void>
-}
+export type PageDirection = "newer" | "older";
 
-// --------------------- Data access -------------------------------
+export type PaginateArgument = {
+    cursor: number | "newest" | "oldest",
+    limit: number,
+    direction: PageDirection
+};
 
-
+export type PaginatedResult = {
+    headCursor: number | string,
+    tailCursor: number | string,
+    content: Object[],
+};
