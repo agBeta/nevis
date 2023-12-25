@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS blog_tbl (
     author_id CHAR(24),
 
     -- For pagination. created_at cannot be used for pagination. See database.md from self-documentation.
+    -- Why INT instead of UNSIGNED? See [AUTO_INCREMENT limit] inside database.md.
     order_id INT NOT NULL AUTO_INCREMENT,
 
     blog_title VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS blog_tbl (
     INDEX idx_order_id (order_id),
     
     CONSTRAINT fk_blog_author_id FOREIGN KEY (author_id) 
-        REFERENCES users_tbl(id)
+        REFERENCES user_tbl(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) 
