@@ -10,9 +10,10 @@ import makeHttpError from "./http-error.js";
  * @param {{
  *      schemaOfPathParams?: JoiObjectSchema,
  *      schemaOfBody?: JoiObjectSchema,
+*       schemaOfQueryParams?: JoiObjectSchema,
  * }} param0
  */
-export default function makeBasicValidateNormalize({ schemaOfBody, schemaOfPathParams }) {
+export default function makeBasicValidateNormalize({ schemaOfBody, schemaOfPathParams, schemaOfQueryParams }) {
 
     return function (/** @type HttpRequest */ httpRequest) {
 
@@ -34,6 +35,24 @@ export default function makeBasicValidateNormalize({ schemaOfBody, schemaOfPathP
                 };
             }
             httpRequest.pathParams = normalized;
+        }
+
+        if (schemaOfQueryParams) {
+            const { value: normalized, error } = schemaOfQueryParams.validate(
+                httpRequest.queryParams,
+                { abortEarly: true, convert: true }
+            );
+            if (error){
+                return {
+                    isValid: false,
+                    httpErrorResponse: makeHttpError({
+                        // The route exists, so 404 isn't correct. 400 is better.
+                        statusCode: 400,
+                        error: "Bad request. Invalid query parameters.",
+                    })
+                };
+            }
+            httpRequest.queryParams = normalized;
         }
 
         if (schemaOfBody) {
