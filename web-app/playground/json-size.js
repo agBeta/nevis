@@ -24,9 +24,11 @@ const obj1 = {
     blogTopic: "t".repeat(70),
 };
 
-console.log("without base64 img embeded (kb): ", getSizeInBytes(obj1) / 1000);
+console.log("without base64 img embedded (kb): ", getSizeInBytes(obj1) / 1000);
 // Where does +35 below come from? Testing a 22kb image in https://www.base64-image.de/.
-console.log("some base64 img embeded (kb): ", getSizeInBytes(obj1) / 1000 + 35);
+// A 22kb image when encoded to base64 seems to have about 30 (thirty) thousand characters.
+// A 2 kb image when encoded to base64 seems to have about 2  (two)    thousand character.
+console.log("some base64 img embedded (kb): ", getSizeInBytes(obj1) / 1000 + 35);
 
 
 function getSizeInBytes(param) {
