@@ -1,11 +1,13 @@
 import * as crypto from "node:crypto";
+import { URLSearchParams } from "node:url";
 import bcrypt from "bcrypt";
 import { init } from "@paralleldrive/cuid2";
+import sanitizeHtml from "sanitize-html";
 
 import makeSendEmail from "../send-email/send-email.js";
 import {
-    count_number_of_blog_post_actions_by_userId,
-    find_action_by_actionId,
+    count_actions_by_userId,
+    find_action_record_by_actionId,
     find_blog_record_by_blogId,
     find_blog_records_paginated,
     find_code_records_by_email,
@@ -43,7 +45,7 @@ export const sendEmail = makeSendEmail({
 const createSecureHash = async function (/**@type {string}*/ plain) {
     return bcrypt.hash(plain, 9);
 };
-const createFastHash = async function(/**@type {string}*/ plain) {
+const createFastHash = async function (/**@type {string}*/ plain) {
     return crypto.createHash("md5").update(plain, "utf-8").digest("base64");
 };
 
@@ -67,6 +69,13 @@ const generateSecureId = init({
 //  resistent.
 const generateFastId = function () {
     return crypto.randomBytes(16).toString("hex");
+};
+const sanitizeText = function(/**@type {string}*/ text) {
+    // By default <img> tag is disallowed. See https://github.com/apostrophecms/sanitize-html?tab=readme-ov-file#default-options
+    return sanitizeHtml(text, {
+        disallowedTagsMode: "discard",
+        allowedIframeHostnames: [],
+    });
 };
 
 
@@ -108,14 +117,15 @@ const auth_authenticated_as_GET = make_auth_authenticated_as_GET_controller({
 // 📝
 const blog_POST_action_creation = make_blog_POST_action_creation_controller({
     generateFastId,
-    count_number_of_blog_post_actions_by_userId,
+    count_actions_by_userId,
     insert_action,
 });
 
 const blog_action_PUT = make_blog_action_PUT({
-    find_action_by_actionId,
+    find_action_record_by_actionId,
     update_action,
     generateCollisionResistentId,
+    sanitizeText,
     insert_blog,
 });
 
@@ -123,6 +133,21 @@ const blog_blogId_GET = make_blog_blogId_GET({ find_blog_record_by_blogId });
 
 const blog_paginated_GET = make_blog_paginated_GET({ find_blog_records_paginated });
 
+const /**@type {Controller}*/ blog_GET = {
+    validateRequest: () => ({ isValid: true }),
+    // @ts-ignore
+    handleRequest: function() {
+        const qs = new URLSearchParams([
+            ["cursor", "1"],
+            ["direction", "next"],
+            ["limit", "10"],
+        ]);
+        return {
+            statusCode: 301,
+            headers: { "Location": `/api/v1/blog/paginated?${qs.toString()}` }
+        };
+    }
+};
 
 export {
     auth_code_POST,
@@ -132,5 +157,13 @@ export {
     blog_action_PUT,
     blog_blogId_GET,
     blog_paginated_GET,
+    blog_GET,
     blog_POST_action_creation,
 };
+
+
+/**
+ * @typedef {import("#types").HttpRequest} HttpRequest
+ * @typedef {import("#types").HttpResponse} HttpResponse
+ * @typedef {import("#types").Controller} Controller
+ */
