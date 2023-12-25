@@ -8,7 +8,7 @@ import makeHttpError from "../http-error.js";
  * @returns {Controller}
  */
 export function makeEndpointController({
-    find_action_by_actionId,
+    find_action_record_by_actionId,
     update_action,
     generateCollisionResistentId,
     sanitizeText,
@@ -36,7 +36,7 @@ export function makeEndpointController({
     async function handleRequest(/**@type {AuthenticatedHttpRequest}*/ httpRequest) {
         const userId = httpRequest.userId;
         const actionId = httpRequest.pathParams.actionId;
-        const action = await find_action_by_actionId({ actionId });
+        const action = await find_action_record_by_actionId({ actionId });
 
         if (!action) {
             return makeHttpError({
@@ -51,6 +51,7 @@ export function makeEndpointController({
                 error: "Not found."
             });
         }
+        // No need to check if (action.purpose === "blog:post"). Very rare edge case.
 
         if (action.state === CONSTANTS.actionState.FINISHED) {
             //  Return the same response without doing nothing else.
@@ -70,7 +71,7 @@ export function makeEndpointController({
         }
 
         await update_action({
-            ...action,
+            id: action.id,
             state: CONSTANTS.actionState.PROCESSING,
         });
 
@@ -82,6 +83,17 @@ export function makeEndpointController({
         const /**@type {string}*/ blogBody = sanitizeText(httpRequest.body.blogBody).trim();
         // @ts-ignore
         const /**@type {string}*/ blogTopic = sanitizeText(httpRequest.body.blogTopic).trim();
+        // @ts-ignore
+        const /**@type {string}*/ imageUrl = httpRequest.body.imageUrl;
+
+        // We assume the user has permission to include image in his blog.
+        const isPermittedToHaveImage = true;
+        if (!isPermittedToHaveImage) {
+            return makeHttpError({
+                statusCode: 403,
+                error: "You aren't allowed to insert image into your blog."
+            });
+        }
 
         // In future versions we may ask an AI to moderate and review content of the blog. But for now...
         const isPublished = true;
@@ -96,6 +108,7 @@ export function makeEndpointController({
             blogTitle,
             blogBody,
             blogTopic,
+            imageUrl,
             isPublished,
             createdAt: now,
             modifiedAt: now,
@@ -108,14 +121,29 @@ export function makeEndpointController({
                 "Content-Type": "application/json",
                 "Cache-Control": "max-age=3600",
             },
-            payload: JSON.stringify({success: true, message: `Blog ${blogId} is created.` }),
+            payload: JSON.stringify({ success: true, message: `Blog ${blogId} is created.` }),
         };
 
+        //  There is a tiny possibility that MySQL event scheduler deletes the action within the time we updated
+        //  the action to PROCESSING till now (i.e. when action expiresAt is very close to current time). So we
+        //  shouldn't let update_action below throws an error to upstream (which would result in incorrect 5xx
+        //  response to the client, although the entity is actually created and inserted to db).
+        //  Another bad scenario happens when update_action throws some error (like connection is closed, etc.).
+        //  Again we shouldn't bubble the error to upstream (to prevent from sending 5xx to client).
+
+        //  On the other hand if any error happens during update_action below, it will leave our application in
+        //  an invalid state, meaning action is actually FINISHED but db shows it is still in PROCESSING state. If
+        //  the client retries the action it will get an incorrect response from server.
+        //  there is NO way to automatically recover from this scenario, unless we retry update_action over and over
+        //  again.
+
+        //  Eventually we made up our mind to do this:
         await update_action({
-            ...action,
+            id: action.id,
             state: CONSTANTS.actionState.FINISHED,
             response: JSON.stringify(response),
         });
+        // For simplicity we ignored all these rare scenarios.
 
         return response;
     }
