@@ -7,7 +7,7 @@ import CONSTANTS from "../constants.js";
  */
 export function makeEndpointController({
     generateFastId,
-    count_number_of_blog_post_actions_by_userId,
+    count_actions_by_userId,
     insert_action,
 }) {
     return Object.freeze({
@@ -20,7 +20,7 @@ export function makeEndpointController({
     async function handleRequest(/**@type {AuthenticatedHttpRequest}*/ httpRequest) {
         const userId = httpRequest.userId;
         // See below (insert_action) to find out what exactly does "few hours" mean.
-        const cnt_within_last_few_hours = await count_number_of_blog_post_actions_by_userId({ userId });
+        const cnt_within_last_few_hours = await count_actions_by_userId({ userId, purpose: "blog:post" });
 
         if (cnt_within_last_few_hours > 10) {
             return {
@@ -45,7 +45,8 @@ export function makeEndpointController({
             userId,
             state: CONSTANTS.actionState.NOT_INITIATED,
             response: null,
-        }, { ttl: 12 * 60 * 60 });
+            ttlInSeconds: 12 * 60 * 60
+        });
 
         return {
             statusCode: 201,
