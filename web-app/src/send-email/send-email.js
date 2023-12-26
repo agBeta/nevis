@@ -4,7 +4,7 @@ import log from "#utils/log.js";
 
 /**
  * @param {{ [key: string]: string|undefined }} param0
- * @returns
+ * @returns {import("#types").SendEmail}
  */
 export default function makeSendEmail({
     mailServiceHost,
@@ -29,10 +29,7 @@ export default function makeSendEmail({
 
     return sendEmail;
 
-    /**
-     * @param {{ email: string, subject: string, body: string }} properties
-     * @returns {Promise<any>}
-     */
+    /** @type {import("#types").SendEmail} */
     async function sendEmail({ email, subject, body }) {
 
         log({

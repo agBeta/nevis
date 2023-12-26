@@ -4,7 +4,12 @@ import makeBasicValidateNormalize from "../validate-normalize.js";
 
 /**
  * POST /auth/code endpoint controller isn't idempotent. Just for simplicity.
- * @param {*} param0
+ * @param {{
+ *      insert_code: Insert_Code,
+ *      generateCode: () => string,
+ *      sendEmail: SendEmail,
+ *      createSecureHash: (plain: string) => Promise<string>
+ * }} param0
  * @returns {Controller}
  */
 export function makeEndpointController({
@@ -61,6 +66,8 @@ export function makeEndpointController({
  * @typedef {import("#types").HttpRequest} HttpRequest
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
+ * @typedef {import("#types").SendEmail} SendEmail
+ * @typedef {import("#types").Insert_Code} Insert_Code
  */
 
 

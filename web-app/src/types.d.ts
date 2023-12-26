@@ -1,10 +1,11 @@
-import { Request, Response, CookieOptions, Express, Router } from "express";
+import { Request, Response, CookieOptions, Express, Router, NextFunction } from "express";
 import { Pool, Connection } from "mysql2/promise";
 import { Server } from "http";
 import { RedisClientType, RedisFunctions, RedisScripts, RedisModules } from "redis";
 
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;
+export type ExpressNextFunc = NextFunction;
 export type ExpressApp = Express;
 export type ExpressRouter = Router;
 
@@ -84,18 +85,20 @@ export type Timestamp = number;
 
 // Synonyms for services: utility, facility. Not to confuse with so-called 'services' in REST API design.
 
+export type Session = { 
+    hashedSessionId: string, 
+    userId: string, 
+    expiresAt: number,
+};
 
-// --------------------- Data access -------------------------------
-// RFD stands for Retrieved From Database.
-
-export type CodeRFD = {
+export type Code = {
     hashedCode: string,
     email: string,
-    purpose: 'signup' | 'reset-pass',
+    purpose: "signup" | "reset-pass",
     expiresAt: number
 };
 
-export type BlogRFD = {
+export type Blog = {
     id: string,
     authorId: string,
     blogTitle: string,
@@ -106,7 +109,7 @@ export type BlogRFD = {
     createdAt: Date,
     modifiedAs: Date,
 };
-export type BlogRFDv2 = {
+export type BlogV2 = {
     id: string,
     authorId: string,
     authorDisplayName: string,
@@ -114,6 +117,8 @@ export type BlogRFDv2 = {
     createdAt: Date,
     orderId: number,
 };
+
+// --------------------- Data access -------------------------------
 
 export type PageDirection = "newer" | "older";
 
@@ -128,3 +133,14 @@ export type PaginatedResult = {
     tailCursor: number | string,
     content: Object[],
 };
+
+
+export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId: string }) => Promise<Session | null>;
+
+export type Insert_Code = ({ email, hashedCode, purpose, expiresAt }: 
+        { email: string, hashedCode: string, purpose: string, expiresAt: number }
+    ) => Promise<void>;
+
+// ---------------------
+export type EmailDetail = { email: string , subject: string , body : string };
+export type SendEmail = (emailDetail: EmailDetail) => Promise<void>;

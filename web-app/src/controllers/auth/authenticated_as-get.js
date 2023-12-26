@@ -3,7 +3,10 @@ import makeHttpError from "../http-error.js";
 const NAME_OF_SESSION_COOKIE = "__Host-nevis_sessionId";
 
 /**
- * @param {*} param0
+ * @param {{
+ *      find_session_record_by_hashedSessionId: import("#types").Find_Session_Record_By_HashedSessionId,
+ *      createFastHash: (plain: string) => string,
+ * }} param0
  * @returns {Controller}
  */
 export function makeEndpointController({

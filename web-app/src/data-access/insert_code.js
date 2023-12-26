@@ -2,6 +2,7 @@ import { OperationalError } from "#utils/errors.js";
 
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool}} props
+ * @returns {Insert_Code}
  */
 export default function make_insert_code({ dbConnectionPool }) {
 
@@ -18,10 +19,7 @@ export default function make_insert_code({ dbConnectionPool }) {
 
     return insert_code;
 
-    /**
-     * @param {Code} param0
-     * @returns {Promise<void>}
-     */
+    /** @type {Insert_Code} */
     async function insert_code({ email, hashedCode, purpose, expiresAt }) {
         const db = await dbConnectionPool;
         await db.execute(sqlCmd, [
@@ -36,4 +34,5 @@ export default function make_insert_code({ dbConnectionPool }) {
 /**
  * @typedef {import("#types").Code} Code
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
+ * @typedef {import("#types").Insert_Code} Insert_Code
  */

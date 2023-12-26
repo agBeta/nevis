@@ -1,8 +1,8 @@
-import { AppError, OperationalError } from "#utils/errors.js";
 import log from "#utils/log.js";
 
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool, cacheClient: RedisClient|null }} props
+ * @returns {import("#types").Find_Session_Record_By_HashedSessionId}
  */
 export default function make_find_session_record_by_hashedSessionId({ dbConnectionPool, cacheClient }) {
     const sqlCmd = `
@@ -108,5 +108,5 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
  * @typedef {import("#types").RedisClient} RedisClient
- * @typedef {{ hashedSessionId: string, userId: string, expiresAt: number }} Session
+ * @typedef {import("#types").Session} Session
  */
