@@ -1,24 +1,69 @@
 import path from "node:path";
-import { test } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import dotenv from "dotenv";
 
 import makeDbConnectionPool from "../connection.js";
 import makeRedisClient from "../cache-connection.js";
 import make_find_session_record_by_hashedSessionId from "../find_session_record_by_hashedSessionId.js";
+import make_insert_session from "../insert_session.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "session-crud.env"),
     override: true,
 });
 
-const dbConnectionPool = makeDbConnectionPool({ port: process.env.MYSQL_PORT });
-const find_session_record_by_hashedSessionId = make_find_session_record_by_hashedSessionId({
+// ? Make sure MySQL and redis server are running in your machine.
+// Now ...
+const dbConnectionPool = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) ?? 3306 });
+const cacheClient = null ;//await makeRedisClient();
 
+// const insert_session = make_insert_session({ dbConnectionPool });
+// const find_session_record_by_hashedSessionId = make_find_session_record_by_hashedSessionId({
+//     dbConnectionPool,
+//     cacheClient
+// });
+
+
+describe("find session record by hashedSessionId", { concurrency: false }, async () => {
+    let db;
+    const user1 = { id: "a".repeat(24 /*since id column is CHAR(24)*/) };
+    const user2 = { id: "b".repeat(24) };
+
+    before(async () => {
+        try {
+            db = await dbConnectionPool;
+        }
+        catch (err) {
+            throw new Error("Test setup failed. " + err.message);
+        }
+        // await db.execute("DELETE FROM session_tbl;");
+        // await cacheClient.flushAll();
+
+        // await db.execute(`
+        //     INSERT INTO
+        //         user_tbl
+        //         (id , email , hashed_password , display_name , birth_year , signup_at )
+        //     VALUES
+        //           ( ${user1.id} , 'user1@gmail.com' , REPEAT('a',60) , "user1" , 1391 , '2020-12-31 01:02:03' )
+        //         , ( ${user2.id} , 'user2@gmail.com' , REPEAT('b',60) , "user2" , 1392 , ADDDATE('2020-12-31 01:02:03', 31) )
+        //     ;
+        // `);
+    });
+
+    it("@sanity", () => {
+        assert.strictEqual(1, 1);
+    });
+
+    after(async() => {
+        console.log("&".repeat(50));
+        await db.end();
+        await dbConnectionPool.end();
+        console.log("Hi");
+        // await cacheClient.QUIT();
+    });
 });
 
-test("find session record by hashedSessionId", { concurrency: false, timeout: 6000 }, async (t) => {
-});
 
 
 // check if expiresAt is number (not string or date) two separate tests:

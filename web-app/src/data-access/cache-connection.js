@@ -12,7 +12,7 @@ export default async function makeRedisClient() {
     const redisPort = process.env.REDIS_PORT;
     const redisPassword = process.env.REDIS_PASSWORD;
 
-    if (!redisHost || !redisPort || !redisPassword) {
+    if (!redisHost || !redisPort || (!redisPassword && process.env.NODE_ENV !== "test")) {
         throw new AppError("Some of Redis environment variables are missing", "cache__connect");
     }
 
@@ -33,7 +33,7 @@ export default async function makeRedisClient() {
         return redisClient;
     }
     catch (err) {
-        throw new OperationalError("Failed to connect to Redis server.", "cache__connect");
+        throw new OperationalError("Failed to connect to Redis server. " + err.message, "cache__connect");
     }
 }
 
