@@ -1,6 +1,6 @@
 import express from "express";
 import makeExpressCallback from "../express-stuff/express-callback";
-import requireAuthentication from "../express-stuff/auth-middleware.js";
+import { requireAuthentication } from "../express-stuff/auth-middleware.js";
 import {
     blog_POST_action_creation,
     blog_action_PUT,
@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.use("/", express.json({ limit: "10kb" }));
+router.use("/", express.json({ limit: "12kb" }));
 
 // (semi-?)idempotent POST
 router.post("/",
