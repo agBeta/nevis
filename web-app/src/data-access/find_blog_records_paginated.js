@@ -1,13 +1,13 @@
 import { AppError } from "#utils/errors.js";
 
-/** @param {{ dbConnectionPool: MySQLConnectionPool }} props */
+/**
+ * @param {{ dbConnectionPool: MySQLConnectionPool }} props
+ * @returns {Find_Blog_Records_Paginated}
+ */
 export default function make_find_blog_records_paginated({ dbConnectionPool }) {
     return find_blog_records_paginated;
 
-    /**
-     * @param {PaginateArgument} pageArg
-     * @returns {Promise<import("#types").BlogRFDv2[]>}
-     */
+    /**@type {Find_Blog_Records_Paginated}*/
     async function find_blog_records_paginated({ cursor, direction, limit }) {
         const db = await dbConnectionPool;
 
@@ -41,7 +41,6 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
             // @ts-ignore
             return (rows);
         }
-
 
         if (cursor === "oldest") {
             if (direction !== "older") {
@@ -108,4 +107,5 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
  * @typedef {import("#types").PaginateArgument} PaginateArgument
+ * @typedef {import("#types").Find_Blog_Records_Paginated} Find_Blog_Records_Paginated
  */

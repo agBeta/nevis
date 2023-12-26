@@ -3,7 +3,7 @@ import makeHttpError from "../http-error.js";
 import makeBasicValidateNormalize from "../validate-normalize.js";
 
 /**
- * @param {*} param0
+ * @param {{ find_blog_records_paginated: import("#types").Find_Blog_Records_Paginated }} param0
  * @returns {Controller}
  */
 export function makeEndpointController({ find_blog_records_paginated }) {
@@ -32,8 +32,7 @@ export function makeEndpointController({ find_blog_records_paginated }) {
         // @ts-ignore
         const /**@type {"newer"|"older"}  */ direction = httpRequest.queryParams.direction;
 
-        const /**@type {BlogRFDv2[]}*/ records = await find_blog_records_paginated(
-            // why 3*limit? See below.
+        const records = await find_blog_records_paginated(
             { cursor, limit: limit + 3 * limit, direction }
         );
         const cnt = records.length;
@@ -48,7 +47,8 @@ export function makeEndpointController({ find_blog_records_paginated }) {
         //  Maybe it would be better to decrypt/encrypt tail and head cursors, and drop orderId from content to
         //  prevent leaking business info. But let's not do that.
 
-        // Client should interpret head and tail cursors based on direction.
+        //  Client should interpret head and tail cursors based on direction. If direction="older", then tailCursor
+        //  is older (or smaller in terms of "orderId") than headCursor. If direction="newer" it is opposite.
 
         const /**@type {PaginatedResult}*/ currentPage = cnt >= limit
             ? {
@@ -95,6 +95,5 @@ export function makeEndpointController({ find_blog_records_paginated }) {
  * @typedef {import("#types").HttpRequest} HttpRequest
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
- * @typedef {import("#types").BlogRFDv2} BlogRFDv2
  * @typedef {import("#types").PaginatedResult} PaginatedResult
  */

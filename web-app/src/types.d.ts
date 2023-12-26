@@ -118,21 +118,21 @@ export type BlogV2 = {
     orderId: number,
 };
 
+export type PaginatedResult = {
+    headCursor: number | string,
+    tailCursor: number | string,
+    content: Object[],
+};
+
 // --------------------- Data access -------------------------------
-
 export type PageDirection = "newer" | "older";
-
 export type PaginateArgument = {
     cursor: number | "newest" | "oldest",
     limit: number,
     direction: PageDirection
 };
 
-export type PaginatedResult = {
-    headCursor: number | string,
-    tailCursor: number | string,
-    content: Object[],
-};
+export type Find_Blog_Records_Paginated = (paginateArg: PaginateArgument) => Promise<BlogV2[]>;
 
 
 export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId: string }) => Promise<Session | null>;
@@ -140,6 +140,7 @@ export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId: string 
 export type Insert_Code = ({ email, hashedCode, purpose, expiresAt }: 
         { email: string, hashedCode: string, purpose: string, expiresAt: number }
     ) => Promise<void>;
+
 
 // ---------------------
 export type EmailDetail = { email: string , subject: string , body : string };
