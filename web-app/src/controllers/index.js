@@ -45,7 +45,7 @@ export const sendEmail = makeSendEmail({
 const createSecureHash = async function (/**@type {string}*/ plain) {
     return bcrypt.hash(plain, 9);
 };
-const createFastHash = async function (/**@type {string}*/ plain) {
+const createFastHash = function (/**@type {string}*/ plain) {
     return crypto.createHash("md5").update(plain, "utf-8").digest("base64");
 };
 
@@ -87,7 +87,7 @@ const auth_code_POST = make_auth_code_POST_controller({
     insert_code,
     generateCode: function () {
         //  Don't use Math.random() or timestamp. See https://stackoverflow.com/a/14869745 for a detailed explanation.
-        return Promise.resolve(crypto.randomBytes(3).toString("hex"));
+        return crypto.randomBytes(3).toString("hex");
     },
     createSecureHash,
     sendEmail,
