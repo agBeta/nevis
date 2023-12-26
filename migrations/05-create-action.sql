@@ -1,8 +1,8 @@
 CREATE TABLE action_tbl (
     id CHAR(32) PRIMARY KEY,
     user_id CHAR(24) NOT NULL,
-    purpose VARCHAR(31) NOT NULL
-    state SMALLINT NOT NULL,
+    purpose VARCHAR(31) NOT NULL,
+    state INT NOT NULL,
     expires_at TIMESTAMP NOT NULL,
 
     -- stringified response

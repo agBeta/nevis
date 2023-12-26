@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS auth_session_tbl (
     user_id CHAR(24),
     expires_at TIMESTAMP NOT NULL,
 
-    PRIMARY KEY (session_id),
+    PRIMARY KEY (hashed_session_id),
     
     CONSTRAINT fk_auth_session_user_id FOREIGN KEY (user_id) 
         REFERENCES user_tbl(id)
