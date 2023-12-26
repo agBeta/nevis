@@ -32,7 +32,9 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
             // We don't propagate cache errors to upstream.
         }
         if (resultFromCache) {
-            if (resultFromCache.expiresAt < Date.now())
+            //  Why check expiresAt? Because expired sessions get deleted from db automatically but not from cache.
+            //  Recall, we did't use redis TTL or EXPIRE.
+            if (resultFromCache.expiresAt > Date.now())
                 return resultFromCache;
             else {
                 delete_from_cache(hashedSessionId)
