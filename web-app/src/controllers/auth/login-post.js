@@ -4,13 +4,21 @@ import makeBasicValidateNormalize from "../validate-normalize.js";
 
 /**
  * POST /auth/login endpoint controller isn't idempotent. Just for simplicity.
- * @param {*} param0
+ * @param {Object} param0
+ * @param {(plain: string, encrypted: string) => Promise<boolean>} param0.compareHash
+ *      NOTE: Closely associated with [createSecureHash] (in signup-post). Checks if given password matches
+ *      the hashed password in database.
+ * @param {import("#types").Find_User_Records_By_Email} param0.find_user_records_by_email
+ * @param {import("#types").Insert_Session} param0.insert_session
+ * @param {(plain: string) => string} param0.createFastHash - To hash (to be) generated sessionId.
+ * @param {() => string} param0.generateSecureId - To generate (unguessable secure) sessionId.
  * @returns {Controller}
  */
 export function makeEndpointController({
     find_user_records_by_email,
     insert_session,
     compareHash,
+    createFastHash,
     generateSecureId,
 }) {
 
@@ -35,7 +43,7 @@ export function makeEndpointController({
         // @ts-ignore
         const /**@type {boolean}*/ rememberMe = httpRequest.body.rememberMe;
 
-        const records = await find_user_records_by_email({ email });
+        const records = await find_user_records_by_email({ email }, /*omitPassword=*/false);
         if (!records) {
             return makeHttpError({
                 statusCode: 401,
@@ -44,6 +52,7 @@ export function makeEndpointController({
         }
 
         const user = records.find(async function checkIfPasswordMatches(el) {
+            if (!el.hashedPassword) /*should never happen but to suppress ts*/ throw new Error("🔥 impossible!");
             return await compareHash(password, el.hashedPassword);
         });
         if (!user) {
@@ -60,8 +69,10 @@ export function makeEndpointController({
         const lifespanInSeconds = (rememberMe ? 30 * 24 * 60 * 60 : 3 * 60 * 60);
         const expiresAt = Date.now() + lifespanInSeconds * 1000;
 
+        const hashedSessionId = createFastHash(sessionId);
+
         await insert_session({
-            sessionId,
+            hashedSessionId,
             userId: user.id,
             expiresAt,
         });

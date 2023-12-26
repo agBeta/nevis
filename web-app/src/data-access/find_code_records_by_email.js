@@ -1,4 +1,7 @@
-/** @param {{ dbConnectionPool: MySQLConnectionPool }} props */
+/**
+ * @param {{ dbConnectionPool: MySQLConnectionPool }} props
+ * @returns {Find_Code_Records_By_Email}
+ */
 export default function make_find_code_records_by_email({ dbConnectionPool }) {
 
     const sqlCmd = `
@@ -16,20 +19,18 @@ export default function make_find_code_records_by_email({ dbConnectionPool }) {
 
     return find_code_records_by_email;
 
-    /**
-     * @param {{ email: string }} param0
-     * @returns {Promise<Code[]>}
-     */
+    /**@type {Find_Code_Records_By_Email}*/
     async function find_code_records_by_email({ email }) {
         const db = await dbConnectionPool;
         const [rows,] = await db.execute(sqlCmd, [email]);
         if (!rows) return [];
-        return /** @type {Code[]} */ (rows);
+        // @ts-ignore
+        return (rows);
     }
 }
 
 
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
- * @typedef {import("#types").Code} Code
+ * @typedef {import("#types").Find_Code_Records_By_Email} Find_Code_Records_By_Email
  */

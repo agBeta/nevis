@@ -89,7 +89,7 @@ const auth_code_POST = make_auth_code_POST_controller({
         //  Don't use Math.random() or timestamp. See https://stackoverflow.com/a/14869745 for a detailed explanation.
         return crypto.randomBytes(3).toString("hex");
     },
-    createSecureHash,
+    createSecureHash/*to hash code*/,
     sendEmail,
 });
 
@@ -97,14 +97,16 @@ const auth_signup_POST = make_auth_signup_POST_controller({
     find_code_records_by_email,
     remove_code_records_by_email,
     insert_user,
-    compareHash: bcrypt.compare,
-    createSecureHash,
+    compareHash/*for code*/: bcrypt.compare,
+    createSecureHash/*to hash password*/,
     generateCollisionResistentId,
 });
 
 const auth_login_POST = make_auth_login_POST_controller({
     find_user_records_by_email,
     insert_session,
+    compareHash/*for password*/: bcrypt.compare,
+    createFastHash,
     generateSecureId,
 });
 

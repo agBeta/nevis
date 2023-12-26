@@ -79,12 +79,9 @@ export type Controller = {
 }
 
 
-// It is safer to use number for timestamp instead of date. The server running this code might have different timezone
-// from db server. Also we may use raw sql queries. It prevents ambiguity throughout the code.
-export type Timestamp = number;
-
 // Synonyms for services: utility, facility. Not to confuse with so-called 'services' in REST API design.
 
+// ------------------------------------------------------------
 export type Session = { 
     hashedSessionId: string, 
     userId: string, 
@@ -118,6 +115,15 @@ export type BlogV2 = {
     orderId: number,
 };
 
+export type User = {
+    id: string,
+    email: string,
+    displayName: string,
+    birthYear: number,
+    signupAt: Date,
+    hashedPassword?: string,
+};
+
 export type PaginatedResult = {
     headCursor: number | string,
     tailCursor: number | string,
@@ -134,13 +140,22 @@ export type PaginateArgument = {
 
 export type Find_Blog_Records_Paginated = (paginateArg: PaginateArgument) => Promise<BlogV2[]>;
 
+export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId }: { hashedSessionId: string }) 
+    => Promise<Session | null>;
 
-export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId: string }) => Promise<Session | null>;
+export type Find_User_Records_By_Email = ({email}: {email: string}, omitPassword: boolean=true) 
+    => Promise<User[]>
+
+export type Find_Code_Records_By_Email = ({email}: {email: string}) => Promise<Code[]>;
 
 export type Insert_Code = ({ email, hashedCode, purpose, expiresAt }: 
         { email: string, hashedCode: string, purpose: string, expiresAt: number }
     ) => Promise<void>;
 
+
+export type Insert_Session = ({ hashedSessionId, userId, expiresAt }: 
+    { hashedSessionId: string, userId: string, expiresAt: number }
+    ) => Promise<void>;
 
 // ---------------------
 export type EmailDetail = { email: string , subject: string , body : string };

@@ -6,7 +6,15 @@ import { InvalidError } from "#utils/errors.js";
 
 /**
  * POST /auth/signup endpoint controller isn't idempotent. Just for simplicity.
- * @param {*} param0
+ * @param {Object} param0
+ * @param {(plain: string, encrypted: string) => Promise<boolean>} param0.compareHash
+ *      NOTE: Closely associated with [createSecureHash] (in code-post). Checks if given code matches
+ *      the hashed code in database.
+ * @param {Find_Code_Records_By_Email} param0.find_code_records_by_email
+ * @param {*} param0.remove_code_records_by_email
+ * @param {*} param0.insert_user
+ * @param {*} param0.createSecureHash
+ * @param {*} param0.generateCollisionResistentId
  * @returns {Controller}
  */
 export function makeEndpointController({
@@ -48,8 +56,6 @@ export function makeEndpointController({
         // @ts-ignore
         const /** @type {number} */ birthYear = httpRequest.body.birthYear;
 
-
-        // todo type
         const records = await find_code_records_by_email({ email: email });
 
         const isCredentialsValid = records.some(async (el) => {
@@ -121,6 +127,7 @@ export function makeEndpointController({
  * @typedef {import("#types").HttpRequest} HttpRequest
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
+ * @typedef {import("#types").Find_Code_Records_By_Email} Find_Code_Records_By_Email
  */
 
 

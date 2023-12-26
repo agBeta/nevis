@@ -1,6 +1,7 @@
-import { OperationalError } from "#utils/errors.js";
-
-/** @param {{ dbConnectionPool: MySQLConnectionPool}} props */
+/**
+ * @param {{ dbConnectionPool: MySQLConnectionPool}} props
+ * @returns {Insert_Session}
+ */
 export default function make_insert_session({ dbConnectionPool }) {
 
     const sqlCmd = `
@@ -15,10 +16,7 @@ export default function make_insert_session({ dbConnectionPool }) {
 
     return insert_session;
 
-    /**
-     * @param {{ hashedSessionId: string, userId: string, expiresAt: number }} param0
-     * @returns {Promise<void>}
-     */
+    /** @type {Insert_Session} */
     async function insert_session({ hashedSessionId, userId, expiresAt }) {
         const db = await dbConnectionPool;
         await db.execute(sqlCmd, [
@@ -31,4 +29,5 @@ export default function make_insert_session({ dbConnectionPool }) {
 
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
+ * @typedef {import("#types").Insert_Session} Insert_Session
  */

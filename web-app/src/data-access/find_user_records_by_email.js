@@ -1,10 +1,12 @@
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool }} props
+ * @returns {Find_User_Records_By_Email}
  */
 export default function make_find_user_records_by_email({ dbConnectionPool }) {
 
     return find_user_records_by_email;
 
+    /** @type {Find_User_Records_By_Email} */
     async function find_user_records_by_email({ email }, omitPassword = true) {
         const db = await dbConnectionPool;
         const sqlCmd = `
@@ -23,6 +25,7 @@ export default function make_find_user_records_by_email({ dbConnectionPool }) {
             `;
         const [rows,] = await db.execute(sqlCmd, [email]);
         if (!rows) return [];
+        // @ts-ignore
         return (rows);
     }
 }
@@ -30,4 +33,5 @@ export default function make_find_user_records_by_email({ dbConnectionPool }) {
 
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
+ * @typedef {import("#types").Find_User_Records_By_Email} Find_User_Records_By_Email
  */

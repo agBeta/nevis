@@ -39,10 +39,11 @@ export function makeEndpointController({
 
         const code = await generateCode();
         // Must also hash this short-lived code before storing in db. See comment at the end of this file.
+        // Maybe it would be better to also include client IP to create hashed code. But let's keep it simple.
         const hashedCode = await createSecureHash(code);
         const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes later
 
-        // Don't remove already existing codes related to this email address. See comment at the end of this file.
+        //  Don't remove already existing codes related to this email address. See comment at the end of this file.
         await insert_code({ email, hashedCode, purpose, expiresAt });
 
         const subject = "کد تایید";

@@ -10,12 +10,12 @@ import {
 const router = express.Router();
 
 // middleware
-router.use("/", express.json({ limit: "20kb" }));
+router.use(express.json({ limit: "10kb" }));
+router.get("/authenticated_as", makeExpressCallback(auth_authenticated_as_GET));
 
 router.post("/code", makeExpressCallback(auth_code_POST));
 router.post("/signup", makeExpressCallback(auth_signup_POST));
 router.post("/login", makeExpressCallback(auth_login_POST));
-router.get("/authenticated_as", makeExpressCallback(auth_authenticated_as_GET));
 
 
 export { router };

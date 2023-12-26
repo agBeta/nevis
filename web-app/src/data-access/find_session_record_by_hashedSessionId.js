@@ -2,7 +2,7 @@ import log from "#utils/log.js";
 
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool, cacheClient: RedisClient|null }} props
- * @returns {import("#types").Find_Session_Record_By_HashedSessionId}
+ * @returns {Find_Session_Record_By_HashedSessionId}
  */
 export default function make_find_session_record_by_hashedSessionId({ dbConnectionPool, cacheClient }) {
     const sqlCmd = `
@@ -17,10 +17,7 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
 
     return find_session_record_by_hashedSessionId;
 
-    /**
-     * @param {{ hashedSessionId: string} } param0
-     * @returns {Promise<Session|null>}
-     */
+    /**@type {Find_Session_Record_By_HashedSessionId}*/
     async function find_session_record_by_hashedSessionId({ hashedSessionId }) {
         let /**@type {Session|null}*/ resultFromCache = /*to suppress ts warning*/null;
         try {
@@ -108,5 +105,6 @@ export default function make_find_session_record_by_hashedSessionId({ dbConnecti
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
  * @typedef {import("#types").RedisClient} RedisClient
+ * @typedef {import("#types").Find_Session_Record_By_HashedSessionId} Find_Session_Record_By_HashedSessionId
  * @typedef {import("#types").Session} Session
  */
