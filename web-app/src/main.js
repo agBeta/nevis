@@ -25,9 +25,3 @@ const server = http.createServer(app);
 server.listen(PORT, () => {
     console.log(`Hello on port ${PORT}`);
 });
-
-
-const Id = Object.freeze({
-    createId: init({ length: 24 }),
-    isValidId: isCuid
-});
