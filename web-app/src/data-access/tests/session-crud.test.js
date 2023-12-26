@@ -1,5 +1,5 @@
 import path from "node:path";
-import { describe, it, before, after } from "node:test";
+import test, { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import dotenv from "dotenv";
 
@@ -16,51 +16,46 @@ dotenv.config({
 // ? Make sure MySQL and redis server are running in your machine.
 // Now ...
 const dbConnectionPool = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) ?? 3306 });
-const cacheClient = null ;//await makeRedisClient();
+const cacheClient = await makeRedisClient();
 
-// const insert_session = make_insert_session({ dbConnectionPool });
-// const find_session_record_by_hashedSessionId = make_find_session_record_by_hashedSessionId({
-//     dbConnectionPool,
-//     cacheClient
-// });
+const insert_session = make_insert_session({ dbConnectionPool });
+const find_session_record_by_hashedSessionId = make_find_session_record_by_hashedSessionId({
+    dbConnectionPool,
+    cacheClient
+});
 
 
-describe("find session record by hashedSessionId", { concurrency: false }, async () => {
+test("find session record by hashedSessionId", { concurrency: false }, async (t) => {
     let db;
     const user1 = { id: "a".repeat(24 /*since id column is CHAR(24)*/) };
     const user2 = { id: "b".repeat(24) };
 
-    before(async () => {
-        try {
-            db = await dbConnectionPool;
-        }
-        catch (err) {
-            throw new Error("Test setup failed. " + err.message);
-        }
-        // await db.execute("DELETE FROM session_tbl;");
-        // await cacheClient.flushAll();
-
-        // await db.execute(`
-        //     INSERT INTO
-        //         user_tbl
-        //         (id , email , hashed_password , display_name , birth_year , signup_at )
-        //     VALUES
-        //           ( ${user1.id} , 'user1@gmail.com' , REPEAT('a',60) , "user1" , 1391 , '2020-12-31 01:02:03' )
-        //         , ( ${user2.id} , 'user2@gmail.com' , REPEAT('b',60) , "user2" , 1392 , ADDDATE('2020-12-31 01:02:03', 31) )
-        //     ;
-        // `);
+    await t.before(async () => {
+        db = await dbConnectionPool;
+        await db.execute("DELETE FROM session_tbl;");
+        await db.execute("DELETE FROM user_tbl;");
+        await cacheClient.flushAll();
+        await db.execute(`
+            INSERT INTO
+                user_tbl
+                (id , email , hashed_password , display_name , birth_year , signup_at )
+            VALUES
+                  ( '${user1.id}' , 'user1@gmail.com' , REPEAT('a',60) , "user1" , 1391 , '2020-12-31 01:02:03' )
+                , ( '${user2.id}' , 'user2@gmail.com' , REPEAT('b',60) , "user2" , 1392 , ADDDATE('2020-12-31 01:02:03', 31) )
+            ;
+        `);
     });
 
-    it("@sanity", () => {
+    await t.test("@sanity", () => {
         assert.strictEqual(1, 1);
     });
 
-    after(async() => {
+    await t.after(async () => {
         console.log("&".repeat(50));
-        await db.end();
+        // await db.end();
         await dbConnectionPool.end();
         console.log("Hi");
-        // await cacheClient.QUIT();
+        await cacheClient.QUIT();
     });
 });
 
