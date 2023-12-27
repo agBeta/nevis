@@ -83,7 +83,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         assert.notStrictEqual(1, 2);
     });
 
-    it("returns 200 along with userId when given email,password are correct", async() => {
+    it("returns 200 along with userId when given email,password are correct", async () => {
         const raw = await agent.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user1.password,
@@ -97,6 +97,45 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         const response = await raw.json();
         assert.strictEqual(response.success, true);
         assert.strictEqual(response.userId, user1.id);
+    });
+
+    it("returns 401 when given email,password are incorrect", async () => {
+        const raw = await agent.postRequest("/api/v1/auth/login", {
+            email: user1.email,
+            password: user2/*<--*/.password,
+            rememberMe: false,
+        });
+        assert.strictEqual(raw.status, 401);
+        const response = await raw.json();
+        assert.strictEqual(response.success, false);
+        assert.strictEqual(response.error == null, false);
+        assert.strictEqual(response.error.includes("email or password"), true);
+    });
+
+    // This test makes sure the controller won't end up executing slow downstream functions.
+    it("returns 400 when given password is too long or isn't supplied", async () => {
+        // password isn't given
+        let raw = await agent.postRequest("/api/v1/auth/login", {
+            email: user1.email,
+            /*no password is provided*/
+            rememberMe: false,
+        });
+        assert.strictEqual(raw.status, 400);
+        let response = await raw.json();
+        assert.strictEqual(response.success, false);
+        assert.strictEqual(response.error.toLowerCase().includes("bad request"), true);
+        assert.strictEqual(response.error.includes("password") && response.error.includes("required"), true);
+
+
+        raw = await agent.postRequest("/api/v1/auth/login", {
+            email: user1.email,
+            password: user1.password.repeat(20 /*long password*/),
+            rememberMe: false,
+        });
+        assert.strictEqual(raw.status, 400);
+        response = await raw.json();
+        assert.strictEqual(response.success, false);
+        assert.strictEqual(response.error.toLowerCase().includes("bad request"), true);
     });
 
     after(async () => {
