@@ -43,7 +43,7 @@ If you want to delete a branch, you must first remove its worktree.
 
 ## Better Log
 
-If you want to see git logs for a file in the last hour, it is recommended to use some other flags to also include history of file before it was renamed. We assume you **always** rename or move your repository files using `git mv` (otherwise, the following command will **not** show the actual history). You can run:  
+If you want to see git logs for9 a file in the last hour, it is recommended to use some other flags to also include history of file before it was renamed. We assume you **always** rename or move your repository files using `git mv` (otherwise, the following command will **not** show the actual history). You can run:  
  `git log --since="1 hour ago" --name-status --follow -- <path to file>`  
 If you do not specify last two flags, the result will end on the commit in which the file was renamed/moved.
 

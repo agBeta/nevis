@@ -17,9 +17,10 @@ We used to spin up test server (via node or nodemon) separately and run `npm tes
 
 Bill Souror accesses db in integration/e2e test. See https://github.com/dev-mastery/comments-api/blob/master/__test__/e2e.spec.js#L34.
 
-## Fixtures
+We used to have DbFx (db queries as fixtures), but it turned out to be premature abstraction. Most of the time each test suite needs its own ad-hoc queries. Moreover...
+We decided to use some of data-access exported functions in our tests. If anything fails because of some bug  inside data-access implementation, it is actually to our advantage (happened in 4b6348f). Bill Souror also does this.
 
-Fixtures for unit tests is different from fixtures for integration and e2e test.
+</br>
 
 ## (Deprecated but informative) Why not use pretest?
 
@@ -78,3 +79,10 @@ See https://stackoverflow.com/a/71851612. if the setup is asynchronous, you can'
 ## mocks and hoisting
 
 We must be careful about mocks and imports. Unlike jest, in which it will take of mocks. See https://www.coolcomputerclub.com/posts/jest-hoist-await/. Also According to [jest docs](https://jestjs.io/docs/manual-mocks#using-with-es-module-imports): ... But often you need to instruct Jest to use a mock before modules use it. For this reason, Jest will automatically hoist jest.mock calls to the top of the module (before any imports) ...
+
+
+## Mock import, default export
+https://stackoverflow.com/questions/77348607/mock-default-export-function-with-inbuilt-node-test-runner.
+Also See commit 48ea129 and its diff. The problem happened when we try to mock sendEmail. But we cannot import it from ./controllers/index.js, because then the module will be imported and all controllers code will be initialized (especially auth_code_POST) before we get the chance to mock sendEmail. So even if we mock sendEmail, authRouter will be using the not-mocked version of sendEmail.
+https://github.com/nodejs/help/issues/4298. -> how to mock standalone imported functions.
+https://github.com/nodejs/node/issues/42242

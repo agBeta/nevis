@@ -20,6 +20,8 @@
         "nocheck",
         "paralleldrive",
         "signup",
+        "subtest",
+        "subtests",
         "TINYINT",
         "uncategorized",
         "worktree",
