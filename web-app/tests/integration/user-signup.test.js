@@ -154,7 +154,7 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
 
             it("creates the user in db, and returns user id", async () => {
                 const raw = await agent.postRequest("/api/v1/auth/signup", validBody);
-            
+
                 assert.strictEqual(raw.status, 201);
                 assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");
 
@@ -173,16 +173,22 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
                 // user's signupAt should be around now.
                 assert.strictEqual(Math.abs(records[0].signupAt - Date.now()) < 2000, true);
 
+                // @ts-ignore
                 const isPasswordSavedCorrectly = await bcrypt.compare(validBody.password, records[0].hashedPassword);
                 assert.strictEqual(isPasswordSavedCorrectly, true);
             });
-            it.todo("sets session cookie");
         });
     });
 
-    // it.todo("returns 400 and does not create code if no email is supplied");
-    // it.todo("returns 409 if given email already exists");
-    // it.todo("returns 400 when password and repeatPassword don't match");
+    it("returns 400 and doesn't create code if email isn't supplied", async () => {
+        const raw = await agent.postRequest("/api/v1/auth/code", { purpose: "signup" });
+        assert.strictEqual(raw.status, 400);
+        const response = await raw.json();
+        assert.strictEqual(response.success, false);
+        assert.strictEqual(response.error == null, false);
+        assert.strictEqual(typeof response.error == "string", true);
+        assert.strictEqual(response.error.includes("email") && response.error.includes("required"), true);
+    });
 
     after(async () => {
         //  Below, ending dbConnectionPool is closely associated with the fact that each test runs on its own
