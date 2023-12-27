@@ -9,7 +9,8 @@
     "dev": "nodemon src/main.js",
     "lint": "eslint .",
     "test:unit": "NODE_ENV=test node --test src/**/*.test.js",
-    "tda": "NODE_ENV=test node --test src/data-access/tests/blog-crud.test.js",
+    "tda": "NODE_ENV=test node --test src/data-access/tests/*.test.js",
+    "tint": "NODE_ENV=test PORT=9079 node --test-reporter=spec --test tests/integration/user-login.test.js",
     "test:integration": "NODE_ENV=test PORT=9079 node --test-reporter=spec --test tests/integration",
     "test": "npm run test:integration"
   },
