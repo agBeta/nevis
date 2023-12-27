@@ -23,7 +23,6 @@ const find_user_records_by_email = make_find_user_records_by_email({ dbConnectio
 test("User CRUD", { concurrency: false }, async (t) => {
     let db;
 
-
     await t.before(async () => {
         db = await dbConnectionPool;
         await db.execute("DELETE FROM user_tbl;");

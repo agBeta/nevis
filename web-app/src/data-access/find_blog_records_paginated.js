@@ -11,6 +11,9 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
     async function find_blog_records_paginated({ cursor, direction, limit }) {
         const db = await dbConnectionPool;
 
+        //  We don't use cache at the moment. But if you decided to use cache, remember, cache result of query
+        //  only when direction=older.
+
         if (cursor === "newest") {
             if (direction !== "newer") {
                 throw new AppError(
