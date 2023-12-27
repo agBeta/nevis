@@ -108,9 +108,20 @@ test("User CRUD", { concurrency: false }, async (t) => {
         assert.strictEqual(records.length, 0);
     });
 
-    // await t.test("should insert user with emoji displayName and retrieve it correctly", async()=>{
-
-    // });
+    await t.test("should insert user with emoji displayName and retrieve it correctly", async()=>{
+        const user3 = Object.freeze({
+            id: "c".repeat(24),
+            email: "c_user3@gmail.com",
+            hashedPassword: "h3".repeat(30),
+            displayName: "user🎂",
+            birthYear: 1384,
+            signupAt: (new Date("2022-11-12T20:30:00-01:00")).getTime(),
+        });
+        await insert_user(user3); // if this fails here, it is actually to our benefit.
+        const records = await find_user_records_by_email({ email: user3.email });
+        assert.strictEqual(records[0].displayName.includes("🎂"), true);
+        assert.strictEqual(records[0].displayName, user3.displayName);
+    });
 
 
     await t.test("should let us insert another user with case-sensitive email", async () => {
