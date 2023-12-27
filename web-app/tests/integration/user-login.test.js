@@ -37,11 +37,40 @@ const find_session_record_by_hashedSessionId = make_find_session_record_by_hashe
 describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     let /** @type {WebAppServer} */ server;
     let db;
+    //  These are skeleton of two users that will be insert to db in [before] hook and are used in
+    //  test cases. Only relevant information (id, email, password) is provided. We will assign some
+    //  default value for other fields (birthYear, etc).
+    let user1 = {
+        id: "a".repeat(24),
+        email: "user1_1@gmail.com",
+        password: "pass1",
+    };
+    let user2 = {
+        id: "b".repeat(24),
+        email: "user2_2@gmail.com",
+        password: "pass2",
+    };
 
     before(async () => {
         db = await dbConnectionPool;
         await db.execute("DELETE FROM session_tbl;");
         await db.execute("DELETE FROM user_tbl;");
+
+        // NOTE, you must the same hash function that is used inside auth-signup controller.
+        const hc1 = await bcrypt.hash(user1.password, 9);
+        const hc2 = await bcrypt.hash(user2.password, 9);
+
+        // We don't use prepared statement. Raw sql is more transparent.
+        await db.execute(`
+            INSERT INTO
+                user_tbl
+                (id , email , hashed_password , display_name , birth_year , signup_at )
+            VALUES
+                  ( '${user1.id}' , '${user1.email}' , '${hc1}' , 'user1' , 1391 , '2020-12-31 01:02:03' )
+                , ( '${user2.id}' , '${user2.email}' , '${hc2}' , 'user2' , 1392 , '2020-12-20 01:02:03' )
+            ;
+        `);
+
         const app = makeExpressApp();
         installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
         server = http.createServer(app);
@@ -54,6 +83,21 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         assert.notStrictEqual(1, 2);
     });
 
+    it("returns 200 along with userId when given email,password are correct", async() => {
+        const raw = await agent.postRequest("/api/v1/auth/login", {
+            email: user1.email,
+            password: user1.password,
+            rememberMe: false,
+        });
+
+        assert.strictEqual(raw.status, 200);
+        // Cache-Control: no-store is important for security. So we must check it.
+        assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");
+
+        const response = await raw.json();
+        assert.strictEqual(response.success, true);
+        assert.strictEqual(response.userId, user1.id);
+    });
 
     after(async () => {
         await dbConnectionPool.end();
