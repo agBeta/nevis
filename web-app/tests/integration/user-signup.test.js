@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
 import make_find_code_records_by_email from "../../src/data-access/find_code_records_by_email.js";
+import make_find_user_records_by_email from "../../src/data-access/find_user_records_by_email.js";
+import make_insert_code from "../../src/data-access/insert_code.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "..", "configs", "user-signup.env"),
@@ -49,7 +51,8 @@ const agent = makeHttpClient({ port: PORT });
 
 const dbConnectionPool = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) });
 const find_code_records_by_email = make_find_code_records_by_email({ dbConnectionPool });
-
+const find_user_records_by_email = make_find_user_records_by_email({ dbConnectionPool });
+const insert_code = make_insert_code({ dbConnectionPool });
 
 
 
@@ -119,28 +122,67 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
         });
 
 
-        // describe("Given supplied code, email and user profile details are valid", async () => {
-        //     //  For these subtests, the assumption (Given ...) must be satisfied. We shall manually
-        //     //  insert code and email into db.
+        describe("Given supplied code, email and user profile details are valid", async () => {
+            //  For these subtests, the assumption (Given ...) must be satisfied. We shall manually
+            //  insert code and email into db.
 
-        //     const correctCode = "4srw5x";
-        //     const correctEmail = "test@gmail.com";
+            const correctCode = "4srw5x";
+            const correctEmail = "correct_supplied@gmail.com";
 
-        //     before(async () => {
-        //         const hashed_code_to_save_in_db = await bcrypt.hash(correctCode, 9);
-        //         await DbFx.();
-        //     });
+            const validBody = Object.freeze({
+                email: correctEmail,
+                code: correctCode,
+                displayName: "cake 🎂",
+                birthYear: 1370,
+                password: "some_pass",
+                repeatPassword: "some_pass",
+            });
 
-        //     it.todo("creates the user in db", async () => {
+            before(async () => {
+                db = await dbConnectionPool;
+                await db.execute(`DELETE FROM user_tbl WHERE email = '${correctEmail}' ;`);
+                await db.execute(`DELETE FROM code_tbl WHERE email = '${correctEmail}' ;`);
 
-        //     });
-        //     it.todo("sets session cookie");
-        //     it.todo("returns user id");
-        // });
+                const hc = await bcrypt.hash(correctCode, 9);
+                await insert_code({
+                    email: correctEmail,
+                    hashedCode: hc,
+                    purpose: "signup",
+                    expiresAt: Date.now() + 5 * 60 * 1000,
+                });
+            });
+
+            it("creates the user in db, and returns user id", async () => {
+                const raw = await agent.postRequest("/api/v1/auth/signup", validBody);
+            
+                assert.strictEqual(raw.status, 201);
+                assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");
+
+                const response = await raw.json();
+                assert.strictEqual(response.success, true);
+
+                assert.strictEqual(response.id == null, false);
+                assert.strictEqual(typeof response.id == "string", true);
+                assert.strictEqual(response.id.length === 24, true);
+
+                // Now let's check if user is saved (correctly) in db
+                const records = await find_user_records_by_email({ email: correctEmail }, /*omitPassword=*/false);
+                assert.strictEqual(records.length, 1);
+                assert.strictEqual(records[0].id, response.id);
+                assert.strictEqual(records[0].displayName, validBody.displayName);
+                // user's signupAt should be around now.
+                assert.strictEqual(Math.abs(records[0].signupAt - Date.now()) < 2000, true);
+
+                const isPasswordSavedCorrectly = await bcrypt.compare(validBody.password, records[0].hashedPassword);
+                assert.strictEqual(isPasswordSavedCorrectly, true);
+            });
+            it.todo("sets session cookie");
+        });
     });
 
     // it.todo("returns 400 and does not create code if no email is supplied");
     // it.todo("returns 409 if given email already exists");
+    // it.todo("returns 400 when password and repeatPassword don't match");
 
     after(async () => {
         //  Below, ending dbConnectionPool is closely associated with the fact that each test runs on its own
