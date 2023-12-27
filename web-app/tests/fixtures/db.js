@@ -3,7 +3,7 @@
 
 /**
  * @param {MySQLConnectionPool} dbConnectionPool
- * @param {"codes" | "auth_sessions" | "users" | "posts" | "all"} [table="all"]
+ * @param {"code" | "session" | "user" | "blog" | "all"} [table="all"]
  */
 export async function doClear(dbConnectionPool, table = "all") {
     const db = await dbConnectionPool;
@@ -12,25 +12,25 @@ export async function doClear(dbConnectionPool, table = "all") {
         case "all":
             //  Although deleting users will be enough, since every other table has a foreign key to users_tbl. But who
             //  tests the test? Let's keep it simple and do all.
-            await db.execute("DELETE from auth_sessions_tbl;", []);
-            await db.execute("DELETE from codes_tbl;", []);
-            await db.execute("DELETE from posts_tbl;", []);
-            await db.execute("DELETE from users_tbl;", []);
-            await db.execute("ALTER TABLE posts_tbl AUTO_INCREMENT = 1;");
+            await db.execute("DELETE from session_tbl;", []);
+            await db.execute("DELETE from code_tbl;", []);
+            await db.execute("DELETE from blog_tbl;", []);
+            await db.execute("DELETE from user_tbl;", []);
+            await db.execute("ALTER TABLE blog_tbl AUTO_INCREMENT = 1;");
             break;
 
-        case "codes":
-            await db.execute("DELETE from codes_tbl;", []);
+        case "code":
+            await db.execute("DELETE from code_tbl;", []);
             break;
-        case "users":
-            await db.execute("DELETE from users_tbl;", []);
+        case "user":
+            await db.execute("DELETE from user_tbl;", []);
             break;
-        case "posts":
-            await db.execute("DELETE from posts_tbl;", []);
-            await db.execute("ALTER TABLE posts_tbl AUTO_INCREMENT = 1;");
+        case "blog":
+            await db.execute("DELETE from blog_tbl;", []);
+            await db.execute("ALTER TABLE blog_tbl AUTO_INCREMENT = 1;");
             break;
-        case "auth_sessions":
-            await db.execute("DELETE from auth_sessions_tbl;", []);
+        case "session":
+            await db.execute("DELETE from session_tbl;", []);
             break;
     }
 }
@@ -59,10 +59,13 @@ export async function doFindAllInCodesDb(dbConnectionPool, email) {
     const [rows,] = await db.execute(`
             SELECT
                 hashed_code AS hashedCode
-              , email , purpose
+              , email
+              , purpose
               , UNIX_TIMESTAMP(expires_at) * 1000 AS expiresAt
-            FROM codes_tbl
-            WHERE email LIKE ?
+            FROM
+                code_tbl
+            WHERE
+                email = ?
             ;
         `,
     [email]);
