@@ -24,7 +24,7 @@ const find_session_record_by_hashedSessionId = make_find_session_record_by_hashe
     cacheClient
 });
 
-test("find session record by hashedSessionId", { concurrency: false }, async (t) => {
+test("Session CRUD", { concurrency: false }, async (t) => {
     let db;
     const user1 = { id: "a".repeat(24 /*since id column is CHAR(24)*/) };
     const user2 = { id: "b".repeat(24) };
@@ -126,11 +126,9 @@ test("find session record by hashedSessionId", { concurrency: false }, async (t)
 
 
     await t.after(async () => {
-        // console.log("&".repeat(50));
         // It might be necessary to: await db.end();
         await dbConnectionPool.end();
         await cacheClient.QUIT();
-        // console.log("Hi");
     });
 });
 
