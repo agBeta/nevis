@@ -1,10 +1,4 @@
-/**
- * Runtime check.
- * Though TS helps us catch such type-related bugs but some consumer might bypass type checks by ts-ignore.
- * Checks also timestamp is in milliseconds.
- * @param {unknown} thing
- * @returns {boolean}
- */
+/** @param {unknown} thing @returns {boolean} */
 export function isTimestampAndIsInMilliseconds(thing) {
     if (typeof thing !== "number") {
         return false;

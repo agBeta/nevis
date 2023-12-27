@@ -65,6 +65,10 @@ test("User CRUD", { concurrency: false }, async (t) => {
     });
 
     await t.test("should should throw error when signupAt is native Date (i.e. isn't timestamp number)", async () => {
+        //  Why this test? Not sure if having such tests is production quality, but ...
+        //  let it be.
+        //  It checks if we have a runtime check for signupAt. Though TS helps us catch such type-related bugs but
+        //  some consumer might bypass type checks (using ts-ignore).
         assert.rejects(async function call_insert_user_with_native_date_parameter() {
             // @ts-ignore
             await insert_user(user2);
