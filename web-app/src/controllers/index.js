@@ -82,6 +82,8 @@ const sanitizeText = function(/**@type {string}*/ text) {
 
 // 2️⃣️ Now we create controllers by injecting necessary dependencies for each one.
 
+await sendEmail({ email: "Hi" });
+
 // 🔒
 const auth_code_POST = make_auth_code_POST_controller({
     insert_code,
