@@ -47,6 +47,7 @@ If you want to see git logs for a file in the last hour, it is recommended to us
  `git log --since="1 hour ago" --name-status --follow -- <path to file>`  
 If you do not specify last two flags, the result will end on the commit in which the file was renamed/moved.
 
+If you want to see git logs containing a specific word: `git log --grep="entities"`. This is better than piping git log into `grep`. The latter doesn't show commit hash and other information.
 </br>
 
 Chances are that you have renamed a file in some commit, but you do not remember its current name. You can use `--diff-filter` flag so that the result selectively includes (or exludes) files that have been renamed or deleted. For rename you can run: `git log --diff-filter=R`.

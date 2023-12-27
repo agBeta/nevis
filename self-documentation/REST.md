@@ -281,6 +281,10 @@ These are **not** quite related to this project. But they open you eyes.
 This comment by Kasey Speakman is great: https://dev.to/rhymes/what-would-you-use-as-a-sortable-globally-unique-id-5akb#comment-f6em.
 
 Good SO answer: https://stackoverflow.com/a/47155318.
+Regarding the answer below, it is better to enforce timestamp also in client-side. In other words clients should only send timestamp in their requests and receive timestamp in response. Otherwise many problems may occur. Imagine a request is sent and some fields are Date. The request is received in server and in the meantime the client experiences daylight saving. The response gets back to client. Especially imagine response is an error and client retries the request. Server **shouldn't** try to do the conversion from Date to timestamp. Because now server's perception of client timezone (which is based on running js runtime that is running on the server and has not arrived the next day (unlike client that has just arrived his next day and has just experienced daylight saving)) is considered different. You can imagine similar scenarios.
+
+But in any case, server should store as TIMESTAMP data-type in db, so that it can exploit date-time function provided by RDBMS.
+
 
 Sharding & IDs at Instagram: https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c.
 
