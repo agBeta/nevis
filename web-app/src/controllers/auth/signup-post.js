@@ -12,7 +12,7 @@ import { InvalidError } from "#utils/errors.js";
  *      the hashed code in database.
  * @param {Find_Code_Records_By_Email} param0.find_code_records_by_email
  * @param {*} param0.remove_code_records_by_email
- * @param {*} param0.insert_user
+ * @param {Insert_User} param0.insert_user
  * @param {*} param0.createSecureHash
  * @param {*} param0.generateCollisionResistentId
  * @returns {Controller}
@@ -128,6 +128,7 @@ export function makeEndpointController({
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
  * @typedef {import("#types").Find_Code_Records_By_Email} Find_Code_Records_By_Email
+ * @typedef {import("#types").Insert_User} Insert_User
  */
 
 

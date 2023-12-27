@@ -2,6 +2,7 @@ import { InvalidError, OperationalError } from "#utils/errors.js";
 
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool}} props
+ * @returns {Insert_User}
  */
 export default function make_insert_user({ dbConnectionPool }) {
 
@@ -22,6 +23,7 @@ export default function make_insert_user({ dbConnectionPool }) {
     return insert_user;
 
 
+    /**@type {Insert_User}*/
     async function insert_user({ id, email, hashedPassword, displayName, birthYear, signupAt }) {
         try {
             const db = await dbConnectionPool;
@@ -45,4 +47,5 @@ export default function make_insert_user({ dbConnectionPool }) {
 
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
+ * @typedef {import("#types").Insert_User} Insert_User
  */

@@ -157,6 +157,11 @@ export type Insert_Session = ({ hashedSessionId, userId, expiresAt }:
     { hashedSessionId: string, userId: string, expiresAt: number }
     ) => Promise<void>;
 
+export type Insert_User = ({ id, email, hashedPassword, displayName, birthYear, signupAt }:
+    { id: string, email: string, hashedPassword: string, displayName: string, birthYear: number, 
+        signupAt: number }
+    ) => Promise<void>;
+
 // ---------------------
 export type EmailDetail = { email: string , subject: string , body : string };
 export type SendEmail = (emailDetail: EmailDetail) => Promise<void>;
