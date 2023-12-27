@@ -44,6 +44,8 @@ export function makeEndpointController({
         const /**@type {boolean}*/ rememberMe = httpRequest.body.rememberMe;
 
         const records = await find_user_records_by_email({ email }, /*omitPassword=*/false);
+        //  By design, records will have at most one element. But why an array is returned? Because we might change
+        //  implementation of find_user_.. in future, to check for substring matching in email.
         if (!records) {
             return makeHttpError({
                 statusCode: 401,
@@ -51,10 +53,19 @@ export function makeEndpointController({
             });
         }
 
-        const user = records.find(async function checkIfPasswordMatches(el) {
-            if (!el.hashedPassword) /*should never happen but to suppress ts*/ throw new Error("🔥 impossible!");
-            return await compareHash(password, el.hashedPassword);
-        });
+        //  Don't use records.find(...), since find() doesn't expect a promise.
+        let user = null;
+        for (let el of records) {
+            if (!el.hashedPassword) {
+                /*should never happen but to suppress ts error further in compareHash*/
+                throw new Error("🔥 Impossible! You're doing something terribly wrong.");
+            }
+            const isMatching = await compareHash(password, el.hashedPassword);
+            if (isMatching) {
+                user = el;
+                break;
+            }
+        }
         if (!user) {
             return makeHttpError({
                 statusCode: 401,
