@@ -1,4 +1,7 @@
-/** @param {{ dbConnectionPool: MySQLConnectionPool }} props */
+/**
+ * @param {{ dbConnectionPool: MySQLConnectionPool }} props
+ * @return {Find_Blog_Record_By_BlogId}
+ */
 export default function make_find_blog_record_by_blogId ({ dbConnectionPool }) {
 
     const sqlCmd = `
@@ -9,8 +12,8 @@ export default function make_find_blog_record_by_blogId ({ dbConnectionPool }) {
             , blog_body  AS blogBody
             , blog_topic AS blogTopic
             , image_url  AS imageUrl
-            , created_at AS createdAt
-            , modified_at AS modifiedAs
+            , UNIX_TIMESTAMP(created_at) * 1000 AS createdAt
+            , UNIX_TIMESTAMP(modified_at) * 1000 AS modifiedAt
         FROM
             blog_tbl
         WHERE
@@ -21,10 +24,7 @@ export default function make_find_blog_record_by_blogId ({ dbConnectionPool }) {
 
     return find_blog_record_by_blogId;
 
-    /**
-     * @param {{ blogId: string }} param0
-     * @returns {Promise<BlogRFD|null>}
-     */
+    /** @type {Find_Blog_Record_By_BlogId} */
     async function find_blog_record_by_blogId({ blogId }) {
         const db = await dbConnectionPool;
         const [rows, ] = await db.execute(sqlCmd, [blogId]);
@@ -37,5 +37,5 @@ export default function make_find_blog_record_by_blogId ({ dbConnectionPool }) {
 
 /**
  * @typedef {import("#types").MySQLConnectionPool} MySQLConnectionPool
- * @typedef {import("#types").BlogRFD} BlogRFD
+ * @typedef {import("#types").Find_Blog_Record_By_BlogId} Find_Blog_Record_By_BlogId
  */
