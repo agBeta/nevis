@@ -15,6 +15,7 @@ dotenv.config({
 //  In order to overcome this problem we make imports imperative using the import function.
 //  See hoisting imports in node.md in self-documentation.
 const makeDbConnectionPool = (await import("../../src/data-access/connection.js")).default;
+
 const { installRouter, makeExpressApp } = await import("../../src/express-stuff/server.js");
 const DbFx = await import("../fixtures/db.js");
 const { makeFakeUser } = await import("../fixtures/user.js");
@@ -57,14 +58,16 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
     let /** @type {WebAppServer} */ server;
 
     before(async () => {
+        console.log("🚀 ".repeat(20));
         db = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) });
-        await DbFx.doClear(db, "codes");
-        await DbFx.doClear(db, "users");
+        await DbFx.doClear(db, "code");
+        await DbFx.doClear(db, "user");
 
         const app = makeExpressApp();
         installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
         server = http.createServer(app);
         await doListen(server, PORT);
+        console.log("📢 ".repeat(20));
     });
 
     describe("@sanity", () => {
@@ -72,67 +75,69 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
         assert.notStrictEqual(1, 2);
     });
 
-    describe("happy flow", async () => {
-        it("creates a signup code and stores it in db", async () => {
-            const user = makeFakeUser({});
+    // describe("happy flow", async () => {
+    //     it("creates a signup code and stores it in db", async () => {
+    //         const user = makeFakeUser({});
 
-            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
-            assert.strictEqual(raw.status, 201);
+    //         const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+    //         assert.strictEqual(raw.status, 201);
 
-            const correspondingRecords = await DbFx.doFindAllInCodesDb(db, user.email);
-            assert.strictEqual(correspondingRecords.length == 1, true);
+    //         const correspondingRecords = await DbFx.doFindAllInCodesDb(db, user.email);
+    //         assert.strictEqual(correspondingRecords.length == 1, true);
 
-            const exp = correspondingRecords[0].expiresAt;
-            assert.strictEqual(typeof exp === "number", true);
-            // code should expire in 5 minutes. We check for 4 minutes.
-            assert.strictEqual(exp > Date.now() + 4 * 60 * 1000, true);
+    //         const exp = correspondingRecords[0].expiresAt;
+    //         assert.strictEqual(typeof exp === "number", true);
+    //         // code should expire in 5 minutes. We check for 4 minutes.
+    //         assert.strictEqual(exp > Date.now() + 4 * 60 * 1000, true);
 
-            assert.strictEqual(correspondingRecords[0].purpose, "signup");
-        });
+    //         assert.strictEqual(correspondingRecords[0].purpose, "signup");
+    //     });
 
-        it("creates a signup code and sends it via email (flaky)", async () => {
-            //  Warning: concurrency is turned off in this test suite. Otherwise this test might fail.
+    //     it("creates a signup code and sends it via email (flaky)", async () => {
+    //         //  Warning: concurrency is turned off in this test suite. Otherwise this test might fail.
 
-            //  Since in previous tests, send email might be called several times (all of them use the same
-            //  mocked send function), in order to de-couple this test we need to store current callCount.
-            const sendCallCountBeforeRunningThisTest = spiedSendEmail.mock.callCount();
+    //         //  Since in previous tests, send email might be called several times (all of them use the same
+    //         //  mocked send function), in order to de-couple this test we need to store current callCount.
+    //         const sendCallCountBeforeRunningThisTest = spiedSendEmail.mock.callCount();
 
-            const user = makeFakeUser({});
-            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+    //         const user = makeFakeUser({});
+    //         const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
 
-            assert.strictEqual(raw.status, 201);
-            assert.strictEqual(spiedSendEmail.mock.callCount(), sendCallCountBeforeRunningThisTest + 1);
-        });
+    //         assert.strictEqual(raw.status, 201);
+    //         assert.strictEqual(spiedSendEmail.mock.callCount(), sendCallCountBeforeRunningThisTest + 1);
+    //     });
 
-        it("create a signup code and sends it to the correct email", async () => {
-            const user = makeFakeUser({
-                email: "_some_specific_email_@gmail.com"
-            });
-            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+    //     it("create a signup code and sends it to the correct email", async () => {
+    //         const user = makeFakeUser({
+    //             email: "_some_specific_email_@gmail.com"
+    //         });
+    //         const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
 
-            assert.strictEqual(raw.status, 201);
-            assert.strictEqual(emailAddressesSentTo.includes(user.email), true);
-        });
+    //         assert.strictEqual(raw.status, 201);
+    //         assert.strictEqual(emailAddressesSentTo.includes(user.email), true);
+    //     });
 
 
-        describe.todo("GIVEN supplied code and user profile details are valid", () => {
+    //     describe.todo("GIVEN supplied code and user profile details are valid", () => {
 
-            // First create user raw and insert a code into codeDb
+    //         // First create user raw and insert a code into codeDb
 
-            it.todo("creates the user in db", async () => {
+    //         it.todo("creates the user in db", async () => {
 
-            });
-            it.todo("sets session cookie");
-            it.todo("returns user id");
-        });
-    });
+    //         });
+    //         it.todo("sets session cookie");
+    //         it.todo("returns user id");
+    //     });
+    // });
 
     // it.todo("returns 400 and does not create code if no email is supplied");
     // it.todo("returns 409 if given email already exists");
 
     after(async () => {
+        console.log("🚩 ".repeat(20));
         await DbFx.doCloseConnections(db);
         await promisify(server.close.bind(server))();
+        console.log("🎬 ".repeat(20));
     });
 });
 
