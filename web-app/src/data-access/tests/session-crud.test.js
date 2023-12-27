@@ -127,6 +127,7 @@ test("Session CRUD", { concurrency: false }, async (t) => {
 
     await t.after(async () => {
         // It might be necessary to: await db.end();
+        // Based on https://github.com/mysqljs/mysql/blob/master/Readme.md#terminating-connections.
         await dbConnectionPool.end();
         await cacheClient.QUIT();
     });
