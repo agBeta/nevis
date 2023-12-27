@@ -1,5 +1,5 @@
 import path from "node:path";
-import test from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import dotenv from "dotenv";
 
@@ -20,7 +20,7 @@ const insert_blog = make_insert_blog({ dbConnectionPool });
 const find_blog_record_by_blogId = make_find_blog_record_by_blogId({ dbConnectionPool });
 const find_blog_records_paginated = make_find_blog_records_paginated({ dbConnectionPool });
 
-test("Blog CRUD", { concurrency: false }, async (t) => {
+describe("Blog CRUD", { concurrency: false }, async (t) => {
     let db;
     const users = Object.freeze([
         { id: "a".repeat(24), email: "a_user0@gmail.com" },
@@ -28,7 +28,7 @@ test("Blog CRUD", { concurrency: false }, async (t) => {
         { id: "c".repeat(24), email: "c_user2@gmail.com" },
     ]);
 
-    await t.before(async () => {
+    before(async () => {
         db = await dbConnectionPool;
         await db.execute("DELETE FROM blog_tbl;");
         await db.execute("DELETE FROM user_tbl;");
@@ -49,11 +49,11 @@ test("Blog CRUD", { concurrency: false }, async (t) => {
         await db.execute(rawSqlCmd);
     });
 
-    await /*crucial*/ t.test("@sanity", () => {
+    it("@sanity", () => {
         assert.strictEqual(3, 3);
     });
 
-    await t.test("inserts a blog and finds it by id", async () => {
+    it("inserts a blog and finds it by id", async () => {
         //  It is ok to test both query functions in same test case. If any of the fails the test will fail which is
         //  actually to our benefit.
         const blog1 = {
@@ -76,7 +76,9 @@ test("Blog CRUD", { concurrency: false }, async (t) => {
         assert.strictEqual(record.modifiedAt, blog1.modifiedAt);
     });
 
-    await t.after(async () => {
+    describe.todo("Blog Pagination");
+
+    after(async () => {
         await dbConnectionPool.end();
     });
 });
