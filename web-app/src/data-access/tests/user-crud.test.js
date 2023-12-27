@@ -64,12 +64,15 @@ test("User CRUD", { concurrency: false }, async (t) => {
         assert.strictEqual(signup_at.getTime() - user1.signupAt.getTime(), 0);
     });
 
-    // await t.test("should work correctly when signupAt is native Date (i.e. isn't timestamp number)", async () => {
-    //     assert.throws(async() => { await insert_user(user2); }, {
-    //         name: /App/i,
-    //         message: /timestamp/i,
-    //     });
-    // });
+    await t.test("should should throw error when signupAt is native Date (i.e. isn't timestamp number)", async () => {
+        assert.rejects(async function call_insert_user_with_native_date_parameter() {
+            // @ts-ignore
+            await insert_user(user2);
+        }, {
+            message: /signupAt/i,
+            name: /invalid/i,
+        });
+    });
 
     t.todo("should let us insert another user with case-sensitive email");
 
