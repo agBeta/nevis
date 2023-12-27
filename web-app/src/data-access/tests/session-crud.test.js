@@ -118,7 +118,7 @@ test("Session CRUD", { concurrency: false }, async (t) => {
         assert.strictEqual(again?.hashedSessionId, session.hashedSessionId);
         assert.strictEqual(again?.userId, session.userId);
 
-        //  🕰️ Don't use exact equality check for timestamp, i.e. Don't check again.expiresAt==session.expiresAt.
+        //  🔷 Don't use exact equality check for timestamp, i.e. Don't check again.expiresAt==session.expiresAt.
         //  Since MySQL by default stores timestamp only with precision 1 (i.e. in seconds), so session.expiresAt
         //  might get rounded up/down when inserted into MySQL database. So...
         assert.strictEqual(Math.abs(again?.expiresAt - session.expiresAt) <= 1000, true);
