@@ -6,7 +6,7 @@ export default function make_find_code_records_by_email({ dbConnectionPool }) {
 
     const sqlCmd = `
         SELECT
-              hashedCode
+              hashed_code AS hashedCode
             , email
             , purpose
             , UNIX_TIMESTAMP(expires_at) * 1000 as expiresAt
