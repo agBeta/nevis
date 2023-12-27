@@ -5,6 +5,9 @@ let /**@type {RedisClient}*/ redisClient;
 
 /** @returns {Promise<RedisClient>} */
 export default async function makeRedisClient() {
+    if (process.env.DISABLE_CACHE) {
+        throw new Error("Cache is disabled.");
+    }
     if (redisClient) {
         return redisClient;
     }
