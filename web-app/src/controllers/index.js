@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { init } from "@paralleldrive/cuid2";
 import sanitizeHtml from "sanitize-html";
 
-import makeSendEmail from "../send-email/send-email.js";
+import makeEmailService from "../email-service/email-service.js";
 import {
     count_actions_by_userId,
     find_action_record_by_actionId,
@@ -34,7 +34,7 @@ import { makeEndpointController as make_blog_paginated_GET } from "./blog/pagina
 
 // 1️⃣️ Create functions on which our controllers rely, so that we can inject them.
 
-export const sendEmail = makeSendEmail({
+export const emailService = makeEmailService({
     mailServiceHost: process.env.MAIL_HOST,
     mailServicePort: process.env.MAIL_PORT,
     mailServiceUser: process.env.MAIL_SMTP_USERNAME,
@@ -82,7 +82,7 @@ const sanitizeText = function(/**@type {string}*/ text) {
 
 // 2️⃣️ Now we create controllers by injecting necessary dependencies for each one.
 
-await sendEmail({ email: "Hi" });
+await emailService.sendEmail({ email: "Hi@example.com", subject: "Mockery", body: "Hi" });
 
 // 🔒
 const auth_code_POST = make_auth_code_POST_controller({
@@ -92,7 +92,7 @@ const auth_code_POST = make_auth_code_POST_controller({
         return crypto.randomBytes(3).toString("hex");
     },
     createSecureHash/*to hash code*/,
-    sendEmail,
+    emailService,
 });
 
 const auth_signup_POST = make_auth_signup_POST_controller({

@@ -170,5 +170,7 @@ export type Insert_User = ({ id, email, hashedPassword, displayName, birthYear, 
     ) => Promise<void>;
 
 // ---------------------
-export type EmailDetail = { email: string , subject: string , body : string };
-export type SendEmail = (emailDetail: EmailDetail) => Promise<void>;
+
+export type EmailService = {
+    sendEmail: ({ email, subject, body }:{ email: string , subject: string , body: string }) => Promise<void>,
+};

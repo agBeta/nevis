@@ -7,7 +7,7 @@ import makeBasicValidateNormalize from "../validate-normalize.js";
  * @param {{
  *      insert_code: Insert_Code,
  *      generateCode: () => string,
- *      sendEmail: SendEmail,
+ *      emailService: EmailService,
  *      createSecureHash: (plain: string) => Promise<string>
  * }} param0
  * @returns {Controller}
@@ -15,7 +15,7 @@ import makeBasicValidateNormalize from "../validate-normalize.js";
 export function makeEndpointController({
     insert_code,
     generateCode,
-    sendEmail,
+    emailService,
     createSecureHash,
 }) {
 
@@ -50,7 +50,7 @@ export function makeEndpointController({
         const body = "کد تایید شما برابر".concat(" <strong>" + code + "</strong> ").concat("می‌باشد" + ".")
             .concat(" ").concat("این کد برای مدت").concat(" " + "10" + " ").concat("دقیقه معتبر می‌باشد" + ".");
 
-        await sendEmail({ email, subject, body });
+        await emailService.sendEmail({ email, subject, body });
 
         return {
             headers: {
@@ -67,7 +67,7 @@ export function makeEndpointController({
  * @typedef {import("#types").HttpRequest} HttpRequest
  * @typedef {import("#types").HttpResponse} HttpResponse
  * @typedef {import("#types").Controller} Controller
- * @typedef {import("#types").SendEmail} SendEmail
+ * @typedef {import("#types").EmailService} EmailService
  * @typedef {import("#types").Insert_Code} Insert_Code
  */
 

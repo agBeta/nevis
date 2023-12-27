@@ -4,9 +4,9 @@ import log from "#utils/log.js";
 
 /**
  * @param {{ [key: string]: string|undefined }} param0
- * @returns {import("#types").SendEmail}
+ * @returns {EmailService}
  */
-export default function makeSendEmail({
+export default function makeEmailService({
     mailServiceHost,
     mailServicePort,
     mailServiceUser,
@@ -26,24 +26,29 @@ export default function makeSendEmail({
             }
         }));
 
+    //  Why not just `return sendEmail;` ?
+    //  Because then it would be almost impossible to mock email sending in our integration tests.
+    //  See test.md from self-documentation.
+    //  In addition, returning this way it will be easier to extend email service to contain other functionalities,
+    //  like using a ring buffer to prevent from being rate limited by mail host, etc.
 
-    return sendEmail;
+    //  NOTE: Don't freeze, so that properties can be mocked.
+    return {
+        sendEmail
+    };
 
-    /** @type {import("#types").SendEmail} */
+
+    /** @param {{ email: string, subject: string, body: string}} param0 */
     async function sendEmail({ email, subject, body }) {
-
         log({
             level: "info",
-            keyword: "send-email",
-            message: `to ${email} with subject: ${subject}`
+            keyword: "send_email",
+            message: `To: ${email} with subject: ${subject}`
         });
-
         if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
             // Do nothing.
         }
         else {
-            /** @todo TODO add logic to prevent being rate limited */
-
             try {
                 // @ts-ignore
                 await transporter.sendMail({
@@ -68,4 +73,5 @@ export default function makeSendEmail({
 
 /**
  * @typedef {import("nodemailer").TransportOptions} TransportOptions
+ * @typedef {import("#types").EmailService} EmailService
  */

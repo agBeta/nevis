@@ -15,51 +15,36 @@ dotenv.config({
 //  In order to overcome this problem we make imports imperative using the import function.
 //  See hoisting imports in node.md in self-documentation.
 const makeDbConnectionPool = (await import("../../src/data-access/connection.js")).default;
-
 const { installRouter, makeExpressApp } = await import("../../src/express-stuff/server.js");
+
+//  There's a long enlightening story behind mocking send email. See test.md from self-documentation.
+//  Now it's ok to mock it even after importing authRouter or controllers (as we are doing right now,
+//  since the whole controllers execution context (?) is being created by doing import below). So it
+//  seems ok to swap the order of two following import functions.
+//  BTW, it's bad practice to export emailService from controller just because of tests. But at the
+//  moment, it seems the cleanest approach. Anyway...
+const emailService = (await import("#controllers")).emailService;
+const authRouter = (await import("../../src/routes/auth-router.js")).router;
+
+/** @type {Array<{email:string, body:string}>} */
+const emailsSentDuringTest = [];
+const spiedSendEmail = mock.method(emailService, "sendEmail", // @ts-ignore
+    function mockedImplementation({ email, body /*ignore subject*/ }) {
+        console.log(`📩 As if we are sending email to ${email}.`);
+        emailsSentDuringTest.push({ email, body });
+    },
+    { times: Infinity },
+);
+
+// Fixtures and utils for test
 const DbFx = await import("../fixtures/db.js");
 const { makeFakeUser } = await import("../fixtures/user.js");
 const makeHttpClient = (await import("../fixtures/http-client.js")).default;
 const doListen = (await import("../fixtures/listen.js")).default;
 
-//  Mocking email sending MUST be done before importing the router, for the same reason explained above.
-//  (See test.md)
-//   We cannot do this:
-//  const sendEmail = (await import("../../src/controllers/index.js")).sendEmail;
-const makeSendEmail = (await import("../../src/send-email/send-email.js")).default;
-
-// inside controller index.js: await sendEmail({ email: "Hi module" });
-
-// BTW, you cannot mock sendEmail from controller. This will make the whole module load and auth_code_POST to be
-// instantiated with old sendEmail. Not sure actually.
-
-/** Email addresses to whom we sent an email during this test suite.
- * @see comment above sendEmail regarding concurrency issues.
- * @type {string[]}
- */
-const emailAddressesSentTo = [];
-
-const spiedMakeSendEmail = mock.fn(makeSendEmail,
-    (/* ignoring all config */) => {
-        console.log("----------------- Mocked is here -------------");
-        return async function sendEmail({email, body, subject}) {
-            console.log("📩 ".repeat(20));
-            // console.log("Pretending to send an email");
-            emailAddressesSentTo.push(email);
-        };
-    },
-    { times: Infinity }
-);
-
-console.log("=>".repeat(30));
-
-// Now sendEmail is mocked, we can safely import any router that eventually exploits sendEmail.
-const authRouter = (await import("../../src/routes/auth-router.js")).router;
-
 
 const PORT = Number(process.env.PORT);
 const agent = makeHttpClient({ port: PORT });
-
 
 
 
@@ -124,8 +109,9 @@ describe("user signup", { concurrency: false, timeout: 8000 }, () => {
             });
             const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
 
+            console.log(emailsSentDuringTest);
             assert.strictEqual(raw.status, 201);
-            assert.strictEqual(emailAddressesSentTo.includes(user.email), true);
+            assert.strictEqual(emailsSentDuringTest.map(({ email, body }) => (email)).includes(user.email), true);
         });
 
 
