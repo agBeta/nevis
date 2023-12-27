@@ -1,5 +1,6 @@
 #!/bin/bash
 # First creates a database and a database user. 
+# ? Second grants all previliges to the created user (Don't do this for production)
 # Then performs all migrations specified in the current folder step-by-step.
 
 # Skeleton of first part (creating database and user) is copied from https://stackoverflow.com/a/33474729.
