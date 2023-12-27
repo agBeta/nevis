@@ -22,23 +22,6 @@ const find_user_records_by_email = make_find_user_records_by_email({ dbConnectio
 
 test("User CRUD", { concurrency: false }, async (t) => {
     let db;
-    //  We declare users here, since when they are inserted into db, they won't get deleted.
-    const user1 = {
-        id: "a".repeat(24),
-        email: "a_user1@gmail.com",
-        hashedPassword: "h1".repeat(30),
-        displayName: "user1",
-        birthYear: 1380,
-        signupAt: (new Date("2019-08-02T15:30:00+02:30")).getTime(),
-    };
-    const user2 = Object.freeze({
-        id: "b".repeat(24),
-        email: "b_user2@gmail.com",
-        hashedPassword: "h2".repeat(30),
-        displayName: "user2",
-        birthYear: 1384,
-        signupAt: (new Date("2022-11-12T20:30:00-01:00")).getTime(),
-    });
 
 
     await t.before(async () => {
@@ -47,6 +30,15 @@ test("User CRUD", { concurrency: false }, async (t) => {
     });
 
     await t.test("inserts new user", async () => {
+        const user1 = {
+            id: "a".repeat(24),
+            email: "a_user1@gmail.com",
+            hashedPassword: "h1".repeat(30),
+            displayName: "user1",
+            birthYear: 1380,
+            signupAt: (new Date("2019-08-02T15:30:00+02:30")).getTime(),
+        };
+
         await insert_user(user1);
         //  We don't want to use find_user_.. here, though using it is also ok and to our benefit (in case of failure).
         //  But let's keep this test as isolated as possible.
@@ -68,7 +60,15 @@ test("User CRUD", { concurrency: false }, async (t) => {
         //  It checks if we have a runtime check for signupAt. Though TS helps us catch such type-related bugs but
         //  some consumer might bypass type checks (using ts-ignore).
 
-        assert.rejects(async function call_insert_user_with_native_date_parameter() {
+        const user2 = Object.freeze({
+            id: "b".repeat(24),
+            email: "b_user2@gmail.com",
+            hashedPassword: "h2".repeat(30),
+            displayName: "user2",
+            birthYear: 1384,
+            signupAt: (new Date("2022-11-12T20:30:00-01:00")).getTime(),
+        });
+        /*await assert?*/ assert.rejects(async function call_insert_user_with_native_date_parameter() {
             await insert_user({
                 ...user2,
                 signupAt: new Date(user2.signupAt)
@@ -79,7 +79,38 @@ test("User CRUD", { concurrency: false }, async (t) => {
         });
     });
 
-    t.todo("should insert user with emoji displayName and retrieve it correctly");
+    await t.test("should find user records by email", async() => {
+        // user2 isn't inserted to db yet, although it is used in previous test.
+        const user2 = Object.freeze({
+            id: "b".repeat(24),
+            email: "b_user2@gmail.com",
+            hashedPassword: "h2".repeat(30),
+            displayName: "user2",
+            birthYear: 1384,
+            signupAt: (new Date("2022-11-12T20:30:00-01:00")).getTime(),
+        });
+        await insert_user(user2); // if this fails here, it is actually to our benefit.
+
+        const records = await find_user_records_by_email({ email: user2.email });
+        assert.strictEqual(records.length, 1);
+        assert.strictEqual(records[0].id, user2.id);
+        assert.strictEqual(records[0].birthYear, user2.birthYear);
+        // by default it should omit (hashed) password column when retrieving users from db.
+        assert.strictEqual(records[0].hashedPassword == null, true);
+
+        const withHP = await find_user_records_by_email({ email: user2.email }, false);
+        assert.strictEqual(withHP.length, 1);
+        assert.strictEqual(withHP[0].hashedPassword, user2.hashedPassword);
+    });
+
+    await t.test("should return empty array when try to find user records and no email is matching", async () => {
+        const records = await find_user_records_by_email({ email: "some_email_not_exist@gmail.com" });
+        assert.strictEqual(records.length, 0);
+    });
+
+    // await t.test("should insert user with emoji displayName and retrieve it correctly", async()=>{
+
+    // });
 
 
     await t.test("should let us insert another user with case-sensitive email", async () => {
