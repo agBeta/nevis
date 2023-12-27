@@ -39,8 +39,8 @@ test("Session CRUD", { concurrency: false }, async (t) => {
                 user_tbl
                 (id , email , hashed_password , display_name , birth_year , signup_at )
             VALUES
-                  ( '${user1.id}' , 'user1@gmail.com' , REPEAT('a',60) , "user1" , 1391 , '2020-12-31 01:02:03' )
-                , ( '${user2.id}' , 'user2@gmail.com' , REPEAT('b',60) , "user2" , 1392 , ADDDATE('2020-12-31 01:02:03', 31) )
+                  ( '${user1.id}' , 'user1@gmail.com' , REPEAT('a',60) , 'user1' , 1391 , '2020-12-31 01:02:03' )
+                , ( '${user2.id}' , 'user2@gmail.com' , REPEAT('b',60) , 'user2' , 1392 , ADDDATE('2020-12-31 01:02:03', 31) )
             ;
         `);
         await cacheClient.flushAll();
