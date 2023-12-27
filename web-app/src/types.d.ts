@@ -109,7 +109,7 @@ export type Blog = {
     imageUrl: string,
     // Note, it isn't number (i.e. timestamp) but native js date object.
     createdAt: number,
-    modifiedAs: number,
+    modifiedAt: number,
 };
 export type BlogV2 = {
     id: string,
@@ -152,6 +152,8 @@ export type Find_User_Records_By_Email = ({email}: {email: string}, omitPassword
     => Promise<User[]>
 
 export type Find_Code_Records_By_Email = ({email}: {email: string}) => Promise<Code[]>;
+
+export type Find_Blog_Record_By_BlogId = ({blogId}: {blogId: string}) => Promise<Blog | null>;
 
 export type Insert_Code = ({ email, hashedCode, purpose, expiresAt }: 
         { email: string, hashedCode: string, purpose: string, expiresAt: number }
