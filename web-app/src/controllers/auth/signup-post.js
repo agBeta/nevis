@@ -33,7 +33,7 @@ export function makeEndpointController({
         validateRequest: makeBasicValidateNormalize({
             schemaOfBody: Joi.object({
                 email: Joi.string().email({ allowUnicode: true }).max(80).required(),
-                displayName: Joi.string().min(2).max(80).alphanum().required(),
+                displayName: Joi.string().min(2).max(80).required(),
                 password: Joi.string().min(3).max(30).required(),
                 repeatPassword: Joi.ref("password"),
                 birthYear: Joi.number().integer().min(1300).max(1402).required(),
@@ -99,7 +99,11 @@ export function makeEndpointController({
                     "Cache-Control": "no-store",
                 },
                 statusCode: 201,
-                payload: JSON.stringify({ success: true, message: "User is successfully created and email is verified." }),
+                payload: JSON.stringify({
+                    success: true,
+                    message: "User is successfully created and email is verified.",
+                    id
+                }),
             };
         }
         catch (err) {
