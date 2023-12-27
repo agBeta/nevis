@@ -60,11 +60,11 @@ test("find session record by hashedSessionId", { concurrency: false }, async (t)
     });
 
     await t.test("inserts session for user2 and finds it", async () => {
-        const /**@type {Session}*/ session = {
+        const /**@type {Session}*/ session = Object.freeze({
             hashedSessionId: "s2".repeat(12),
             userId: user2.id,
             expiresAt: Date.now() + (10 * 60 * 1000)
-        };
+        });
         await insert_session(session);
         const record = await find_session_record_by_hashedSessionId({ hashedSessionId: session.hashedSessionId });
         // Note, typeof null is object. So don't check that.
@@ -94,11 +94,11 @@ test("find session record by hashedSessionId", { concurrency: false }, async (t)
     });
 
     await t.test("should use cache the second time we try to find session", async () => {
-        const /**@type {Session}*/ session = {
+        const /**@type {Session}*/ session = Object.freeze({
             hashedSessionId: "s9".repeat(12),
             userId: user1.id,
-            expiresAt: Date.now() + (10 * 60 * 1000)
-        };
+            expiresAt: Date.now() + (4 * 60 * 1000)
+        });
         await insert_session(session);
 
         const record = await find_session_record_by_hashedSessionId({ hashedSessionId: session.hashedSessionId });
@@ -107,7 +107,7 @@ test("find session record by hashedSessionId", { concurrency: false }, async (t)
         //  So the idea (thank God) is to delete session from database and call find_... one again. If it returns the
         //  session it means the cache is working.
         db = await dbConnectionPool;
-        const [resultSetHeader, ] = await db.execute(
+        const /**@type {[ResultSetHeader, any]}*/ [resultSetHeader, ] = await db.execute(
             `DELETE FROM session_tbl WHERE hashed_session_id = '${session.hashedSessionId}' ;`
         );
         // First check if it is indeed deleted from database
@@ -117,6 +117,11 @@ test("find session record by hashedSessionId", { concurrency: false }, async (t)
         assert.strictEqual(again == null, false);
         assert.strictEqual(again?.hashedSessionId, session.hashedSessionId);
         assert.strictEqual(again?.userId, session.userId);
+
+        //  🕰️ Don't use exact equality check for timestamp, i.e. Don't check again.expiresAt==session.expiresAt.
+        //  Since MySQL by default stores timestamp only with precision 1 (i.e. in seconds), so session.expiresAt
+        //  might get rounded up/down when inserted into MySQL database. So...
+        assert.strictEqual(Math.abs(again?.expiresAt - session.expiresAt) <= 1000, true);
     });
 
 
@@ -131,4 +136,5 @@ test("find session record by hashedSessionId", { concurrency: false }, async (t)
 
 /**
  * @typedef {import("#types").Session} Session
+ * @typedef {import("mysql2").ResultSetHeader} ResultSetHeader
  */
