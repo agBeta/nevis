@@ -18,7 +18,7 @@ We used to spin up test server (via node or nodemon) separately and run `npm tes
 Bill Souror accesses db in integration/e2e test. See https://github.com/dev-mastery/comments-api/blob/master/__test__/e2e.spec.js#L34.
 
 We used to have DbFx (db queries as fixtures), but it turned out to be premature abstraction. Most of the time each test suite needs its own ad-hoc queries. Moreover...
-We decided to use some of data-access exported functions in our tests. If anything fails because of some bug  inside data-access implementation, it is actually to our advantage (happened in 4b6348f). Bill Souror also does this.
+We decided to use some of data-access exported functions in our tests. If anything fails because of some bug  inside data-access implementation, it is actually to our advantage (happened in 4b6348f). It also prevent rewriting lots of code (especially useful when database columns change).  Bill Souror also uses data-access.
 
 </br>
 
