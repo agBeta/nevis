@@ -1,4 +1,5 @@
 import { InvalidError, OperationalError } from "#utils/errors.js";
+import { isTimestampAndIsInMilliseconds } from "#utils/time.js";
 
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool}} props
@@ -26,6 +27,11 @@ export default function make_insert_user({ dbConnectionPool }) {
     /**@type {Insert_User}*/
     async function insert_user({ id, email, hashedPassword, displayName, birthYear, signupAt }) {
         try {
+            //  We want to rest assured in runtime.
+            if (!isTimestampAndIsInMilliseconds(signupAt)) {
+                throw new InvalidError("User signupAt must be timestamp in milliseconds.");
+            }
+
             const db = await dbConnectionPool;
             await db.execute(sqlCmd, [
                 id,
@@ -37,7 +43,10 @@ export default function make_insert_user({ dbConnectionPool }) {
             ]);
         }
         catch (error) {
-            if (error?.sqlMessage?.includes?.("UNQ_user_email")){
+            if (error instanceof InvalidError) {
+                throw error; // bubble to upstream
+            }
+            if (error?.sqlMessage?.includes?.("UNQ_user_email")) {
                 throw new InvalidError("Email already exists.");
             }
             throw new OperationalError(error.message, "db");

@@ -82,6 +82,11 @@ export type Controller = {
 // Synonyms for services: utility, facility. Not to confuse with so-called 'services' in REST API design.
 
 // ------------------------------------------------------------
+
+//? ⏰ Why all date-time related fields are number? It prevents lots of headaches and inconsistencies. See:
+//     - Unknown aspects of scaling in REST.md in self-documentation.
+//     - date-and-time.md in self-documentation.
+
 export type Session = { 
     hashedSessionId: string, 
     userId: string, 
@@ -103,15 +108,15 @@ export type Blog = {
     blogTopic: string,
     imageUrl: string,
     // Note, it isn't number (i.e. timestamp) but native js date object.
-    createdAt: Date,
-    modifiedAs: Date,
+    createdAt: number,
+    modifiedAs: number,
 };
 export type BlogV2 = {
     id: string,
     authorId: string,
     authorDisplayName: string,
     blogTitle: string,
-    createdAt: Date,
+    createdAt: number,
     orderId: number,
 };
 
@@ -120,7 +125,7 @@ export type User = {
     email: string,
     displayName: string,
     birthYear: number,
-    signupAt: Date,
+    signupAt: number,
     hashedPassword?: string,
 };
 
