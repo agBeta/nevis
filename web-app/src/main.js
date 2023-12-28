@@ -1,5 +1,6 @@
 import path from "node:path";
 import * as http from "node:http";
+import helmet from "helmet";
 // This must precede the rest of imports.
 import "./config.js";
 import { installRouter, installMorgan, makeExpressApp } from "./express-stuff/server.js";
@@ -13,6 +14,10 @@ app.set("trust proxy", true);
 app.set("case sensitive routing", false);
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "client"));
+
+app.use(helmet({
+    contentSecurityPolicy: false,
+}));
 
 installMorgan({ app });
 installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
