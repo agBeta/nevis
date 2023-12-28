@@ -71,12 +71,9 @@ export type ValidationResult = ResultOfValid | ResultOfInvalid;
 //  https://stackoverflow.com/questions/57695992/in-typescript-why-cant-an-async-function-return-a-union-of-type-t-promiset
 export type Controller = {
     // to enforce validation for any controller
-    validateRequest: (httpRequest: HttpRequest) => ValidationResult,
-    handleRequest: (httpRequest: HttpRequest) => HttpResponse | Promise<HttpResponse>
-} | {
-    validateRequest: (httpRequest: AuthenticatedHttpRequest) => ValidationResult,
-    handleRequest: (httpRequest: AuthenticatedHttpRequest) => HttpResponse | Promise<HttpResponse>
-}
+    validateRequest: (httpRequest: HttpRequest | AuthenticatedHttpRequest) => ValidationResult,
+    handleRequest: (httpRequest: HttpRequest | AuthenticatedHttpRequest) => HttpResponse | Promise<HttpResponse>
+};
 
 
 // Synonyms for services: utility, facility. Not to confuse with so-called 'services' in REST API design.
