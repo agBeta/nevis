@@ -23,13 +23,15 @@ export default function makeExpressCallback(controller) {
             if (httpResponse.cookies) {
                 // Do NOT use `for ... in` for Arrays. See https://stackoverflow.com/a/500531.
                 httpResponse.cookies.forEach(( /** @type {SetCookie} */ cookie) => {
-                    res.cookie(cookie.name, cookie.value, cookie.options);
+                    res.cookie(cookie.name, cookie.value, {
+                        ...cookie.options,
+                        //  max-age is in seconds in standard, but for Express maxAge should be in milliseconds.
+                        //  See https://stackoverflow.com/q/14176432
+                        //  See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#max-agenumber.
+                        maxAge: cookie.options.maxAge * 1000,
+                    });
                 });
             }
-
-            /** @todo TODO if size of response is large, it probably means we have a security leak, mainly SQL injection.
-             *  So return 500 instead.
-            */
 
             res.status(httpResponse.statusCode).send(httpResponse.payload);
         }
