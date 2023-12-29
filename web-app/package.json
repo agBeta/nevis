@@ -42,6 +42,7 @@
     "@types/node": "^20.10.0",
     "@types/nodemailer": "^6.4.14",
     "eslint": "^8.54.0",
+    "fetch-cookie": "^2.1.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.2"
   },
