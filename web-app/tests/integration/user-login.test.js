@@ -190,7 +190,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
             email: user3.email,
             password: user3.password,
             rememberMe: false,
-        }, true);
+        });
         assert.strictEqual(raw.status, 200);
 
         raw = await agent.getRequest("/api/v1/auth/authenticated_as");
