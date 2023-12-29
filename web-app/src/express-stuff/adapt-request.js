@@ -10,7 +10,11 @@ export default function adaptRequest(req) {
     // According to MDN: configurable, enumerable and writable default to false.
 
     Object.defineProperties(adapted, {
-        path: { value: req.path },
+        path: {
+            value: req.path,
+            // if false, it wouldn't be displayed in console.log(adapted).
+            enumerable: true,
+        },
         method: { value: req.method },
 
         // e.g. we hit /user/10 (pattern /user/:id) pathParams will be {id: '10'} in Express.
