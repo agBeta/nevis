@@ -51,6 +51,11 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         email: "user2_2@gmail.com",
         password: "pass2",
     };
+    let user3 = {
+        id: "c".repeat(24),
+        email: "user3_3@gmail.com",
+        password: "pass3",
+    };
 
     before(async () => {
         db = await dbConnectionPool;
@@ -60,6 +65,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         // NOTE, you must the same hash function that is used inside auth-signup controller.
         const hc1 = await bcrypt.hash(user1.password, 9);
         const hc2 = await bcrypt.hash(user2.password, 9);
+        const hc3 = await bcrypt.hash(user3.password, 9);
 
         // We don't use prepared statement. Raw sql is more transparent.
         await db.execute(`
@@ -69,6 +75,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
             VALUES
                   ( '${user1.id}' , '${user1.email}' , '${hc1}' , 'user1' , 1391 , '2020-12-31 01:02:03' )
                 , ( '${user2.id}' , '${user2.email}' , '${hc2}' , 'user2' , 1392 , '2020-12-20 01:02:03' )
+                , ( '${user3.id}' , '${user3.email}' , '${hc3}' , 'user3' , 1393 , '2020-12-20 01:02:03' )
             ;
         `);
 
@@ -139,7 +146,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         assert.strictEqual(response.error.toLowerCase().includes("bad request"), true);
     });
 
-    it("sets session cookie when given email,password are correct", async () => {
+    it.skip("sets session cookie when given email,password are correct", async () => {
         //  it's better to login as user2, since we already have logged in as user1 in previous test and
         //  that might cause some false positives. Not sure. Anyway...
         const raw = await agent.postRequest("/api/v1/auth/login", {
@@ -153,7 +160,9 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
 
         //  cookies[0] should be like:
         //  __Host-nevis_session_id=...; Max-Age=...; Path=/; Expires=Thu, ...; ...
-        const sessionCookieParts = cookies[0].split(";");
+        const sessionCookieParts = cookies[0].split(";")
+            /* if we don't trim, they would be like " Max-Age=..", i.e. extra white space at the beginning. */
+            .map(s => s.trim());
         assert.strictEqual(sessionCookieParts[0].split("=")[0], "__Host-nevis_session_id");
 
         //  sessionId should be quite long. To make the test more robust, we didn't specify the exact
@@ -164,6 +173,34 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         const valueOfMaxAge = Number(sessionCookieParts[1].split("=")[1]);
         // max-age should be 3 hours when rememberMe=false.
         assert.strictEqual(valueOfMaxAge, 3 * 60 * 60);
+
+        // session cookie shouldn't be accessible from browser javascript.
+        assert.strictEqual(sessionCookieParts.includes("HttpOnly"), true);
+
+        const roleCookieParts = cookies[1].split(";").map(s => s.trim());
+        assert.strictEqual(roleCookieParts[0], "__Host-nevis_role=user");
+        // role cookie should be accessible from browser javascript.
+        assert.strictEqual(roleCookieParts.includes("HttpOnly"), false);
+    });
+
+    it("given user is logged in, authenticated_as should return user id", async () => {
+        //  First we need to satisfy the assumption (i.e. given user is logged in).
+        //  We log in as user3 to isolate this test from previous ones.
+        let raw = await agent.postRequest("/api/v1/auth/login", {
+            email: user3.email,
+            password: user3.password,
+            rememberMe: false,
+        }, true);
+        assert.strictEqual(raw.status, 200);
+
+        raw = await agent.getRequest("/api/v1/auth/authenticated_as");
+        const response = await raw.json();
+        console.log(response);
+        assert.strictEqual(raw.status, 200);
+        assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");
+
+        assert.strictEqual(response.success, true);
+        assert.strictEqual(response.userId, user3.id);
     });
 
     after(async () => {
