@@ -83,7 +83,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
         server = http.createServer(app);
         await doListen(server, PORT);
-        console.log("before hook finished.", " 🚀 ".repeat(10));
+        // console.log("before hook finished.", " 🚀 ".repeat(10));
     });
 
     it("@sanity", () => {
@@ -205,7 +205,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     after(async () => {
         await dbConnectionPool.end();
         await promisify(server.close.bind(server))();
-        console.log("after hook finished.", " 🚩🎬 ".repeat(10));
+        // console.log("after hook finished.", " 🚩🎬 ".repeat(10));
     });
 });
 
