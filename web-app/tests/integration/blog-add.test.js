@@ -104,10 +104,25 @@ describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
         });
 
 
-        it("creates an action", async () => {
+        it("creates an action and stores action in db", async () => {
             const result = await client.postRequest("/api/v1/blog/", { nothing: true });
             assert.strictEqual(result.statusCode, 201);
-            // console.log(result.headers);
+            assert.strictEqual(result.headers.get("Location")?.includes("blog/action"), true);
+            const response = result.response;
+            assert.strictEqual(response.success, true);
+            assert.strictEqual(typeof response.actionId === "string", true);
+
+            const actionId = response.actionId;
+            const record = await find_action_record_by_actionId({ actionId });
+            assert.strictEqual(record?.id, actionId);
+            assert.strictEqual(record?.userId, user1.id);
+            //  We don't check [purpose]. Consumer of the API doesn't care about purpose. but [state] is important
+            //  for the consumer. Incorrect state would result in wrong behavior.
+            assert.strictEqual(record?.state, 1 /*=not initiated, according to constants.js in controllers*/);
+            //  The action should have quite long lifespan.
+            assert.strictEqual(record?.expiresAt - Date.now() > 11 * 60 * 60 * 1000, true);
+            //  but not too long...
+            assert.strictEqual(record?.expiresAt - Date.now() < 13 * 60 * 60 * 1000, true);
         });
     });
 
