@@ -193,8 +193,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         });
         assert.strictEqual(raw.status, 200);
 
-        raw = await agent.getRequest("/api/v1/auth/authenticated_as");
-        const response = await raw.json();
+        const response = await agent.get("/api/v1/auth/authenticated_as");
         console.log(response);
         assert.strictEqual(raw.status, 200);
         assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");

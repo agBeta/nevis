@@ -1,5 +1,5 @@
 import makeFetchCookie from "fetch-cookie";
-
+import http from "node:http";
 
 /**
  * @param {{ port: number }} props
@@ -21,6 +21,7 @@ export default function makeHttpClient({ port }) {
     return Object.freeze({
         postRequest,
         getRequest,
+        get,
     });
 
     async function postRequest(/**@type {string}*/ url, /**@type {any}*/ body) {
@@ -61,9 +62,66 @@ export default function makeHttpClient({ port }) {
             throw new Error("getRequest url must start with slash(/).");
         }
         console.log(" cookies in getRequest ", " 🗒️ ".repeat(10));
-        console.log(cookieJar.getCookiesSync(BASE_URL));
+        console.log(cookieJar.getCookiesSync(BASE_URL + url));
         const raw = await fetchCookie(BASE_URL + url);
         return raw.clone();
+    }
+
+    async function get(url) {
+        // path --> http.get (RequestOptions, ...) --> RequestOptions --> ClientRequestArgs
+        //  --> headers?: OutgoingHttpHeaders | undefined;  --> OutgoingHttpHeaders
+        //  --> cookie?: string | string[] | undefined;
+        const opts = {
+            hostname: "localhost",
+            port: port,
+            path: url,
+            agent: false,
+            headers: {
+                cookie: "foo=bar",
+            }
+        };
+
+        // from lib file
+        // const options = {
+        //        hostname: 'www.google.com',
+        //        port: 80,
+        //        path: '/upload',
+        //        method: 'POST',
+        //        headers: {
+        //          'Content-Type': 'application/json',
+        //          'Content-Length': Buffer.byteLength(postData),
+        //        },
+        //      };
+
+
+        // from https://blog.logrocket.com/5-ways-to-make-http-requests-in-node-js/
+        // and https://stackoverflow.com/questions/52951091/how-to-use-async-await-with-https-post-request.
+        return new Promise((resolve, reject) => {
+            const req = http.get(opts, (res) => {
+                let data = [];
+                const headers = res.headers;
+                console.log("Status Code:", res.statusCode);
+                console.log(" 🏀 ".repeat(20));
+                console.log("Cookies in Response header:", headers);
+
+                res.on("data", chunk => {
+                    data.push(chunk);
+                });
+
+                res.on("end", () => {
+                    console.log("Response ended: ");
+                    const response = JSON.parse(Buffer.concat(data).toString());
+                    console.log(response);
+                    resolve(response);
+                });
+            });
+
+            req.on("error", (err) => {
+                reject(err);
+            });
+
+
+        });
     }
 
 }

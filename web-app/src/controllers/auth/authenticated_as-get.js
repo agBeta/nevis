@@ -26,6 +26,7 @@ export function makeEndpointController({
     //  authentication. So for consistency.
 
     function validateRequest(/**@type {HttpRequest}*/ httpRequest) {
+        console.log(httpRequest);
         if (!httpRequest.cookies || Object.keys(httpRequest.cookies).length === 0 ||
             !httpRequest.cookies[NAME_OF_SESSION_COOKIE]) {
             return {
