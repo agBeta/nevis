@@ -14,6 +14,7 @@ export default function makeHttpClient({ port }) {
     return Object.freeze({
         postRequest,
         getRequest,
+        putRequest,
     });
 
     /**
@@ -165,6 +166,57 @@ export default function makeHttpClient({ port }) {
     }
 
 
+    //  This function is almost exactly the same as postRequest.
+    async function putRequest(url, body) {
+        if (!url) {
+            throw new Error("putRequest must have a url.");
+        }
+        if (!url.startsWith("/")) {
+            throw new Error("putRequest url must start with slash(/).");
+        }
+        const stringifiedBody = JSON.stringify(body);
+        const  options = {
+            hostname: "localhost",
+            port: port,
+            path: url,
+            protocol: "http:",
+            method: "PUT", /*<---*/
+            headers: {
+                "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength(stringifiedBody),
+                "Connection": "keep-alive",
+            },
+        };
+        if (clientCookies.length > 0) {
+            options.headers["cookie"] = clientCookies.join("; ");
+        }
+        return new Promise((resolve, reject) => {
+            const req = http.request(options, function handleResponseFromServer(res) {
+                res.setEncoding("utf-8");
+                const statusCode = res.statusCode ?? -99;
+                let headers = res.headers;
+                headers = {
+                    ...headers,
+                    get: function (headerName) {
+                        return this[headerName.toLowerCase()];
+                    }
+                };
+                const chunks = [];
+                res.on("data", (chunk) => {
+                    chunks.push(chunk);
+                });
+                res.on("end", function constructFinalResponseJSON() {
+                    const stringified = chunks.join("");
+                    const response = JSON.parse(stringified);
+                    // We don't check/set any cookies here (unlike postRequest).
+                    resolve(Object.freeze({ response, headers, statusCode }));
+                });
+            });
+            req.on("error", (err) => reject(err));
+            req.write(stringifiedBody, "utf-8");
+            req.end();
+        });
+    }
 
     /** @param {{ [key: string]: string, get: (string)=>string|undefined, getSetCookie: ()=>string[]|undefined}} headers */
     function persistCookiesInClient(headers) {
