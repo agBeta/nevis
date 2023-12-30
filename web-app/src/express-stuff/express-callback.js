@@ -35,11 +35,11 @@ export default function makeExpressCallback(controller) {
 
             res.status(httpResponse.statusCode).send(httpResponse.payload);
         }
-        catch (e) {
+        catch (err) {
             log({
                 level: "http",
                 keyword: "5xx",
-                message: "500 from server."
+                message: "500 from server. " + err.message,
             });
             res.status(500).json({ error: "An unknown error occurred on the server." });
         }
