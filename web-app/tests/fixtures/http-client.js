@@ -54,7 +54,15 @@ export default function makeHttpClient({ port }) {
     }
 
 
-    async function getRequest(/**@type {string}*/ url) {
+    /**
+     * @param {string} url
+     * @returns {Promise<{
+     *      statusCode: number,
+     *      headers: { [key: string]: string, get: (string)=>string|undefined },
+     *      response: any,
+     * }>}
+     */
+    async function getRequest(url) {
         if (!url) {
             throw new Error("getRequest must have a url.");
         }
@@ -81,8 +89,20 @@ export default function makeHttpClient({ port }) {
         }
         return new Promise((resolve, reject) => {
             const req = http.get(options, (res) => {
+                const statusCode = res.statusCode ?? -1;
+                // Key-value pairs of header names (in lower-case) and values
+                let headers = res.headers ?? {};
+                headers = {
+                    ...headers,
+                    //  Don't mix it up with "get" syntax that binds an object property to a function.
+                    //  We add this function to have more compatibility between result of fetch API in
+                    //  which we could use raw.headers.get("...")
+                    get: function(/**@type{string}*/headerName) {
+                        return this[headerName.toLowerCase()];
+                    }
+                };
+
                 let chunks = [];
-                // console.log("Status Code:", res.statusCode);
                 res.on("data", chunk => {
                     chunks.push(chunk);
                 });
@@ -90,7 +110,7 @@ export default function makeHttpClient({ port }) {
                     // console.log("Response ended: ");
                     // console.log(response);
                     const response = JSON.parse(Buffer.concat(chunks).toString());
-                    resolve(response);
+                    resolve(Object.freeze({ response, headers, statusCode }));
                 });
             });
             // We could have chained [.on(..)] on http.get(..).
