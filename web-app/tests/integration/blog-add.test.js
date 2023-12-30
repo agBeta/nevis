@@ -30,7 +30,7 @@ const count_actions_by_userId = make_count_actions_by_userId({ dbConnectionPool 
 const find_action_record_by_actionId = make_find_action_record_by_actionId({ dbConnectionPool });
 
 
-describe("User Login", { concurrency: false, timeout: 8000 }, () => {
+describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
     let /** @type {WebAppServer} */ server;
     let db;
 

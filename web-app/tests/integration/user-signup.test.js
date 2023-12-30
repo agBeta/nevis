@@ -84,8 +84,8 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
         it("creates a signup code and stores it in db", async () => {
             const user = makeFakeUser({});
 
-            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
-            assert.strictEqual(raw.status, 201);
+            const result = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+            assert.strictEqual(result.statusCode, 201);
 
             const correspondingRecords = await find_code_records_by_email({ email: user.email });
             assert.strictEqual(correspondingRecords.length == 1, true);
@@ -106,9 +106,9 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
             const sendCallCountBeforeRunningThisTest = spiedSendEmail.mock.callCount();
 
             const user = makeFakeUser({});
-            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+            const result = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
 
-            assert.strictEqual(raw.status, 201);
+            assert.strictEqual(result.statusCode, 201);
             assert.strictEqual(spiedSendEmail.mock.callCount(), sendCallCountBeforeRunningThisTest + 1);
         });
 
@@ -116,8 +116,8 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
             const user = makeFakeUser({
                 email: "_some_specific_email_@gmail.com"
             });
-            const raw = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
-            assert.strictEqual(raw.status, 201);
+            const result = await agent.postRequest("/api/v1/auth/code", { email: user.email, purpose: "signup" });
+            assert.strictEqual(result.statusCode, 201);
             assert.strictEqual(emailsSentDuringTest.map(({ email, body }) => (email)).includes(user.email), true);
         });
 
@@ -153,12 +153,12 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
             });
 
             it("creates the user in db, and returns user id", async () => {
-                const raw = await agent.postRequest("/api/v1/auth/signup", validBody);
+                const result = await agent.postRequest("/api/v1/auth/signup", validBody);
 
-                assert.strictEqual(raw.status, 201);
-                assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");
+                assert.strictEqual(result.statusCode, 201);
+                assert.strictEqual(result.headers.get("Cache-Control"), "no-store");
 
-                const response = await raw.json();
+                const response = result.response;
                 assert.strictEqual(response.success, true);
 
                 assert.strictEqual(response.id == null, false);
@@ -181,9 +181,9 @@ describe("User Signup", { concurrency: false, timeout: 8000 }, () => {
     });
 
     it("returns 400 and doesn't create code if email isn't supplied", async () => {
-        const raw = await agent.postRequest("/api/v1/auth/code", { purpose: "signup" });
-        assert.strictEqual(raw.status, 400);
-        const response = await raw.json();
+        const result = await agent.postRequest("/api/v1/auth/code", { purpose: "signup" });
+        assert.strictEqual(result.statusCode, 400);
+        const response = result.response;
         assert.strictEqual(response.success, false);
         assert.strictEqual(response.error == null, false);
         assert.strictEqual(typeof response.error == "string", true);

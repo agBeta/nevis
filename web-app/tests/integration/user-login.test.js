@@ -92,29 +92,29 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     });
 
     it("returns 200 along with userId when given email,password are correct", async () => {
-        const raw = await client.postRequest("/api/v1/auth/login", {
+        const result = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user1.password,
             rememberMe: false,
         });
 
-        assert.strictEqual(raw.status, 200);
+        assert.strictEqual(result.statusCode, 200);
         // Cache-Control: no-store is important for security. So we must check it.
-        assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");
+        assert.strictEqual(result.headers.get("Cache-Control"), "no-store");
 
-        const response = await raw.json();
+        const response = result.response;
         assert.strictEqual(response.success, true);
         assert.strictEqual(response.userId, user1.id);
     });
 
     it("returns 401 when given email,password are incorrect", async () => {
-        const raw = await client.postRequest("/api/v1/auth/login", {
+        const result = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user2/*<--*/.password,
             rememberMe: false,
         });
-        assert.strictEqual(raw.status, 401);
-        const response = await raw.json();
+        assert.strictEqual(result.statusCode, 401);
+        const response = result.response;
         assert.strictEqual(response.success, false);
         assert.strictEqual(response.error == null, false);
         assert.strictEqual(response.error.includes("email or password"), true);
@@ -123,25 +123,25 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     // This test makes sure the controller won't end up executing slow downstream functions.
     it("returns 400 when given password is too long or isn't supplied", async () => {
         // password isn't given
-        let raw = await client.postRequest("/api/v1/auth/login", {
+        let result = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             /*no password is provided*/
             rememberMe: false,
         });
-        assert.strictEqual(raw.status, 400);
-        let response = await raw.json();
+        assert.strictEqual(result.statusCode, 400);
+        let response = result.response;
         assert.strictEqual(response.success, false);
         assert.strictEqual(response.error.toLowerCase().includes("bad request"), true);
         assert.strictEqual(response.error.includes("password") && response.error.includes("required"), true);
 
 
-        raw = await client.postRequest("/api/v1/auth/login", {
+        result = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user1.password.repeat(20 /*long password*/),
             rememberMe: false,
         });
-        assert.strictEqual(raw.status, 400);
-        response = await raw.json();
+        assert.strictEqual(result.statusCode, 400);
+        response = result.response;
         assert.strictEqual(response.success, false);
         assert.strictEqual(response.error.toLowerCase().includes("bad request"), true);
     });
@@ -149,14 +149,14 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     it("sets session cookie when given email,password are correct", async () => {
         //  it's better to login as user2, since we already have logged in as user1 in previous test and
         //  that might cause some false positives. Not sure. Anyway...
-        const raw = await client.postRequest("/api/v1/auth/login", {
+        const result = await client.postRequest("/api/v1/auth/login", {
             email: user2.email,
             password: user2.password,
             rememberMe: false,
         });
-        assert.strictEqual(raw.status, 200);
-        const cookies = raw.headers.getSetCookie();
-        assert.strictEqual(cookies.length, 2);
+        assert.strictEqual(result.statusCode, 200);
+        const cookies = result.headers.getSetCookie();
+        assert.strictEqual(cookies?.length, 2);
 
         //  cookies[0] should be like:
         //  __Host-nevis_session_id=...; Max-Age=...; Path=/; Expires=Thu, ...; ...
@@ -186,18 +186,18 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     it("given user is logged in, authenticated_as should return user id", async () => {
         //  First we need to satisfy the assumption (i.e. given user is logged in).
         //  We log in as user3 to isolate this test from previous ones.
-        let raw = await client.postRequest("/api/v1/auth/login", {
+        const result = await client.postRequest("/api/v1/auth/login", {
             email: user3.email,
             password: user3.password,
             rememberMe: false,
         });
-        assert.strictEqual(raw.status, 200);
-
-        const result = await client.getRequest("/api/v1/auth/authenticated_as");
         assert.strictEqual(result.statusCode, 200);
-        assert.strictEqual(result.headers.get("Cache-Control"), "no-store");
 
-        const response = result.response;
+        const resultAuthAs = await client.getRequest("/api/v1/auth/authenticated_as");
+        assert.strictEqual(resultAuthAs.statusCode, 200);
+        assert.strictEqual(resultAuthAs.headers.get("Cache-Control"), "no-store");
+
+        const response = resultAuthAs.response;
         assert.strictEqual(response.success, true);
         assert.strictEqual(response.userId, user3.id);
     });

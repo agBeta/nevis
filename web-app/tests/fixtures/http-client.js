@@ -39,10 +39,11 @@ export default function makeHttpClient({ port }) {
 
         const stringifiedBody = JSON.stringify(body);
 
-        const options = {
+        const /**@type {import("http").ClientRequestArgs}*/ options = {
             hostname: "localhost",
             port: port,
             path: url,
+            protocol: "http:",
             method: "POST",
             headers: {
                 // Content-Type is crucial. Never omit it.
@@ -190,7 +191,6 @@ export default function makeHttpClient({ port }) {
             const nameAndValuePart = coo.split(";")[0];
             clientCookies.push(nameAndValuePart);
         }
-        console.log(clientCookies);
     }
 
 }
