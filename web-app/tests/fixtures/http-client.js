@@ -43,13 +43,13 @@ export default function makeHttpClient({ port }) {
             //  Recall, the server (i.e. login controller) won't set secure option for cookies when
             //  NODE_ENV=test.
             // coo += "; Secure";
-            console.log(coo);
+            // console.log(coo);
             await cookieJar.setCookie(coo, BASE_URL); // ---> not working correctly. don't know why?
         }
         cookieJar.setCookie(raw.headers.getSetCookie()[0].split(";")[0], BASE_URL);
         cookieJar.setCookie(raw.headers.getSetCookie()[1].split(";")[0], BASE_URL);
         cookieJar.setCookie("foo=base", BASE_URL + url);
-        console.log(cookieJar.getCookiesSync(BASE_URL));
+        // console.log(cookieJar.getCookiesSync(BASE_URL));
         return raw.clone();
     }
 
@@ -61,8 +61,8 @@ export default function makeHttpClient({ port }) {
         if (!url.startsWith("/")) {
             throw new Error("getRequest url must start with slash(/).");
         }
-        console.log(" cookies in getRequest ", " 🗒️ ".repeat(10));
-        console.log(cookieJar.getCookiesSync(BASE_URL + url));
+        // console.log(" cookies in getRequest ", " 🗒️ ".repeat(10));
+        // console.log(cookieJar.getCookiesSync(BASE_URL + url));
         const raw = await fetchCookie(BASE_URL + url);
         return raw.clone();
     }
@@ -77,9 +77,12 @@ export default function makeHttpClient({ port }) {
             path: url,
             agent: false,
             headers: {
-                cookie: "foo=bar",
+                "set-cookie": "foo=bar; path=/; max-age=30000; Secure",
+                "cookie": ["baz=lar; you=are"],
             }
         };
+
+        console.log(cookieJar.getCookiesSync(BASE_URL)[0]);
 
         // from lib file
         // const options = {
@@ -101,8 +104,6 @@ export default function makeHttpClient({ port }) {
                 let data = [];
                 const headers = res.headers;
                 console.log("Status Code:", res.statusCode);
-                console.log(" 🏀 ".repeat(20));
-                console.log("Cookies in Response header:", headers);
 
                 res.on("data", chunk => {
                     data.push(chunk);

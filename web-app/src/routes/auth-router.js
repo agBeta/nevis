@@ -7,6 +7,7 @@ import {
     auth_signup_POST,
     auth_authenticated_as_GET,
 } from "#controllers";
+import cookieParser from "cookie-parser";
 
 const router = express.Router();
 
@@ -17,7 +18,13 @@ router.use(makeRateLimitMiddleware({
     points: 100,
     name: "rt_auth_all_" + (process.env.APP_ID ?? "default"),
 }));
-router.get("/authenticated_as", makeExpressCallback(auth_authenticated_as_GET));
+router.use(cookieParser());
+router.get("/authenticated_as", (req, res, next) => {
+    console.log(" 🏀 ".repeat(20));
+    console.log(req.headers);
+    console.log(req.cookies);
+    next();
+},makeExpressCallback(auth_authenticated_as_GET));
 
 router.use(makeRateLimitMiddleware({
     duration: 3600,
