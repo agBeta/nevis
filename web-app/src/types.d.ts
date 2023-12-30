@@ -20,7 +20,7 @@ export type HttpRequest = {
     readonly path: string,
     readonly method: string,
     pathParams: { [key: string]: unknown },
-    queryParams:  { [key: string]: unknown },
+    queryParams: { [key: string]: unknown },
     /* How you should read it: unknown is I don't know; any is I don't care. */
     readonly cookies: { [key: string]: string },
     readonly headers: { [key: string]: string | undefined },
@@ -49,7 +49,7 @@ export type SetCookie = {
 export type HttpResponse = {
     statusCode: number,
     payload: any,
-    headers: { 
+    headers: {
         "Content-Type": string,
         "Cache-Control": string,
         [key: string]: string
@@ -84,9 +84,9 @@ export type Controller = {
 //     - Unknown aspects of scaling in REST.md in self-documentation.
 //     - date-and-time.md in self-documentation.
 
-export type Session = { 
-    hashedSessionId: string, 
-    userId: string, 
+export type Session = {
+    hashedSessionId: string,
+    userId: string,
     expiresAt: number,
 };
 
@@ -95,6 +95,15 @@ export type Code = {
     email: string,
     purpose: "signup" | "reset-pass",
     expiresAt: number
+};
+
+export type Action = {
+    id: string,
+    userId: string,
+    purpose: string,
+    state: number,
+    response: string | null,
+    expiresAt: number,
 };
 
 export type Blog = {
@@ -142,32 +151,36 @@ export type PaginateArgument = {
 
 export type Find_Blog_Records_Paginated = (paginateArg: PaginateArgument) => Promise<BlogV2[]>;
 
-export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId }: { hashedSessionId: string }) 
+export type Find_Session_Record_By_HashedSessionId = ({ hashedSessionId }: { hashedSessionId: string })
     => Promise<Session | null>;
 
-export type Find_User_Records_By_Email = ({email}: {email: string}, omitPassword: boolean=true) 
+export type Find_User_Records_By_Email = ({ email }: { email: string }, omitPassword: boolean = true)
     => Promise<User[]>
 
-export type Find_Code_Records_By_Email = ({email}: {email: string}) => Promise<Code[]>;
+export type Find_Action_Record_By_ActionId = ({ actionId }: { actionId: string }) => Promise<Action | null>;
 
-export type Find_Blog_Record_By_BlogId = ({blogId}: {blogId: string}) => Promise<Blog | null>;
+export type Find_Blog_Record_By_BlogId = ({ blogId }: { blogId: string }) => Promise<Blog | null>;
 
-export type Insert_Code = ({ email, hashedCode, purpose, expiresAt }: 
-        { email: string, hashedCode: string, purpose: string, expiresAt: number }
-    ) => Promise<void>;
+export type Find_Code_Records_By_Email = ({ email }: { email: string }) => Promise<Code[]>;
+
+export type Insert_Code = ({ email, hashedCode, purpose, expiresAt }:
+    { email: string, hashedCode: string, purpose: string, expiresAt: number }
+) => Promise<void>;
 
 
-export type Insert_Session = ({ hashedSessionId, userId, expiresAt }: 
+export type Insert_Session = ({ hashedSessionId, userId, expiresAt }:
     { hashedSessionId: string, userId: string, expiresAt: number }
-    ) => Promise<void>;
+) => Promise<void>;
 
 export type Insert_User = ({ id, email, hashedPassword, displayName, birthYear, signupAt }:
-    { id: string, email: string, hashedPassword: string, displayName: string, birthYear: number, 
-        signupAt: number }
-    ) => Promise<void>;
+    {
+        id: string, email: string, hashedPassword: string, displayName: string, birthYear: number,
+        signupAt: number
+    }
+) => Promise<void>;
 
 // ---------------------
 
 export type EmailService = {
-    sendEmail: ({ email, subject, body }:{ email: string , subject: string , body: string }) => Promise<void>,
+    sendEmail: ({ email, subject, body }: { email: string, subject: string, body: string }) => Promise<void>,
 };
