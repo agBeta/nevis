@@ -10,6 +10,7 @@ export function makeEndpointController({
     count_actions_by_userId,
     insert_action,
 }) {
+    // @ts-ignore related to HttpRequest | AuthenticatedHttpRequest
     return Object.freeze({
         validateRequest,
         handleRequest,
