@@ -17,7 +17,9 @@ export function makeRequireAuthenticationMiddleware({ find_session_record_by_has
      * @param {ExpressNextFunc} next
      */
     async function requireLogin(req, res, next) {
-        const hashedSessionId = req.cookies["__Host-nevis_session_id"];
+        //  req.cookies might be undefined (recall we aren't using cookie-parser which guarantees to
+        //  populate req.cookies with something or {}). So "?." is crucial.
+        const hashedSessionId = req.cookies?.["__Host-nevis_session_id"];
         if (!hashedSessionId) {
             res.set("Content-Type", "application/json").status(401).send(JSON.stringify({
                 success: false,
