@@ -31,6 +31,8 @@ const find_blog_record_by_blogId = make_find_blog_record_by_blogId({ dbConnectio
 const find_action_record_by_actionId = make_find_action_record_by_actionId({ dbConnectionPool });
 
 
+
+
 describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
     let /** @type {WebAppServer} */ server;
     let db;
@@ -75,7 +77,7 @@ describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
         installRouter({ app, router: blogRouter, pathPrefix: "/api/v1/blog" });
         server = http.createServer(app);
         await doListen(server, PORT);
-        console.log("before hook finished.", " 🚀 ".repeat(10));
+        // console.log("before hook finished.", " 🚀 ".repeat(10));
     });
 
     it("@sanity", () => {
@@ -106,7 +108,7 @@ describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
 
 
         it("creates an action and stores action in db", async () => {
-            const result = await client.postRequest("/api/v1/blog/", { nothing: true });
+            const result = await client.postRequest("/api/v1/blog/", {});
             assert.strictEqual(result.statusCode, 201);
             assert.strictEqual(result.headers.get("Location")?.includes("blog/action"), true);
             const response = result.response;
@@ -128,7 +130,7 @@ describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
 
         it("creates a new blog by PUT action and stores the blog in db", async () => {
             // We create a brand-new action, to isolate this test case from the previous.
-            const actionId = (await client.postRequest("/api/v1/blog/", { nothing: true })).response.actionId;
+            const actionId = (await client.postRequest("/api/v1/blog/", {})).response.actionId;
 
             const body = makeFakeBlog({ blogTitle: "یک عنوان جالب" + " " + "🎂" });
             const result = await client.putRequest(`/api/v1/blog/action/${actionId}`, body);
@@ -149,15 +151,33 @@ describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
             assert.strictEqual(record.blogTitle.includes("🎂") && record.blogTitle.includes("عنوان"), true);
         });
 
-        it.todo("returns 400 when blog detail is invalid");
+        it("returns 400 when blog details are invalid", async () => {
+            const actionId = (await client.postRequest("/api/v1/blog/", {})).response.actionId;
+            const body = makeFakeBlog({});
+            delete body.blogTitle; // making body invalid
+            const result = await client.putRequest(`/api/v1/blog/action/${actionId}`, body);
+            assert.strictEqual(result.statusCode, 400);
+            assert.strictEqual(result.response.success, false);
+            assert.strictEqual(result.response.error.includes("blogTitle"), true);
+            assert.strictEqual(result.response.error.includes("required"), true);
+        });
+
     });
 
-    it.todo("should return 401 and shouldn't create action when not authenticated");
+    it("should return 401 and shouldn't create action when not authenticated", async() => {
+        // First, let's clear cookies that are stored from previous test cases.
+        client.clearCookies();
+        const result = await client.postRequest("/api/v1/blog/", {});
+        assert.strictEqual(result.statusCode, 401);
+        assert.strictEqual(result.response.success, false);
+        assert.strictEqual(result.response.error.includes("Not authenticated"), true);
+    });
+
 
     after(async () => {
         await dbConnectionPool.end();
         await promisify(server.close.bind(server))();
-        console.log("after hook finished.", " 🚩🎬 ".repeat(10));
+        // console.log("after hook finished.", " 🚩🎬 ".repeat(10));
     });
 });
 

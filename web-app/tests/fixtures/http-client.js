@@ -15,6 +15,7 @@ export default function makeHttpClient({ port }) {
         postRequest,
         getRequest,
         putRequest,
+        clearCookies: function(){ clientCookies = []; }
     });
 
     /**
