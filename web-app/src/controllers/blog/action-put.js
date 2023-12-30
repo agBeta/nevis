@@ -15,6 +15,7 @@ export function makeEndpointController({
     insert_blog,
 }) {
 
+    // @ts-ignore
     return Object.freeze({
         handleRequest,
         validateRequest: makeBasicValidateNormalize({
@@ -121,7 +122,7 @@ export function makeEndpointController({
                 "Content-Type": "application/json",
                 "Cache-Control": "max-age=3600",
             },
-            payload: JSON.stringify({ success: true, message: `Blog ${blogId} is created.` }),
+            payload: JSON.stringify({ success: true, blogId }),
         };
 
         //  There is a tiny possibility that MySQL event scheduler deletes the action within the time we updated
