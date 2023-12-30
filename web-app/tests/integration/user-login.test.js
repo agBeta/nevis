@@ -23,7 +23,7 @@ const makeHttpClient = (await import("../fixtures/http-client.js")).default;
 const doListen = (await import("../fixtures/listen.js")).default;
 
 const PORT = Number(process.env.PORT);
-const agent = makeHttpClient({ port: PORT });
+const client = makeHttpClient({ port: PORT });
 
 const dbConnectionPool = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) });
 const insert_user = make_insert_user({ dbConnectionPool });
@@ -92,7 +92,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     });
 
     it.skip("returns 200 along with userId when given email,password are correct", async () => {
-        const raw = await agent.postRequest("/api/v1/auth/login", {
+        const raw = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user1.password,
             rememberMe: false,
@@ -108,7 +108,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     });
 
     it.skip("returns 401 when given email,password are incorrect", async () => {
-        const raw = await agent.postRequest("/api/v1/auth/login", {
+        const raw = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user2/*<--*/.password,
             rememberMe: false,
@@ -123,7 +123,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     // This test makes sure the controller won't end up executing slow downstream functions.
     it.skip("returns 400 when given password is too long or isn't supplied", async () => {
         // password isn't given
-        let raw = await agent.postRequest("/api/v1/auth/login", {
+        let raw = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             /*no password is provided*/
             rememberMe: false,
@@ -135,7 +135,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         assert.strictEqual(response.error.includes("password") && response.error.includes("required"), true);
 
 
-        raw = await agent.postRequest("/api/v1/auth/login", {
+        raw = await client.postRequest("/api/v1/auth/login", {
             email: user1.email,
             password: user1.password.repeat(20 /*long password*/),
             rememberMe: false,
@@ -149,7 +149,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     it.skip("sets session cookie when given email,password are correct", async () => {
         //  it's better to login as user2, since we already have logged in as user1 in previous test and
         //  that might cause some false positives. Not sure. Anyway...
-        const raw = await agent.postRequest("/api/v1/auth/login", {
+        const raw = await client.postRequest("/api/v1/auth/login", {
             email: user2.email,
             password: user2.password,
             rememberMe: false,
@@ -186,14 +186,14 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
     it("given user is logged in, authenticated_as should return user id", async () => {
         //  First we need to satisfy the assumption (i.e. given user is logged in).
         //  We log in as user3 to isolate this test from previous ones.
-        let raw = await agent.postRequest("/api/v1/auth/login", {
+        let raw = await client.postRequest("/api/v1/auth/login", {
             email: user3.email,
             password: user3.password,
             rememberMe: false,
         });
         assert.strictEqual(raw.status, 200);
 
-        const response = await agent.get("/api/v1/auth/authenticated_as");
+        const response = await client.getRequest("/api/v1/auth/authenticated_as");
         console.log(response);
         assert.strictEqual(raw.status, 200);
         assert.strictEqual(raw.headers.get("Cache-Control"), "no-store");

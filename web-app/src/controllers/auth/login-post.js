@@ -88,7 +88,6 @@ export function makeEndpointController({
             expiresAt,
         });
 
-        console.log(" 🍞 ".repeat(5), process.env.PORT);
         return {
             statusCode: 200,
             headers: {
@@ -99,25 +98,23 @@ export function makeEndpointController({
             /**@type {SetCookie[]}*/ cookies: [
                 {
                     // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#__host-.
-                    name: "nevis_session_id",
+                    name: "__Host-nevis_session_id",
                     value: sessionId,
                     options: {
                         secure: process.env.NODE_ENV === "test" ? true : true,
                         httpOnly: true,
                         sameSite: "lax",
                         maxAge: lifespanInSeconds,
-                        domain: `localhost`
                     }
                 },
                 {
-                    name: "nevis_role",
+                    name: "__Host-nevis_role",
                     value: "user",
                     options: {
                         secure: process.env.NODE_ENV === "test" ? true : true,
                         httpOnly: false, // can be used by frontend to implement offline functionality
                         sameSite: "lax",
                         maxAge: lifespanInSeconds,
-                        domain: `localhost`
                     }
                 }
             ],

@@ -1,6 +1,6 @@
 import makeHttpError from "../http-error.js";
 
-const NAME_OF_SESSION_COOKIE = "__Host-nevis_sessionId";
+const NAME_OF_SESSION_COOKIE = "__Host-nevis_session_id";
 
 /**
  * @param {{
@@ -26,7 +26,6 @@ export function makeEndpointController({
     //  authentication. So for consistency.
 
     function validateRequest(/**@type {HttpRequest}*/ httpRequest) {
-        console.log(httpRequest);
         if (!httpRequest.cookies || Object.keys(httpRequest.cookies).length === 0 ||
             !httpRequest.cookies[NAME_OF_SESSION_COOKIE]) {
             return {
