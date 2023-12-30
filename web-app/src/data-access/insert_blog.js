@@ -33,7 +33,7 @@ export default function make_insert_blog({ dbConnectionPool }) {
             blogTitle,
             blogBody,
             blogTopic,
-            imageUrl,
+            imageUrl ?? null,  // <-- Bind parameters must not contain undefined. To pass SQL NULL specify JS null
             isPublished,
             new Date(createdAt),
             new Date(modifiedAt),
