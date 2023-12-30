@@ -1,9 +1,13 @@
 import express from "express";
 import morgan from "morgan";
 import log from "#utils/log.js";
+import parseCookieMiddleware from "./parse-cookie-middleware.js";
 
 export function makeExpressApp() {
     const app = express();
+    // Now, install necessary middlewares that are always useful, both in test and production.
+    // Currently there is only this one:
+    app.use(parseCookieMiddleware);
     return app;
 }
 
