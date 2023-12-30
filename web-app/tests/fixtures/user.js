@@ -4,7 +4,6 @@ faker.seed(789);
 
 /**
  * Creates a fake user from POV of api consumer.
- * NOTE, it is different from makeFakeUser in src/data-access/fixtures/user.js.
  * @param {*} overrides
  */
 export function makeFakeUser(overrides) {
