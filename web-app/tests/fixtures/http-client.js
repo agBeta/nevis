@@ -49,6 +49,7 @@ export default function makeHttpClient({ port }) {
                 // Content-Type is crucial. Never omit it.
                 "Content-Type": "application/json",
                 "Content-Length": Buffer.byteLength(stringifiedBody),
+                "Connection": "keep-alive",
             },
         };
         if (clientCookies.length > 0) {
@@ -82,11 +83,9 @@ export default function makeHttpClient({ port }) {
                     // We know for sure the response data is an stringified json. So ...
                     const stringified = chunks.join("");
                     const response = JSON.parse(stringified);
-
                     //  Before resolving, we must take care of set-cookie headers (i.e. server sends
                     //  back a cookie to be set in client-side, like after login).
                     persistCookiesInClient(headers);
-
                     resolve(Object.freeze({ response, headers, statusCode }));
                 });
             });
@@ -121,25 +120,24 @@ export default function makeHttpClient({ port }) {
         // How these options are found? See comment below end of file.
 
         let options = {
+            agent: false,
             hostname: "localhost",
             port: port,
             path: url,
-            agent: false,
+            headers: {
+                // Specifying this seems quite crucial.
+                "Connection": "keep-alive",
+            },
         };
         if (clientCookies.length > 0) {
-            options = {
-                ...options,
-                headers: {
-                    "cookie": clientCookies.join("; ")
-                    //  It seems we can also set it by the array.
-                },
-            };
+            options.headers["cookie"] = clientCookies.join("; ");
         }
+
         return new Promise((resolve, reject) => {
             const req = http.get(options, (res) => {
-                const statusCode = res.statusCode /*just to prevent being undefined*/ - 99;
+                const statusCode = res.statusCode ?? /*just to prevent being undefined*/ -99;
                 // Key-value pairs of header names (in lower-case) and values
-                let headers = res.headers ?? {};
+                let headers = res.headers;
                 headers = {
                     ...headers,
                     //  Don't mix it up with "get" syntax that binds an object property to a function.
@@ -155,8 +153,6 @@ export default function makeHttpClient({ port }) {
                     chunks.push(chunk);
                 });
                 res.on("end", () => {
-                    // console.log("Response ended: ");
-                    // console.log(response);
                     const response = JSON.parse(Buffer.concat(chunks).toString());
                     resolve(Object.freeze({ response, headers, statusCode }));
                 });

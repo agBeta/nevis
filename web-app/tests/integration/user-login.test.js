@@ -16,7 +16,7 @@ dotenv.config({
 });
 
 const makeDbConnectionPool = (await import("../../src/data-access/connection.js")).default;
-const { installRouter, makeExpressApp } = await import("../../src/express-stuff/server.js");
+const { installRouter, makeExpressApp, installMorgan } = await import("../../src/express-stuff/server.js");
 const authRouter = (await import("../../src/routes/auth-router.js")).router;
 const { makeFakeUser } = await import("../fixtures/user.js");
 const makeHttpClient = (await import("../fixtures/http-client.js")).default;
@@ -80,8 +80,12 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         `);
 
         const app = makeExpressApp();
+        // installMorgan({ app });
         installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
         server = http.createServer(app);
+        // The following two will manifest in client response header 'keep-alive': 'timeout=4, max=500'
+        server.keepAliveTimeout = 4000;
+        server.maxRequestsPerSocket = 500;
         await doListen(server, PORT);
         // console.log("before hook finished.", " 🚀 ".repeat(10));
     });
