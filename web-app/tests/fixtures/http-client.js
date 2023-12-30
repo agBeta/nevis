@@ -13,13 +13,21 @@ export default function makeHttpClient({ port }) {
 
     return Object.freeze({
         postRequest,
-        getRequest, clientCookies
+        getRequest,
     });
 
     /**
      * @param {string} url
      * @param {any} body
-     * @returns
+     * @returns {Promise<{
+     *      statusCode: number,
+     *      headers: {
+     *          [key: string]: string,
+     *          get: (headerName:string)=>string|string[]|undefined,
+     *          getSetCookie: ()=>string[]|undefined
+     *      },
+     *      response: any,
+     * }>}
      */
     async function postRequest(url, body) {
         if (!url) {
@@ -29,33 +37,67 @@ export default function makeHttpClient({ port }) {
             throw new Error("postRequest url must start with slash(/).");
         }
 
-        const raw = await fetch(BASE_URL + url, {
-            method: "POST",
-            // Headers are crucial. Never omit them.
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        });
+        const stringifiedBody = JSON.stringify(body);
 
-        if (raw.headers.getSetCookie().length > 0) {
-            //  We use the same client in an entire test suite, in which we might login as different
-            //  users. When response contains 'Set-Cookie' header, it means we must reset the cookies
-            //  to their new values. Even though they might haven already been set by previous requests,
-            //  they aren't valid anymore, since we are now logged in as another user (i.e. session is
-            //  changed).
-            clientCookies = [];
-            for (let coo of raw.headers.getSetCookie()) {
-                //  We only need the name=value pert, to inject as 'cookie' in subsequent requests. Recall,
-                //  there is a 'Set-Cookie' Response header and 'Cookie' Request header. For 'Cookie' header
-                //  in request, we are only allowed to include name=value part (i.e. shouldn't include max-age,
-                //  etc.).
-                //  Also we don't care about Max-Age=.., path=.., etc. Though, we can implement expiration
-                //  logic for clientCookies based on their max-age, but it we won't need this behavior in
-                //  tests and will only complicate the code.
-                const nameAndValuePart = coo.split(";")[0];
-                clientCookies.push(nameAndValuePart);
-            }
+        const options = {
+            hostname: "localhost",
+            port: port,
+            path: url,
+            method: "POST",
+            headers: {
+                // Content-Type is crucial. Never omit it.
+                "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength(stringifiedBody),
+            },
+        };
+        if (clientCookies.length > 0) {
+            // adding new property "cookie"
+            options.headers["cookie"] = clientCookies.join("; ");
         }
-        return raw/*.clone()?*/;
+
+        return new Promise((resolve, reject) => {
+            const req = http.request(options, function handleResponseFromServer(res) {
+                // IncomingMessage extends stream.Readable
+                res.setEncoding("utf-8");
+
+                // See getRequest for comments about the following two variables.
+                const statusCode = res.statusCode ?? -99;
+                let headers = res.headers;
+                headers = {
+                    ...headers,
+                    get: function (/**@type{string}*/headerName) {
+                        return this[headerName.toLowerCase()];
+                    },
+                    getSetCookie: function () {
+                        return this["set-cookie"];
+                    }
+                };
+
+                const chunks = [];
+                res.on("data", (chunk) => {
+                    chunks.push(chunk);
+                });
+                res.on("end", function constructFinalResponseJSON() {
+                    // We know for sure the response data is an stringified json. So ...
+                    const stringified = chunks.join("");
+                    const response = JSON.parse(stringified);
+
+                    //  Before resolving, we must take care of set-cookie headers (i.e. server sends
+                    //  back a cookie to be set in client-side, like after login).
+                    persistCookiesInClient(headers);
+
+                    resolve(Object.freeze({ response, headers, statusCode }));
+                });
+            });
+            req.on("error", (err) => {
+                reject(err);
+            });
+            // Sending body...
+            req.write(stringifiedBody, "utf-8", function (err) {
+                if (err) reject("Failed to write body to stream. " + err.message);
+            });
+            req.end();
+        });
     }
 
 
@@ -94,7 +136,7 @@ export default function makeHttpClient({ port }) {
         }
         return new Promise((resolve, reject) => {
             const req = http.get(options, (res) => {
-                const statusCode = res.statusCode ?? -1;
+                const statusCode = res.statusCode /*just to prevent being undefined*/ - 99;
                 // Key-value pairs of header names (in lower-case) and values
                 let headers = res.headers ?? {};
                 headers = {
@@ -102,7 +144,7 @@ export default function makeHttpClient({ port }) {
                     //  Don't mix it up with "get" syntax that binds an object property to a function.
                     //  We add this function to have more compatibility between result of fetch API in
                     //  which we could use raw.headers.get("...")
-                    get: function(/**@type{string}*/headerName) {
+                    get: function (/**@type{string}*/headerName) {
                         return this[headerName.toLowerCase()];
                     }
                 };
@@ -126,17 +168,31 @@ export default function makeHttpClient({ port }) {
     }
 
 
-    // from lib file
-    // const options = {
-    //        hostname: 'www.google.com',
-    //        port: 80,
-    //        path: '/upload',
-    //        method: 'POST',
-    //        headers: {
-    //          'Content-Type': 'application/json',
-    //          'Content-Length': Buffer.byteLength(postData),
-    //        },
-    //      };
+
+    /** @param {{ [key: string]: string, get: (string)=>string|undefined, getSetCookie: ()=>string[]|undefined}} headers */
+    function persistCookiesInClient(headers) {
+        if (!headers.getSetCookie() || headers.getSetCookie().length == 0) return;
+
+        //  We use the same client in an entire test suite, in which we might login as different
+        //  users. When response contains 'Set-Cookie' header, it means we must reset the cookies
+        //  to their new values. Even though they might haven already been set by previous requests,
+        //  they aren't valid anymore, since we are now logged in as another user (i.e. session is
+        //  changed).
+        clientCookies = [];
+        for (let coo of headers.getSetCookie()) {
+            //  We only need the name=value pert, to inject as 'cookie' in subsequent requests. Recall,
+            //  there is a 'Set-Cookie' Response header and 'Cookie' Request header. For 'Cookie' header
+            //  in request, we are only allowed to include name=value part (i.e. shouldn't include max-age,
+            //  etc.).
+            //  Also we don't care about Max-Age=.., path=.., etc. Though, we can implement expiration
+            //  logic for clientCookies based on their max-age, but it we won't need this behavior in
+            //  tests and will only complicate the code.
+            const nameAndValuePart = coo.split(";")[0];
+            clientCookies.push(nameAndValuePart);
+        }
+        console.log(clientCookies);
+    }
+
 }
 
 
