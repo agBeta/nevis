@@ -1,14 +1,20 @@
 import log from "#utils/log.js";
-import { find_session_record_by_hashedSessionId } from "../data-access/index.js";
-
+import { find_session_record_by_hashedSessionId } from "#da/index.js";
+import { createFastHash } from "#controllers";
 
 export const requireAuthentication = makeRequireAuthenticationMiddleware({
-    find_session_record_by_hashedSessionId
+    calculateHash: createFastHash,
+    find_session_record_by_hashedSessionId,
 });
 
 
-/** @param {{ find_session_record_by_hashedSessionId: Find_Session_Record_By_HashedSessionId }} param0 */
-export function makeRequireAuthenticationMiddleware({ find_session_record_by_hashedSessionId }) {
+/**
+ * @param {Object} param0
+ * @param {(plain: string) => string} param0.calculateHash - MUST be the same hash function used to hash
+ *          sessionId before storing in db (i.e. exactly [createFastHash] used in login-post controller).
+ * @param {Find_Session_Record_By_HashedSessionId} param0.find_session_record_by_hashedSessionId
+ */
+export function makeRequireAuthenticationMiddleware({ calculateHash, find_session_record_by_hashedSessionId }) {
     return requireLogin;
 
     /**
@@ -19,8 +25,8 @@ export function makeRequireAuthenticationMiddleware({ find_session_record_by_has
     async function requireLogin(req, res, next) {
         //  req.cookies might be undefined (recall we aren't using cookie-parser which guarantees to
         //  populate req.cookies with something or {}). So "?." is crucial.
-        const hashedSessionId = req.cookies?.["__Host-nevis_session_id"];
-        if (!hashedSessionId) {
+        const sessionId = req.cookies?.["__Host-nevis_session_id"];
+        if (!sessionId) {
             res.set("Content-Type", "application/json").status(401).send(JSON.stringify({
                 success: false,
                 error: "Not authenticated."
@@ -29,7 +35,8 @@ export function makeRequireAuthenticationMiddleware({ find_session_record_by_has
         }
 
         try {
-            const session = await find_session_record_by_hashedSessionId({ hashedSessionId });
+            const h = calculateHash(sessionId);
+            const session = await find_session_record_by_hashedSessionId({ hashedSessionId: h });
 
             if (!session) {
                 res.set("Content-Type", "application/json").status(401).send(JSON.stringify({

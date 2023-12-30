@@ -45,9 +45,11 @@ export const emailService = makeEmailService({
 const createSecureHash = async function (/**@type {string}*/ plain) {
     return bcrypt.hash(plain, 9);
 };
-const createFastHash = function (/**@type {string}*/ plain) {
+export/*↙️*/ const createFastHash = function (/**@type {string}*/ plain) {
     return crypto.createHash("md5").update(plain, "utf-8").digest("base64");
 };
+// Why export createFastHash? authentication middleware needs it.
+
 
 const generateCollisionResistentId = init({
     length: 24,
