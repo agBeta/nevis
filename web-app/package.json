@@ -56,6 +56,7 @@
     "#controllers": {
       "default": "./src/controllers/index.js"
     },
-    "#utils/*.js": "./src/utils/*.js"
+    "#utils/*.js": "./src/utils/*.js",
+    "#da/*.js": "./src/data-access/*.js"
   }
 }

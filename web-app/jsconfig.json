@@ -18,7 +18,10 @@
             ],
             "#controllers": [
                 "./src/controllers/index.js"
-            ]
+            ],
+            "#da/*": [
+                "./src/data-access/*"
+            ],
         }
     },
     "include": [
