@@ -6,8 +6,9 @@ import { promisify } from "node:util";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
-import make_count_actions_by_userId from "#da/count_actions_by_userId.js";
+import make_find_blog_record_by_blogId from "#da/find_blog_record_by_blogId.js";
 import make_find_action_record_by_actionId from "#da/find_action_record_by_actionId.js";
+import { makeFakeBlog } from "../fixtures/blog.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "..", "configs", "blog-add.env"),
@@ -26,7 +27,7 @@ const client = makeHttpClient({ port: PORT });
 
 const dbConnectionPool = makeDbConnectionPool({ port: Number(process.env.MYSQL_PORT) });
 
-const count_actions_by_userId = make_count_actions_by_userId({ dbConnectionPool });
+const find_blog_record_by_blogId = make_find_blog_record_by_blogId({ dbConnectionPool });
 const find_action_record_by_actionId = make_find_action_record_by_actionId({ dbConnectionPool });
 
 
@@ -124,7 +125,34 @@ describe("Blog Add", { concurrency: false, timeout: 8000 }, () => {
             //  but not too long...
             assert.strictEqual(record?.expiresAt - Date.now() < 13 * 60 * 60 * 1000, true);
         });
+
+        it("creates a new blog by PUT action and stores the blog in db", async () => {
+            // We create a brand-new action, to isolate this test case from the previous.
+            const actionId = (await client.postRequest("/api/v1/blog/", { nothing: true })).response.actionId;
+
+            const body = makeFakeBlog({ blogTitle: "یک عنوان جالب" + " " + "🎂" });
+            const result = await client.putRequest(`/api/v1/blog/action/${actionId}`, body);
+            assert.strictEqual(result.statusCode, 201);
+            const blogId = result.response.blogId;
+            assert.strictEqual(blogId == null, false);
+            assert.strictEqual(result.headers.get("Location"), `/blog/${blogId}`);
+
+            const record = await find_blog_record_by_blogId({ blogId });
+            assert.strictEqual(record == null, false);
+            assert.strictEqual(record?.id == blogId, true);
+
+            // Check authorId is same as logged-in user
+            assert.strictEqual(record?.authorId, user1.id);
+            // createdAt should be something around now (5 seconds tolerance)
+            assert.strictEqual(Math.abs(record?.createdAt - Date.now()) < 5000, true);
+            // blog title should be encoded/decoded correctly along the way from API, stringify, db, etc.
+            assert.strictEqual(record.blogTitle.includes("🎂") && record.blogTitle.includes("عنوان"), true);
+        });
+
+        it.todo("returns 400 when blog detail is invalid");
     });
+
+    it.todo("should return 401 and shouldn't create action when not authenticated");
 
     after(async () => {
         await dbConnectionPool.end();
