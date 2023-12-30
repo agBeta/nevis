@@ -16,7 +16,12 @@ export default function makeHttpClient({ port }) {
         getRequest, clientCookies
     });
 
-    async function postRequest(/**@type {string}*/ url, /**@type {any}*/ body) {
+    /**
+     * @param {string} url
+     * @param {any} body
+     * @returns
+     */
+    async function postRequest(url, body) {
         if (!url) {
             throw new Error("postRequest must have a url.");
         }
