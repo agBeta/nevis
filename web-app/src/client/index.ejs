@@ -1,11 +1,56 @@
 <!DOCTYPE html>
 <html lang="fa">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>بنویس</title>
-    </head>
-    <body>
-        <h1>Hi</h1>
-    </body>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/public/css/global.css">
+    <title>بنویس</title>
+</head>
+
+<body dir="rtl">
+    <!-- Having dir ↖️ as html attr is more appropriate, according to https://stackoverflow.com/a/5375907. -->
+
+    <div class="menu-toggle">
+        <span></span>
+        <span></span>
+    </div>
+
+    <nav class="primary-nav menu">
+        <div class="links">
+            <ul>
+                <li class="nav__item menu-wrap">
+                    <a href="#">Works/<span>01</span></a>
+                </li>
+                <li class="nav__item menu-wrap">
+                    <a href="#">About/<span>02</span></a>
+                </li>
+                <li class="nav__item menu-wrap">
+                    <a href="#">Blog/<span>03</span></a>
+                </li>
+                <li class="nav__item menu-wrap">
+                    <a href="#">Contact/<span>04</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="header">
+        <span class="to-reveal wrap">
+            <h1>Studio</h1>
+        </span>
+    </header>
+
+    <main>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe sequi enim voluptas ex laudantium? Consequuntur
+        eos consequatur ducimus dolorum! Similique ad voluptate nihil sint nisi itaque minus unde iste harum, culpa
+        earum aperiam, asperiores numquam deleniti magni optio distinctio illo ipsam ab debitis recusandae eligendi non
+        temporibus! Explicabo, vel officiis!
+    </main>
+
+    <script type="module" src="/public/js/styling.js"></script>
+</body>
+
 </html>
