@@ -3,3 +3,5 @@
 /temp
 /web-app/.env
 *.env
+*.jpg
+*.png

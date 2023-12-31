@@ -2,31 +2,15 @@
     "editor.rulers": [
         120
     ],
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features",
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
     "workbench.colorCustomizations": {
         "editorRuler.foreground": "#40b3ff5e"
     },
-    "cSpell.language": "en,fa",
-    "cSpell.words": [
-        "ADDDATE",
-        "alphanum",
-        "birthdate",
-        "Cacheable",
-        "existings",
-        "GCRI",
-        "IIFE",
-        "INNODB",
-        "Jalali",
-        "linebreak",
-        "nocheck",
-        "paralleldrive",
-        "signup",
-        "subtest",
-        "subtests",
-        "TINYINT",
-        "uncategorized",
-        "worktree",
-        "worktrees"
-    ],
     "better-comments.tags": [
         {
             "tag": "!",
@@ -73,5 +57,28 @@
             "bold": false,
             "italic": false
         }
+    ],
+    "cSpell.language": "en,fa",
+    "cSpell.words": [
+        "ADDDATE",
+        "alphanum",
+        "birthdate",
+        "Cacheable",
+        "existings",
+        "GCRI",
+        "IIFE",
+        "INNODB",
+        "Jalali",
+        "linebreak",
+        "nocheck",
+        "paralleldrive",
+        "Samim",
+        "signup",
+        "subtest",
+        "subtests",
+        "TINYINT",
+        "uncategorized",
+        "worktree",
+        "worktrees"
     ]
 }
