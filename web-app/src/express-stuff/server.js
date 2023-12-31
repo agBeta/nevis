@@ -33,8 +33,8 @@ export function installMorgan({ app }) {
                 tokens.method(req, res),
                 tokens.url(req, res), " ---",
                 tokens.status(req, res), "-",
-                (tokens.res(req, res, "content-length") ?? "0").concat(" bytes -"),
-                (tokens["response-time"](req, res) ?? "0").concat(" ms")
+                (tokens.res(req, res, "content-length") + "0").concat(" bytes -"),
+                (tokens["response-time"](req, res) + "0").concat(" ms")
             ].join(" ");
         },
         {
