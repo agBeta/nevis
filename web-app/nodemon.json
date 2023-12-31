@@ -6,7 +6,8 @@
     "watch": ["src/"],
     "env": {
       "NODE_ENV": "test",
-      "PORT": 9079
+      "PORT": 9079,
+      "DISABLE_CACHE": "yes"
     },
     "ext": "js,json,cjs,ejs"
 }
