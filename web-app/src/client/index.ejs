@@ -17,20 +17,20 @@
         <span></span>
         <span></span>
     </div>
-
-    <nav class="primary-nav menu">
-        <div class="links">
+    <nav aria-label="Main Menu">
+        <!-- ↖️ according to https://www.w3.org/WAI/tutorials/menus/structure/ -->
+        <div class="nav-item-group">
             <ul>
-                <li class="nav__item menu-wrap">
+                <li class="nav-item to-reveal">
                     <a href="#">Works/<span>01</span></a>
                 </li>
-                <li class="nav__item menu-wrap">
+                <li class="nav-item to-reveal">
                     <a href="#">About/<span>02</span></a>
                 </li>
-                <li class="nav__item menu-wrap">
+                <li class="nav-item to-reveal">
                     <a href="#">Blog/<span>03</span></a>
                 </li>
-                <li class="nav__item menu-wrap">
+                <li class="nav-item to-reveal">
                     <a href="#">Contact/<span>04</span></a>
                 </li>
             </ul>
@@ -38,19 +38,22 @@
     </nav>
 
     <header class="header">
-        <span class="to-reveal wrap">
+        <span class="to-reveal">
             <h1>Studio</h1>
         </span>
     </header>
 
-    <main>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe sequi enim voluptas ex laudantium? Consequuntur
-        eos consequatur ducimus dolorum! Similique ad voluptate nihil sint nisi itaque minus unde iste harum, culpa
-        earum aperiam, asperiores numquam deleniti magni optio distinctio illo ipsam ab debitis recusandae eligendi non
-        temporibus! Explicabo, vel officiis!
+    <main class="to-reveal">
+        <div>
+            
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe sequi enim voluptas ex laudantium? Consequuntur
+            eos consequatur ducimus dolorum! Similique ad voluptate nihil sint nisi itaque minus unde iste harum, culpa
+            earum aperiam, asperiores numquam deleniti magni optio distinctio illo ipsam ab debitis recusandae eligendi non
+            temporibus! Explicabo, vel officiis!
+        </div>
     </main>
 
-    <script type="module" src="/public/js/styling.js"></script>
+    <script type="module" src="/public/js/style-stuff.js"></script>
 </body>
 
 </html>

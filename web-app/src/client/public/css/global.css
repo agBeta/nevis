@@ -67,14 +67,8 @@ body {
 .u-text-center {}
 
 
-/* ----- Navigation ----------- */
-.primary-nav ul {
-    list-style: none;
-}
-
-.primary-nav a {
-    color: #191919;
-}
+/* ------- Navigation and Reveal animation ----------- */
+/* We prefer semantic css here. */
 
 .menu-toggle {
     position: fixed;
@@ -98,52 +92,49 @@ body {
     transform-origin: center;
 }
 
+/* Creating cross animation */
 .menu-toggle.active span:nth-child(1) {
     position: absolute;
     transform: rotate(45deg);
 }
-
 .menu-toggle.active span:nth-child(2) {
     position: absolute;
     transform: rotate(-45deg);
 }
 
-
-.header {
-    position: fixed;
-    top: 3%;
-    left: 3%;
-    width: 94%;
-    z-index: 2;
-    color: black;
-}
-
-h1 {
-    font-weight: 400;
-}
-
-.wrap {
+.to-reveal {
     position: relative;
     display: block;
-    line-height: auto;
     overflow: hidden;
     transition: 0.3s;
     will-change: transform;
 }
 
-.wrap h1 {
+.to-reveal > * {
     transform: translateY(100%);
     transition: 0.3s;
     will-change: transform;
 }
 
-.wrap.done h1 {
+.to-reveal.active > * {
+    transform: translateY(0);
+}
+
+.to-reveal.done h1 {
     transform: translateY(100%);
     transition: 0.3s;
     will-change: transform;
 }
 
-.menu {
+nav[aria-label="Main Menu"] ul {
+    list-style: none;
+}
+
+nav[aria-label="Main Menu"] a {
+    color: #191919;
+}
+
+nav[aria-label="Main Menu"] {
     position: fixed;
     top: 0;
     left: 0;
@@ -155,40 +146,44 @@ h1 {
     transition: 0.3s;
 }
 
-.menu.active {
+nav[aria-label="Main Menu"].active {
     pointer-events: all;
     opacity: 1;
 }
 
-.links {
+.nav-item-group {
     position: absolute;
     bottom: 3%;
     left: 3%;
     min-height: 100px;
 }
-.links ul {
+
+.nav-item-group ul {
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-.menu-wrap {
+nav[aria-label="Main Menu"] .to-reveal {
     position: relative;
     overflow: hidden;
 }
 
-.menu-wrap a {
+nav[aria-label="Main Menu"] .to-reveal a {
     display: block;
     font-size: var(--fs-600);
     transform: translateY(100%);
     transition: 0.3s;
 }
 
-.menu-wrap.active a {
+
+nav[aria-label="Main Menu"] .to-reveal.active a {
     transform: translateY(0);
 }
-.menu-wrap span {
+
+nav[aria-label="Main Menu"] .nav-item span {
     font-size: var(--fs-300);
 }
+
 /**/
