@@ -1,11 +1,8 @@
-/**
- * @param {{ routes: Array<{path: string, pageView: PageView}> }} param0
- * @returns
- */
-export default function makeRouter({
-    routes
-}) {
+/** @param {{ routes: Array<{path: string, pageView: PageView}> }} param0 */
+export default function makeRouter({ routes }) {
+
     return Object.freeze({
+        init,
         navigateTo,
     });
 
@@ -17,22 +14,51 @@ export default function makeRouter({
             //  See https://developer.mozilla.org/en-US/docs/Web/API/History/pushState.
             history.pushState({ route: routeToNavigate }, "", routeToNavigate);
         }
-        document.querySelectorAll("section.page").forEach(panel /*i.e. page*/ => {
-            panel.setAttribute("aria-hidden", "false");
+        document.querySelectorAll("section.page").forEach(page => {
+            page.setAttribute("aria-hidden", "false");
         });
-        // const
+        let matchingRoute = null;
+        let params = null;
+
+        for (const r of routes) {
+            const result = matchAndCapture(r.path, routeToNavigate);
+            if (result == null) continue;
+            matchingRoute = r;
+            params = result.params;
+            // The first one whose pattern matches the routeToNavigate will be rendered. We don't continue anymore.
+            break;
+        }
+        if (!matchingRoute) {
+            // By convention, the last element should correspond to 404 page.
+            matchingRoute = routes[routes.length - 1];
+            params = null;
+        }
+        matchingRoute.pageView.render(params);
     }
 
 
+    function init() {
+        //  Don't add eventListener just to links. Because we may later add/remove new links to the page.
+        //  The best way is to attach our listener body click event.
+        document.body.addEventListener("click", (ev) => {
+            if (ev.target instanceof Element && ev.target.matches("[data-link]")) {
+                // We aren't letting the browser take care of navigation, since we want to do it by our router, so...
+                ev.preventDefault();
+                navigateTo(/**@type {HTMLAnchorElement}*/(ev.target).href, true);
+            }
+        });
 
+        window.addEventListener("popstate", ev => {
+            navigateTo(ev.state.route, false/*<--*/);
+        });
+
+        // Now listeners are registered, and we just need to take care of initial url
+        navigateTo(window.location.pathname);
+    }
 }
 
 
-
-/**
- * @param {string} pathPattern an Express-like path, e.g. /posts/:id
- * @param {string} routeToNavigate
- */
+/** @param {string} pathPattern an Express-like path, e.g. /posts/:id  @param {string} routeToNavigate */
 export function matchAndCapture(pathPattern, routeToNavigate) {
     //  See tests for router to understand what this function does.
 
@@ -71,6 +97,9 @@ export function matchAndCapture(pathPattern, routeToNavigate) {
         params: Object.fromEntries(keys.map((k, i) => [k, values[i]]))
     });
 }
+
+
+
 
 //  Credit to:
 //  https://github.com/dcode-youtube/single-page-app-vanilla-js/tree/master.
