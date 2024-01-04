@@ -15,8 +15,10 @@ export default function makeRouter({ routes }) {
             history.pushState({ route: routeToNavigate }, "", routeToNavigate);
         }
         document.querySelectorAll("section.page").forEach(page => {
-            page.setAttribute("aria-hidden", "false");
+            page.setAttribute("aria-hidden", "true");
         });
+        
+
         let matchingRoute = null;
         let params = null;
 
@@ -29,10 +31,12 @@ export default function makeRouter({ routes }) {
             break;
         }
         if (!matchingRoute) {
-            // By convention, the last element should correspond to 404 page.
+            // By convention, the last element should correspond to 404/crash page.
             matchingRoute = routes[routes.length - 1];
             params = null;
         }
+        console.log(routeToNavigate);
+        console.log(matchingRoute);
         matchingRoute.pageView.render(params);
     }
 
