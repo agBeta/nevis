@@ -30,7 +30,7 @@ router.get("/manifest.json", (req, res) => {
 });
 
 
-router.get("/", (req, res) => {
+router.get("/*", (req, res) => {
 
     //  We could have set CSP headers in our web server configuration (e.g. Nginx reverse proxy). But this way we
     //  have more control. We aren't using google fonts or any CDN to load icons, etc. So most of them are 'self'.
