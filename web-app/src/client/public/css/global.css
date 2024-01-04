@@ -36,6 +36,18 @@
     --fs-600: 2rem;
     --fs-700: 2.5rem;
     --border-radius: .75rem;
+    --clr-dark-red: #b30101;
+}
+
+@media (max-width: 30rem) {
+    :root {
+        --fs-200: .625rem;
+        --fs-300: .75rem;
+        --fs-400: 1rem;
+        --fs-500: 1.125rem;
+        --fs-600: 1.625rem;
+        --fs-700: 2rem;
+    }
 }
 
 
@@ -63,6 +75,10 @@ html {
 body {
     margin: 0;
     width: 100%;
+    /*  It is crucial so that <main> can fill remaining vertical space. Since margin: 0 it's ok to specify
+        as 100vh. 100% doesn't work unless we set 100% on <html> element too.
+    */
+    height: 100vh;
     overscroll-behavior: none;
 }
 
@@ -82,8 +98,11 @@ body {
     position: fixed;
     top: 3%;
     right: 3%;
-    width: 1.5rem;
-    height: .425rem;
+    width: 24px;
+    /*  Don't use rem here, since on small screens .425rem will be small. For styling component
+        it's ok to use px.
+    */
+    height: 10px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
@@ -120,11 +139,13 @@ body {
 
 .to-reveal > * {
     transform: translateY(100%);
+    opacity: 0;
     transition: 0.3s;
     will-change: transform;
 }
 
 .to-reveal.active > * {
+    opacity: 1;
     transform: translateY(0);
 }
 
@@ -134,16 +155,6 @@ body {
     will-change: transform;
 }
 
-nav[aria-label="Main Menu"] ul {
-    list-style: none;
-}
-
-nav[aria-label="Main Menu"] a {
-    color: #191919;
-    text-decoration: none;
-    display: block;
-    font-size: var(--fs-600);
-}
 
 /*  aria-current is based on:
     https://stackoverflow.com/questions/19604677/what-aria-state-role-to-use-for-current-page-in-navigation.
@@ -151,29 +162,41 @@ nav[aria-label="Main Menu"] a {
     https://demos.tink.uk/aria-current/.
     https://tink.uk/using-the-aria-current-attribute/.
 */
-nav[aria-label="Main Menu"] a[aria-current="page"] {
-    font-weight: bold;
-}
-
-nav[aria-label="Main Menu"] a:hover {
-    color: dodgerblue;
-}
 
 nav[aria-label="Main Menu"] {
     position: fixed;
     top: 0;
-    left: 5%;
+    left: 0;
     width: 100%;
     min-height: 100vh;
-    z-index: 1;
     opacity: 0;
     pointer-events: none;
     transition: 0.3s;
+    background-color: #e2d9d9e4;
 }
 
 nav[aria-label="Main Menu"].active {
     pointer-events: all;
     opacity: 1;
+}
+
+nav[aria-label="Main Menu"] ul {
+    list-style: none;
+}
+
+nav[aria-label="Main Menu"] a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    font-size: var(--fs-600);
+}
+
+nav[aria-label="Main Menu"] a[aria-current="page"] {
+    font-weight: bold;
+}
+
+nav[aria-label="Main Menu"] a:hover {
+    color: rgb(70, 160, 251);
 }
 
 .nav-item-group {
@@ -210,4 +233,128 @@ nav[aria-label="Main Menu"] .nav-item span {
     font-size: var(--fs-300);
 }
 
-/**/
+/* */
+
+
+/*--------  Pages (i.e. Panels in SPA) ------- */
+main {
+    height: 100%;
+}
+
+section.page {
+    display: block;
+    /* This is closely associated with height:100% in <main> and <body>. */
+    height: 100%;
+    padding: 1rem;
+    /* background-color: aquamarine; */
+}
+
+section.page[aria-hidden="true"] {
+    display: none;
+}
+
+
+/* ------------ Error ------------------ */
+.error-container {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.error-container .error-title {
+    font-size: var(--fs-600);
+    color: var(--clr-dark-red);
+}
+
+.error-container p {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.error-container button {
+    margin: 0 auto;
+    padding: 0.615rem 2rem;
+    font-size: var(--fs-400);
+    border-radius: 100vh;
+    font-weight: 500;
+    background: #fff;
+    color: black;
+    outline: none;
+    border: 2px solid black;
+    border-radius: 100vh;
+    cursor: pointer;
+}
+
+
+/* ----------  loader spinner --------  */
+/* Copied from https://cssloaders.github.io/ with a few changes. */
+.loading-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-spinner {
+    display: block;
+    position: relative;
+    height: 32px;
+    width: 120px;
+    border-bottom: 5px solid #000;
+    box-sizing: border-box;
+    animation: balancing 2s linear infinite alternate;
+    transform-origin: 50% 100%;
+}
+
+.loading-spinner::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #580401;
+    animation: ballbns 2s linear infinite alternate;
+}
+
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 20px;
+    width: 20px;
+    transform: translate(-50%, 100%);
+    border-radius: 50%;
+    border: 6px solid #000;
+}
+
+@keyframes ballbns {
+    0% {
+        left: 0;
+        transform: translateX(0%);
+    }
+
+    100% {
+        left: 100%;
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes balancing {
+    0% {
+        transform: rotate(-15deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(15deg);
+    }
+}
