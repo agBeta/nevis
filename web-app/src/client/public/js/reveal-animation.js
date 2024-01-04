@@ -35,7 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        //  You may also add aria-hidden="true" for screen readers when menu is not expanded. We didn't do that.
+        //  You may also add aria-hidden="true" to nav-items for screen readers when menu isn't expanded. We didn't
+        //  do that.
         //  Some useful links:
         //  https://www.linkedin.com/pulse/hiding-elements-from-screen-readers-girijesh-tripathi.
         //  https://snook.ca/archives/html_and_css/hiding-content-for-accessibility.
