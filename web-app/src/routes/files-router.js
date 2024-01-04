@@ -2,8 +2,6 @@ import path from "node:path";
 import express from "express";
 import { makeRateLimitMiddleware } from "../express-stuff/rate-limit-middleware.js";
 
-// todo nonce
-
 //  Note, there seems to be some gotchas regarding how to correctly obtain __dirname correctly both in Linux and
 //  Windows. See node.md in self-documentation.
 const __dirname = new URL(".", import.meta.url).pathname;
