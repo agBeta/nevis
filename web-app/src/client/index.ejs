@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="/public/css/global.css">
+    <link rel="stylesheet" href="/public/css/blog-paginated-view.css">
     <title>بنویس</title>
 </head>
 
@@ -22,7 +23,7 @@
             <ul dir="rtl">
                 <!-- I -->
                 <li class="nav-item to-reveal">
-                    <a href="#" data-link aria-current="page">
+                    <a href="/blog/paginated" data-link aria-current="page">
                         <span>۰۱</span>/ نوشته‌ها
                     </a>
                 </li>
@@ -46,17 +47,21 @@
     </nav>
 
     <main>
-        <section class="page" id="posts" aria-hidden="true">
+        <section class="page u-container to-reveal" id="blogs" aria-hidden="true">
         </section>
-        <section class="page" id="create-post" aria-hidden="false">
+        <section class="page u-container to-reveal" id="single-blog" aria-hidden="false">
         </section>
-        <section class="page" id="signup" aria-hidden="false">
+        <section class="page u-container to-reveal" id="create-blog" aria-hidden="false">
         </section>
-        <section class="page" id="login" aria-hidden="false">
+        <section class="page u-container to-reveal" id="signup" aria-hidden="false">
+        </section>
+        <section class="page u-container to-reveal" id="login" aria-hidden="false">
+        </section>
+        <section class="page u-container to-reveal" id="not-found" aria-hidden="false">
         </section>
     </main>
 
-    <script type="module" src="/index.js"></script>
+    <script type="module" src="/public/js/index.js"></script>
 </body>
 
 </html>
