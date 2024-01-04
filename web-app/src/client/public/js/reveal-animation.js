@@ -1,9 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    handleRevealAnimation();
-});
 
-
-export default function handleRevealAnimation() {
     const panelElementsToReveal = /**@type {HTMLElement[]}*/
         ([...document.querySelectorAll(".to-reveal:not(.nav-item)")]);
     const menuElementsToReveal = /**@type {HTMLElement[]}*/
@@ -12,58 +8,48 @@ export default function handleRevealAnimation() {
     const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
 
     menuToggle.addEventListener("click", onMenuToggleClick);
-    revealAllPanelElements();
-
-
-    /** @param {HTMLElement} wrap  @param {boolean} active  */
-    function toggleReveal(wrap, active) {
-        requestAnimationFrame(() => {
-            if (active) {
-                wrap.classList.add("active");
-            }
-            else {
-                wrap.classList.remove("active");
-            }
-        });
-    }
-
-    function revealAllPanelElements() {
-        panelElementsToReveal.forEach((wrap, i) => {
-            setTimeout(() => {
-                wrap.classList.add("active");
-            }, (i + 1) * 50);
-        });
-    }
+    // Reveal menu by default when the page loads.
+    menuToggle.click();
 
     function onMenuToggleClick() {
         if (menu.classList.contains("active")) {
             menuToggle.classList.remove("active");
+            menuToggle.setAttribute("aria-expanded", "false");
             menuElementsToReveal.forEach(wrap => {
                 toggleReveal(wrap, false);
             });
-            setTimeout(() => { menu.classList.remove("active"); }, 200);
-            setTimeout(() => {
-                panelElementsToReveal.forEach(wrap => {
-                    toggleReveal(wrap, true);
-                });
-            }, 200);
+            menu.classList.remove("active");
+            panelElementsToReveal.forEach(wrap => {
+                toggleReveal(wrap, true);
+            });
         }
         else {
             menuToggle.classList.add("active");
+            menuToggle.setAttribute("aria-expanded", "true");
             panelElementsToReveal.forEach(wrap => {
                 toggleReveal(wrap, false);
             });
-
-            setTimeout(() => {
-                menu.classList.add("active");
-            }, 300);
-            setTimeout(() => {
-                menuElementsToReveal.forEach(wrap => {
-                    toggleReveal(wrap, true);
-                });
-            }, 300);
+            menu.classList.add("active");
+            menuElementsToReveal.forEach(wrap => {
+                toggleReveal(wrap, true);
+            });
         }
 
+        //  You may also add aria-hidden="true" for screen readers when menu is not expanded. We didn't do that.
+        //  Some useful links:
+        //  https://www.linkedin.com/pulse/hiding-elements-from-screen-readers-girijesh-tripathi.
+        //  https://snook.ca/archives/html_and_css/hiding-content-for-accessibility.
+    }
+});
+
+
+/** @param {HTMLElement} el  @param {boolean} active  */
+function toggleReveal(el, active) {
+    if (active) {
+        el.classList.add("active");
+    }
+    else {
+        el.classList.remove("active");
     }
 }
 

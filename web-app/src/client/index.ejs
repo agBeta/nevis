@@ -10,28 +10,32 @@
     <title>بنویس</title>
 </head>
 
-<body dir="rtl">
-    <!-- Having dir ↖️ as html attr is more appropriate, according to https://stackoverflow.com/a/5375907. -->
-
-    <div class="menu-toggle">
+<body>
+    <div class="menu-toggle" role="button" aria-label="Main menu toggle" aria-expanded="false">
+        <!-- According to http://web-accessibility.carnegiemuseums.org/code/navigation/. -->
         <span></span>
         <span></span>
     </div>
-    <nav aria-label="Main Menu">
+    <nav aria-label="Main Menu" aria-hidden="false">
         <!-- ↖️ according to https://www.w3.org/WAI/tutorials/menus/structure/ -->
         <div class="nav-item-group">
-            <ul>
+            <ul dir="rtl">
+                <!-- I -->
                 <li class="nav-item to-reveal">
-                    <a href="#">Works/<span>01</span></a>
+                    <a href="#" aria-current="page">
+                        <span>۰۱</span>/ نوشته‌ها
+                    </a>
                 </li>
                 <li class="nav-item to-reveal">
-                    <a href="#">About/<span>02</span></a>
+                    <a href="#">
+                        <span>۰۲</span>/ افزودن نوشته
+                    </a>
                 </li>
                 <li class="nav-item to-reveal">
-                    <a href="#">Blog/<span>03</span></a>
+                    <a href="#"><span>۰۳</span>/ ثبت‌نام</a>
                 </li>
                 <li class="nav-item to-reveal">
-                    <a href="#">Contact/<span>04</span></a>
+                    <a href="#"><span>۰۴</span>/ ورود</a>
                 </li>
             </ul>
         </div>
@@ -44,16 +48,18 @@
     </header>
 
     <main class="to-reveal">
-        <div>
-            
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe sequi enim voluptas ex laudantium? Consequuntur
+        <div class="u-container">
+
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe sequi enim voluptas ex laudantium?
+            Consequuntur
             eos consequatur ducimus dolorum! Similique ad voluptate nihil sint nisi itaque minus unde iste harum, culpa
-            earum aperiam, asperiores numquam deleniti magni optio distinctio illo ipsam ab debitis recusandae eligendi non
+            earum aperiam, asperiores numquam deleniti magni optio distinctio illo ipsam ab debitis recusandae eligendi
+            non
             temporibus! Explicabo, vel officiis!
         </div>
     </main>
 
-    <script type="module" src="/public/js/style-stuff.js"></script>
+    <script type="module" src="/public/js/reveal-animation.js"></script>
 </body>
 
 </html>

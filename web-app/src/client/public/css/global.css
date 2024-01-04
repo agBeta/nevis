@@ -1,25 +1,30 @@
 @font-face {
     /* "How to host your own fonts made simple" by Kevin Powell + https://caniuse.com/?search=woff2. */
     font-family: Samim;
+    /*
+        Don't add "." (dot) at the beginning of url. Doing that would result in relative url based on the url that
+        this css file is loaded. So as a result it would try to grab the font from "/public/css/public/fonts/..."
+        (notice double "public") and it will get 404.
+    */
     src: local(),
-        url('./public/fonts/Samim-FD.woff2') format('woff2'),
-        url('./public/fonts/Samim.woff') format('woff');
+        url('/public/fonts/Samim-FD.woff2') format('woff2'),
+        url('/public/fonts/Samim.woff') format('woff');
     font-weight: normal;
 }
 
 @font-face {
     font-family: Samim;
     src: local(),
-        url('./public/fonts/Samim-Bold-FD.woff2') format('woff2'),
-        url('./public/fonts/Samim-Bold.woff') format('woff');
+        url('/public/fonts/Samim-Bold-FD.woff2') format('woff2'),
+        url('/public/fonts/Samim-Bold.woff') format('woff');
     font-weight: bold;
 }
 
 @font-face {
     font-family: Samim;
     src: local(),
-        url('./public/fonts/Samim-Medium-FD.woff2') format('woff2'),
-        url('./public/fonts/Samim-Medium.woff') format('woff');
+        url('/public/fonts/Samim-Medium-FD.woff2') format('woff2'),
+        url('/public/fonts/Samim-Medium.woff') format('woff');
     font-weight: 500;
 }
 
@@ -52,7 +57,7 @@ img {
 
 html {
     font-family: Samim, Tahoma, sans-serif;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 body {
@@ -64,10 +69,13 @@ body {
 /* ---- utility classes ------- */
 .u-hide-visually {}
 
-.u-text-center {}
+.u-container {
+    max-width: var(--custom-max-width, 50rem);
+    margin: 0 auto;
+}
 
 
-/* ------- Navigation and Reveal animation ----------- */
+/* ------- Main navigation and Reveal animation ----------- */
 /* We prefer semantic css here. */
 
 .menu-toggle {
@@ -92,12 +100,12 @@ body {
     transform-origin: center;
 }
 
-/* Creating cross animation */
-.menu-toggle.active span:nth-child(1) {
+.menu-toggle[aria-expanded="true"] span:nth-child(1) {
     position: absolute;
     transform: rotate(45deg);
 }
-.menu-toggle.active span:nth-child(2) {
+
+.menu-toggle[aria-expanded="true"] span:nth-child(2) {
     position: absolute;
     transform: rotate(-45deg);
 }
@@ -132,12 +140,29 @@ nav[aria-label="Main Menu"] ul {
 
 nav[aria-label="Main Menu"] a {
     color: #191919;
+    text-decoration: none;
+    display: block;
+    font-size: var(--fs-600);
+}
+
+/*  aria-current is based on:
+    https://stackoverflow.com/questions/19604677/what-aria-state-role-to-use-for-current-page-in-navigation.
+    A very good explanation with examples in:
+    https://demos.tink.uk/aria-current/.
+    https://tink.uk/using-the-aria-current-attribute/.
+*/
+nav[aria-label="Main Menu"] a[aria-current="page"] {
+    font-weight: bold;
+}
+
+nav[aria-label="Main Menu"] a:hover {
+    color: dodgerblue;
 }
 
 nav[aria-label="Main Menu"] {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 5%;
     width: 100%;
     min-height: 100vh;
     z-index: 1;
@@ -163,6 +188,7 @@ nav[aria-label="Main Menu"].active {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: .5rem;
 }
 
 nav[aria-label="Main Menu"] .to-reveal {
@@ -171,8 +197,6 @@ nav[aria-label="Main Menu"] .to-reveal {
 }
 
 nav[aria-label="Main Menu"] .to-reveal a {
-    display: block;
-    font-size: var(--fs-600);
     transform: translateY(100%);
     transition: 0.3s;
 }
