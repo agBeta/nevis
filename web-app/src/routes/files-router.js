@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.use(makeRateLimitMiddleware({
     duration: 3600,
-    points: 40,
+    points: 80,
     name: "rt_files_" + (process.env.APP_ID ?? "default"),
 }));
 
@@ -23,10 +23,29 @@ router.use("/public/fonts",
 );
 router.use("/public", express.static(path.resolve(__dirname, "..", "client", "public")));
 
-router.get("/*", (req, res) => {
-    res.render("index", {
+// Service worker must be registered on the root path of our domain if we want to control the whole web-app by it.
+router.get("/sw.js", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "public", "js", "sw.js"));
+});
+router.get("/manifest.json", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "public", "manifest.json"));
+});
+
+
+router.get("/", (req, res) => {
+
+    //  We could have set CSP headers in our web server configuration (e.g. Nginx reverse proxy). But this way we
+    //  have more control. We aren't using google fonts or any CDN to load icons, etc. So most of them are 'self'.
+    //  For future versions, don't forget to add our image upload server.
+    //  Also be ware: Not all directives fallback to default-src (according to https://content-security-policy.com/.)
+    const cspHeader = process.env.NODE_ENV === "test"
+        ? `default-src 'self'; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'none'; manifest-src 'self'; connect-src 'self' localhost:${process.env.PORT} `
+        : "default-src 'self'; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'none'; manifest-src 'self'; connect-src 'self' ";
+
+    res.setHeader("Content-Security-Policy", cspHeader).set("Cache-Control").render("index", {
 
     });
 });
+
 
 export { router };
