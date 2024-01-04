@@ -22,44 +22,41 @@
             <ul dir="rtl">
                 <!-- I -->
                 <li class="nav-item to-reveal">
-                    <a href="#" aria-current="page">
+                    <a href="#" data-link aria-current="page">
                         <span>۰۱</span>/ نوشته‌ها
                     </a>
                 </li>
                 <li class="nav-item to-reveal">
-                    <a href="#">
+                    <a href="#" data-link>
                         <span>۰۲</span>/ افزودن نوشته
                     </a>
                 </li>
                 <li class="nav-item to-reveal">
-                    <a href="#"><span>۰۳</span>/ ثبت‌نام</a>
+                    <a href="#" data-link>
+                        <span>۰۳</span>/ ثبت‌نام
+                    </a>
                 </li>
                 <li class="nav-item to-reveal">
-                    <a href="#"><span>۰۴</span>/ ورود</a>
+                    <a href="#" data-link>
+                        <span>۰۴</span>/ ورود
+                    </a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <header class="header">
-        <span class="to-reveal">
-            <h1>Studio</h1>
-        </span>
-    </header>
-
-    <main class="to-reveal">
-        <div class="u-container">
-
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe sequi enim voluptas ex laudantium?
-            Consequuntur
-            eos consequatur ducimus dolorum! Similique ad voluptate nihil sint nisi itaque minus unde iste harum, culpa
-            earum aperiam, asperiores numquam deleniti magni optio distinctio illo ipsam ab debitis recusandae eligendi
-            non
-            temporibus! Explicabo, vel officiis!
-        </div>
+    <main>
+        <section class="page" id="posts" aria-hidden="true">
+        </section>
+        <section class="page" id="create-post" aria-hidden="false">
+        </section>
+        <section class="page" id="signup" aria-hidden="false">
+        </section>
+        <section class="page" id="login" aria-hidden="false">
+        </section>
     </main>
 
-    <script type="module" src="/public/js/reveal-animation.js"></script>
+    <script type="module" src="/index.js"></script>
 </body>
 
 </html>
