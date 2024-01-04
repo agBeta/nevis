@@ -145,6 +145,7 @@ export function makeEndpointController({
             response: JSON.stringify(response),
         });
         // For simplicity we ignored all these rare scenarios.
+        /**@todo TODO alert + throttle (throttle as util with tests) */
 
         return response;
     }
