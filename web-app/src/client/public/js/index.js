@@ -1,10 +1,12 @@
+import "./state-manage.js";
 import { fetchBlogPaginated } from "./api.js";
-import makeBlogPaginatedView from "./blog-paginated-view.js";
 import makeRouter from "./router.js";
-import { onMenuToggleClick } from "./reveal-animation.js";
+import { onMenuToggleClick, onNavItemClick } from "./reveal-animation.js";
+
+import makeBlogsView from "./pages/blogs.js";
 
 const routes = [
-    { path: "/blog/paginated", pageView: makeBlogPaginatedView({ fetchBlogPaginated }) }
+    { path: "/blog/paginated", pageView: makeBlogsView({ fetchBlogPaginated }) }
 ];
 
 if (history.scrollRestoration) {
@@ -15,7 +17,12 @@ const Router = makeRouter({ routes });
 document.addEventListener("DOMContentLoaded", () => {
     const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
     menuToggle.addEventListener("click", onMenuToggleClick);
-    
+
+    document.querySelectorAll("nav[aria-label='Main Menu'] .nav-item" /*could also use .to-reveal*/)
+        .forEach((navItem) => {
+            navItem.addEventListener("click", onNavItemClick);
+        });
+
     Router.init();
 });
 

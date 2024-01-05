@@ -37,7 +37,8 @@ export default function makeRouter({ routes }) {
         }
         console.log(routeToNavigate);
         console.log(matchingRoute);
-        matchingRoute.pageView.render(params);
+        window.SMI.setCurrentViewOnScreen(matchingRoute.pageView.NAME);
+        matchingRoute.pageView.render(params); // an async function
     }
 
 

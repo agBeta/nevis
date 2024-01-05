@@ -1,37 +1,45 @@
-import { createErrorElement, showHideLoadingSpinner } from "./ui-utils.js";
+import { createErrorElement, showHideLoadingSpinner } from "../ui-utils.js";
 
 /** @param {{ fetchBlogPaginated: FetchBlogPaginated }} param0 @returns {PageView} */
-export default function makeBlogPaginatedView({
+export default function makeBlogsView({
     fetchBlogPaginated,
 }) {
     const sectionEl = /**@type {HTMLElement}*/(document.getElementById("blogs"));
-    let /**@type {"loading"|"free"}*/ currentState;
-    //! todo
-    let lastVisitedState;
+    let /**@type {"loading"|"free"}*/ ongoingDisplayState;
+    const THIS_VIEW = "blogs_view";
 
     return Object.freeze({
-        render: safelyRender
+        render: safelyRender,
+        NAME: THIS_VIEW,
     });
 
     async function safelyRender(/**@type {any}*/ params) {
         try {
             await render(params);
-        } catch (err) {
+        }
+        catch (err) {
+            const isUserCurrentlyAtThisPage = window.SMI.getCurrentViewOnScreen() === THIS_VIEW;
+
             // App might be crashed while loading data from server, etc. So we first check:
-            if (currentState === "loading") {
-                showHideLoadingSpinner(sectionEl, false);
-                currentState = "free";
-            }
-            const errorEl = createErrorElement({
-                title: "خطا",
-                description: err.message ?? "Unknown Error",
-                buttonTitle: "تلاش مجدد",
-                onButtonClick: () => {
-                    errorEl.remove();
-                    safelyRender(params);
+            if (ongoingDisplayState === "loading") {
+                if (isUserCurrentlyAtThisPage){
+                    showHideLoadingSpinner(sectionEl, false);
                 }
-            });
-            sectionEl.appendChild(errorEl);
+            }
+            ongoingDisplayState = "free";
+
+            if (isUserCurrentlyAtThisPage) {
+                const errorEl = createErrorElement({
+                    title: "خطا",
+                    description: err.message ?? "Unknown Error",
+                    buttonTitle: "تلاش مجدد",
+                    onButtonClick: () => {
+                        errorEl.remove();
+                        safelyRender(params);
+                    }
+                });
+                sectionEl.appendChild(errorEl);
+            }
         }
     }
 
@@ -39,24 +47,32 @@ export default function makeBlogPaginatedView({
         console.log(params);
         document.title = "نوشته‌ها";
         sectionEl.innerHTML = "";
+        sectionEl.setAttribute("aria-hidden", "false");
+        sectionEl.setAttribute("aria-live", "polite");
+        sectionEl.classList.add("active");
+        ongoingDisplayState = "loading";
+        showHideLoadingSpinner(/*inside=*/sectionEl, /*visibility=*/true);
+
+        //  The user might have navigated to another page, then come back to this page by clicking on nav-item.
+        //  If the user clicks on nav-item, the params will be empty, but we want to continue from the page that
+        //  was recently displayed. So ...
+        const recentSearchParams = window.SMI.getState(THIS_VIEW);
+        if (params == null || Object.keys(params).length === 0) {
+            params = recentSearchParams;
+        } else {
+            //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
+            //  of this state will later decided to whether clean/error when params are invalid. Anyway...
+            window.SMI.setSate(THIS_VIEW, params);
+        }
 
         const cursor = params.cursor ?? "newest";
         const direction = params.direction ?? "older";
         const limit = Number(params.limit ?? 10);
-
-        sectionEl.setAttribute("aria-hidden", "false");
-        sectionEl.setAttribute("aria-live", "polite");
-        // crucial
-        sectionEl.classList.add("active");
-
-        currentState = "loading";
-        showHideLoadingSpinner(/*inside=*/sectionEl, /*visibility=*/true);
-
         await new Promise((rs, rj) => setTimeout(rs, 2000)); // artificial delay
         const result = await fetchBlogPaginated({ cursor, direction, limit });
 
         showHideLoadingSpinner(sectionEl, false);
-        currentState = "free";
+        ongoingDisplayState = "free";
 
         if (result.statusCode !== 200) {
             throw new Error(result.statusCode + " " + result.body.error);

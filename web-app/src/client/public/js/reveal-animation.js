@@ -45,6 +45,10 @@ export function onMenuToggleClick() {
     //  https://snook.ca/archives/html_and_css/hiding-content-for-accessibility.
 }
 
+export function onNavItemClick() {
+    //  Exactly like when we click on menu toggle to close the menu.
+    onMenuToggleClick();
+}
 
 /** @param {HTMLElement} el  @param {boolean} active  */
 function toggleReveal(el, active) {
