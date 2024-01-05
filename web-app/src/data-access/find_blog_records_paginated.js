@@ -15,7 +15,7 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
         //  only when direction=older.
 
         if (cursor === "newest") {
-            if (direction !== "newer") {
+            if (direction !== "older") {
                 throw new AppError(
                     `Invalid parameters. direction=${direction} doesn't make sense with cursor=${cursor}.`,
                     "db__invalid_paginate"
@@ -25,9 +25,9 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
                 SELECT
                     B.id AS id
                     , B.author_id AS authorId
-                    , U.displayName AS authorDisplayName
+                    , U.display_name AS authorDisplayName
                     , B.blog_title  AS blogTitle
-                    , B.create_at AS createdAs
+                    , B.created_at AS createdAt
                     , B.order_id  AS order_id
                 FROM
                     blog_tbl AS B
@@ -46,7 +46,7 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
         }
 
         if (cursor === "oldest") {
-            if (direction !== "older") {
+            if (direction !== "newer") {
                 throw new AppError(
                     `Invalid parameters. direction=${direction} doesn't make sense with cursor=${cursor}.`,
                     "db__invalid_paginate"
@@ -56,9 +56,9 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
                 SELECT
                     B.id AS id
                     , B.author_id AS authorId
-                    , U.displayName AS authorDisplayName
+                    , U.display_name AS authorDisplayName
                     , B.blog_title  AS blogTitle
-                    , B.create_at AS createdAs
+                    , B.created_at AS createdAt
                     , B.order_id  AS order_id
                 FROM
                     blog_tbl AS B
@@ -81,9 +81,9 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
             SELECT
                 B.id AS id
                 , B.author_id AS authorId
-                , U.displayName AS authorDisplayName
+                , U.display_name AS authorDisplayName
                 , B.blog_title  AS blogTitle
-                , B.create_at AS createdAs
+                , B.created_at AS createdAt
                 , B.order_id  AS order_id
             FROM
                 blog_tbl AS B
