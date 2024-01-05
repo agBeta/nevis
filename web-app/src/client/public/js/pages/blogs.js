@@ -45,7 +45,9 @@ export default function makeBlogsView({
 
     async function render(/** @type {any} */params) {
         document.title = "نوشته‌ها";
-        sectionEl.innerHTML = "";
+        sectionEl.innerHTML = /*html*/`
+            <h1 class="h1">نوشته‌ها</h1>
+        `;
         sectionEl.setAttribute("aria-hidden", "false");
         sectionEl.setAttribute("aria-live", "polite");
         sectionEl.classList.add("active");
@@ -80,6 +82,7 @@ export default function makeBlogsView({
         const /**@type {import("#types").PaginatedResult}*/ current = result.body.current;
 
         const listElOfCurrent = document.createElement("ol");
+        listElOfCurrent.classList.add("list", "u-flow-content");
 
         listElOfCurrent.innerHTML = current.content.map((o) => {
             const blog = /**@type {import("#types").BlogV2}*/(o); // to make ts help us
@@ -89,10 +92,10 @@ export default function makeBlogsView({
                         <h2 class="blog-title">${blog.blogTitle}</h2>
                     </a>
                     <footer>
+                        <p>${blog.authorDisplayName}</p>
                         <time datetime="${new Date(blog.createdAt).toISOString()}">
                             ${new Date(blog.createdAt).toLocaleDateString("fa")}
                         </time>
-                        <p>${blog.authorDisplayName}</p>
                     </footer>
                 </li>
             `;

@@ -32,9 +32,9 @@
     --fs-200: .625rem;
     --fs-300: .75rem;
     --fs-400: 1rem;
-    --fs-500: 1.25rem;
-    --fs-600: 2rem;
-    --fs-700: 2.5rem;
+    --fs-500: 1.5rem;
+    --fs-600: 1.75rem;
+    --fs-700: 2.25rem;
     --border-radius: .75rem;
     --clr-dark-red: #b30101;
 }
@@ -57,6 +57,9 @@
 
 h1, h2, h3, h4, p {
     margin: 0;
+    /* Why? headings are used for semantic purpose. For styling we will use css classes. */
+    font-size: inherit;
+    font-weight: normal;
 }
 
 button, input, select, optgroup, textarea {
@@ -70,6 +73,7 @@ img {
 html {
     font-family: Samim, Tahoma, sans-serif;
     line-height: 1.6;
+    font-size: var(--fs-400);
 }
 
 body {
@@ -90,6 +94,9 @@ body {
     margin: 0 auto;
 }
 
+.u-flow-content > * + * {
+    /* ! todo */
+}
 
 /* ------- Main navigation and Reveal animation ----------- */
 /* We prefer semantic css here. */
@@ -245,7 +252,8 @@ main {
 section.page {
     display: block;
     /* This is closely associated with height:100% in <main> and <body>. */
-    height: 100%;
+    /* Don't use height, since in blogs results won't fit in screen. */
+    min-height: 100%;
     padding: 1rem;
     /* background-color: aquamarine; */
 }
@@ -293,6 +301,10 @@ section.page[aria-hidden="true"] {
 /* Copied from https://cssloaders.github.io/ with a few changes. */
 .loading-container {
     height: 100%;
+    /*  Since we don't have a specific height on <section> elements (only have min-height), so height:100%
+        for this container doesn't give our desired display.
+    */
+    min-height: 90vh;
     width: 100%;
     display: flex;
     align-items: center;

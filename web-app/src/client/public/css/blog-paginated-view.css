@@ -1,3 +1,31 @@
+#blogs .h1 {
+    font-size: var(--fs-600);
+    font-weight: bold;
+    text-align: center;
+}
+#blogs .list {
+    direction: rtl;
+}
+#blogs .blog-item {
 
-
-/**/
+}
+#blogs .blog-item a {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+#blogs .blog-title {
+    font-size: var(--fs-500);
+}
+#blogs .blog-item footer {
+    font-size: var(--fs-400);
+    /* In order to place <p> and <time> on the same line */
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+#blogs .blog-item time {
+    font-size: var(--fs-400);
+    color: rgb(94, 94, 94);
+}
+/* */
