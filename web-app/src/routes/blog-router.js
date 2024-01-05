@@ -33,8 +33,9 @@ router.put("/action/:actionId",
     makeExpressCallback(blog_action_PUT)
 );
 
+router.get("/paginated", makeExpressCallback(blog_paginated_GET));
+// The order is important. /paginated MUST come before /:blogId.
 router.get("/:blogId", makeExpressCallback(blog_blogId_GET));
 router.get("/", makeExpressCallback(blog_GET));
-router.get("/paginated", makeExpressCallback(blog_paginated_GET));
 
 export { router };
