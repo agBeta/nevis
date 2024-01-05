@@ -130,8 +130,11 @@ body {
 }
 
 .to-reveal {
-    position: relative;
     display: block;
+    /*  padding is needed to prevent inner elements touch the edges. If you remove it you would see
+        the touching edge problem in [error-container] for instance
+    */
+    padding: .125rem;
     overflow: hidden;
     transition: 0.3s;
     will-change: transform;
@@ -149,11 +152,6 @@ body {
     transform: translateY(0);
 }
 
-.to-reveal.done h1 {
-    transform: translateY(100%);
-    transition: 0.3s;
-    will-change: transform;
-}
 
 
 /*  aria-current is based on:
@@ -177,6 +175,8 @@ nav[aria-label="Main Menu"] {
 
 nav[aria-label="Main Menu"].active {
     pointer-events: all;
+    /* We must set higher z-index than <main>. Otherwise cursor won't be shown as pointer. */
+    z-index: 1;
     opacity: 1;
 }
 
@@ -189,6 +189,7 @@ nav[aria-label="Main Menu"] a {
     text-decoration: none;
     display: block;
     font-size: var(--fs-600);
+    cursor: pointer;
 }
 
 nav[aria-label="Main Menu"] a[aria-current="page"] {

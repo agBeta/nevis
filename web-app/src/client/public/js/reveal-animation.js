@@ -4,32 +4,39 @@ export function onMenuToggleClick() {
     const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
 
     // We need to re-query the following, since elements might be added/removed from DOM recently.
-    const panelElementsToReveal = /**@type {NodeListOf<HTMLElement>}*/
-        (document.querySelectorAll(".to-reveal:not(.nav-item)"));
+    // Also we need to make an array (using [...]), so that we can use index in forEach callback.
+    const panelElementsToReveal = /**@type {HTMLElement[]}*/
+        ([...(document.querySelectorAll(".to-reveal:not(.nav-item)"))]);
 
-    const menuElementsToReveal = /**@type {NodeListOf<HTMLElement>}*/
-        (document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"));
+    const menuElementsToReveal = /**@type {HTMLElement[]}*/
+        ([...(document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"))]);
 
     if (menu.classList.contains("active")) {
         menuToggle.classList.remove("active");
         menuToggle.setAttribute("aria-expanded", "false");
-        menuElementsToReveal.forEach(wrap => {
-            toggleReveal(wrap, false);
+        menuElementsToReveal.forEach(el => {
+            toggleReveal(el, false);
         });
         menu.classList.remove("active");
-        panelElementsToReveal.forEach(wrap => {
-            toggleReveal(wrap, true);
+        menu.setAttribute("aria-hidden", "true");
+
+        panelElementsToReveal.forEach((el, i) => {
+            //  We wrap it inside setTimeout so that elements reveal one-by-one instead of all at the same
+            //  time. You can remove setTimeout if you want to reveal all at once.
+            setTimeout(() => toggleReveal(el, true), i * 50);
         });
     }
     else {
         menuToggle.classList.add("active");
         menuToggle.setAttribute("aria-expanded", "true");
-        panelElementsToReveal.forEach(wrap => {
-            toggleReveal(wrap, false);
+        panelElementsToReveal.forEach(el => {
+            toggleReveal(el, false);
         });
         menu.classList.add("active");
-        menuElementsToReveal.forEach(wrap => {
-            toggleReveal(wrap, true);
+        menu.setAttribute("aria-hidden", "false");
+
+        menuElementsToReveal.forEach(el => {
+            toggleReveal(el, true);
         });
     }
     //  You may also add aria-hidden="true" to nav-items for screen readers when menu isn't expanded. We didn't

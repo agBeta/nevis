@@ -38,6 +38,7 @@ export default function makeBlogPaginatedView({
     async function render(/** @type {any} */params) {
         console.log(params);
         document.title = "نوشته‌ها";
+        sectionEl.innerHTML = "";
 
         const cursor = params.cursor ?? "newest";
         const direction = params.direction ?? "older";
@@ -45,10 +46,13 @@ export default function makeBlogPaginatedView({
 
         sectionEl.setAttribute("aria-hidden", "false");
         sectionEl.setAttribute("aria-live", "polite");
+        // crucial
+        sectionEl.classList.add("active");
+
         currentState = "loading";
         showHideLoadingSpinner(/*inside=*/sectionEl, /*visibility=*/true);
 
-        await new Promise((rs, rj) => setTimeout(rs, 300)); // artificial delay
+        await new Promise((rs, rj) => setTimeout(rs, 2000)); // artificial delay
         const result = await fetchBlogPaginated({ cursor, direction, limit });
 
         showHideLoadingSpinner(sectionEl, false);
