@@ -10,7 +10,8 @@ const router = express.Router();
 
 router.use(makeRateLimitMiddleware({
     duration: 3600,
-    points: 80,
+    // Remember, our index page will send many requests to grab js, css and other assets.
+    points: process.env.NODE_ENV === "test" ? 2000 : 200,
     name: "rt_files_" + (process.env.APP_ID ?? "default"),
 }));
 
