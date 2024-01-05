@@ -44,7 +44,6 @@ export default function makeBlogsView({
     }
 
     async function render(/** @type {any} */params) {
-        console.log(params);
         document.title = "نوشته‌ها";
         sectionEl.innerHTML = "";
         sectionEl.setAttribute("aria-hidden", "false");
@@ -58,7 +57,7 @@ export default function makeBlogsView({
         //  was recently displayed. So ...
         const recentSearchParams = window.SMI.getState(THIS_VIEW);
         if (params == null || Object.keys(params).length === 0) {
-            params = recentSearchParams;
+            params = recentSearchParams ?? {}/*<-- so that params.cursor below won't throw error*/;
         } else {
             //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
             //  of this state will later decided to whether clean/error when params are invalid. Anyway...
