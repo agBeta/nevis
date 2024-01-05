@@ -3,8 +3,10 @@ export function onMenuToggleClick() {
     const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
     const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
 
+    // We need to re-query the following, since elements might be added/removed from DOM recently.
     const panelElementsToReveal = /**@type {NodeListOf<HTMLElement>}*/
         (document.querySelectorAll(".to-reveal:not(.nav-item)"));
+
     const menuElementsToReveal = /**@type {NodeListOf<HTMLElement>}*/
         (document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"));
 
