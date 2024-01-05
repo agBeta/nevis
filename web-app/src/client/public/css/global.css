@@ -37,9 +37,10 @@
     --fs-700: 2.25rem;
     --border-radius: .75rem;
     --clr-dark-red: #b30101;
+    --clr-accent-hover: #00a1ab;
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 37.5rem) {
     :root {
         --fs-200: .625rem;
         --fs-300: .75rem;
@@ -80,7 +81,7 @@ body {
     margin: 0;
     width: 100%;
     /*  It is crucial so that <main> can fill remaining vertical space. Since margin: 0 it's ok to specify
-        as 100vh. 100% doesn't work unless we set 100% on <html> element too.
+        100vh. 100% doesn't work unless we set 100% on <html> element too.
     */
     height: 100vh;
     overscroll-behavior: none;
@@ -92,10 +93,13 @@ body {
 .u-container {
     max-width: var(--custom-max-width, 50rem);
     margin: 0 auto;
+    /* padding so that it doesn't touch edges on small screens. */
+    padding: 0 .175rem;
 }
 
+/* Remove inconsistency of collapsing margins. */
 .u-flow-content > * + * {
-    /* ! todo */
+    margin-top: var(--custom-space, 1rem);
 }
 
 /* ------- Main navigation and Reveal animation ----------- */
@@ -204,7 +208,7 @@ nav[aria-label="Main Menu"] a[aria-current="page"] {
 }
 
 nav[aria-label="Main Menu"] a:hover {
-    color: rgb(70, 160, 251);
+    color: var(--clr-accent-hover);
 }
 
 .nav-item-group {
@@ -330,7 +334,7 @@ section.page[aria-hidden="true"] {
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: #580401;
+    background: #7a0202;
     animation: ballbns 2s linear infinite alternate;
 }
 
@@ -369,5 +373,36 @@ section.page[aria-hidden="true"] {
 
     100% {
         transform: rotate(15deg);
+    }
+}
+
+
+
+/* -------------------- */
+.fadeIn {
+    animation: fadeIn .4s;
+}
+
+.fadeOut {
+    animation: fadeOut .4s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
     }
 }

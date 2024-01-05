@@ -1,12 +1,10 @@
+/** maximum time reveal animation can take and shouldn't exceed it so that the user doesn't get bored. */
+const MAX_ANIMATION_TIME = 300;
+window.MAX_ANIMATION_TIME = MAX_ANIMATION_TIME; // make it public
 
 export function onMenuToggleClick() {
     const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
     const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
-
-    // We need to re-query the following, since elements might be added/removed from DOM recently.
-    // Also we need to make an array (using [...]), so that we can use index in forEach callback.
-    const panelElementsToReveal = /**@type {HTMLElement[]}*/
-        ([...(document.querySelectorAll(".to-reveal:not(.nav-item)"))]);
 
     const menuElementsToReveal = /**@type {HTMLElement[]}*/
         ([...(document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"))]);
@@ -14,27 +12,23 @@ export function onMenuToggleClick() {
     if (menu.classList.contains("active")) {
         menuToggle.classList.remove("active");
         menuToggle.setAttribute("aria-expanded", "false");
-        menuElementsToReveal.forEach(el => {
-            toggleReveal(el, false);
-        });
         menu.classList.remove("active");
         menu.setAttribute("aria-hidden", "true");
 
-        panelElementsToReveal.forEach((el, i) => {
-            //  We wrap it inside setTimeout so that elements reveal one-by-one instead of all at the same
-            //  time. You can remove setTimeout if you want to reveal all at once.
-            setTimeout(() => toggleReveal(el, true), i * 50);
+        menuElementsToReveal.forEach(el => {
+            //  If you want to reveal menu elements one-by-one wrap line inside a setTimeout. But let's keep
+            //  things simple.
+            toggleReveal(el, false);
         });
+        toggleRevealOfPageElements(true, ":not(.nav-item)");
     }
     else {
         menuToggle.classList.add("active");
         menuToggle.setAttribute("aria-expanded", "true");
-        panelElementsToReveal.forEach(el => {
-            toggleReveal(el, false);
-        });
         menu.classList.add("active");
         menu.setAttribute("aria-hidden", "false");
 
+        toggleRevealOfPageElements(false, ":not(.nav-item)");
         menuElementsToReveal.forEach(el => {
             toggleReveal(el, true);
         });
@@ -45,9 +39,26 @@ export function onMenuToggleClick() {
     //  https://snook.ca/archives/html_and_css/hiding-content-for-accessibility.
 }
 
-export function onNavItemClick() {
-    //  Exactly like when we click on menu toggle to close the menu.
-    onMenuToggleClick();
+/**
+ * @description
+ * This will actually result in (re)displaying reveal animation on screen. Primarily designed for pages
+ * where some of inner elements don't have "active" class and are going to be revealed now, like <li>s
+ * of newly fetched blogs in blogsView.
+ * @param {boolean} active - whether to reveal or hide.
+ * @param {string} selector
+ */
+export function toggleRevealOfPageElements(active, selector) {
+    // We need to make an array (using [...]), so that we can use index in forEach callback.
+    const elementsOfInterest = /**@type {HTMLElement[]}*/
+        ([...(document.querySelectorAll(".to-reveal" + selector))]);
+
+    elementsOfInterest.forEach((el, i) => {
+        //  We wrap it inside setTimeout so that elements reveal/hide one-by-one instead of all at once.
+        //  You can remove setTimeout if you'd like to reveal/hide all at once.
+        setTimeout(() => {
+            toggleReveal(el, active);
+        }, Math.min(MAX_ANIMATION_TIME, i * 30));
+    });
 }
 
 /** @param {HTMLElement} el  @param {boolean} active  */

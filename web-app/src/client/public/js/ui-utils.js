@@ -3,18 +3,14 @@ export function showHideLoadingSpinner(insideEl, visibility) {
     if (visibility) {
         insideEl.setAttribute("aria-busy", "true");
         insideEl.innerHTML += /*html*/`
-            <div class="loading-container to-reveal active">
+            <div class="loading-container">
                 <span class="loading-spinner"></span>
             </div>
         `;
     } else {
         insideEl.setAttribute("aria-busy", "false");
         const loaderEl = insideEl.querySelector(".loading-container");
-        //  If you don't want to display un-reveal animation, simply call loaderEl.remove(). But
-        //  we want to have animation. So...
-        loaderEl?.classList.remove("active");
-        //   Don't use double rAF, since it would still disappear in a flash of light.
-        setTimeout(() => { loaderEl?.remove(); }, 200);
+        loaderEl?.remove();
     }
 }
 

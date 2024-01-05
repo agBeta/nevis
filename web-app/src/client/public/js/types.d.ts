@@ -1,6 +1,9 @@
 // Based on https://stackoverflow.com/a/12709880
 declare global {
-    interface Window {  SMI: StateManagementInterface; }
+    interface Window {  
+        SMI: StateManagementInterface,
+        MAX_ANIMATION_TIME: number
+    }
 }
 type StateManagementInterface = {
     setSate: (key: string, value: object) => boolean,

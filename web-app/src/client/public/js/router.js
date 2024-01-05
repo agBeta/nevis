@@ -35,8 +35,6 @@ export default function makeRouter({ routes }) {
             matchingRoute = routes[routes.length - 1];
             params = null;
         }
-        console.log(routeToNavigate);
-        console.log(matchingRoute);
         window.SMI.setCurrentViewOnScreen(matchingRoute.pageView.NAME);
         matchingRoute.pageView.render(params); // an async function
     }
@@ -46,7 +44,8 @@ export default function makeRouter({ routes }) {
         //  Don't add eventListener just to links. Because we may later add/remove new links to the page.
         //  The best way is to attach our listener body click event.
         document.body.addEventListener("click", (ev) => {
-            if (ev.target instanceof Element && ev.target.matches("[data-link]")) {
+            // @ts-ignore
+            if (ev.target.matches("[data-link]")) {
                 // We aren't letting the browser take care of navigation, since we want to do it by our router, so...
                 ev.preventDefault();
                 navigateTo(/**@type {HTMLAnchorElement}*/(ev.target).pathname, true);

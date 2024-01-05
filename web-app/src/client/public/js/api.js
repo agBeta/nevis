@@ -5,11 +5,9 @@ const BASE_URL = (window.location.host.startsWith("localhost"))
 /** @type {import("./types.d.ts").FetchBlogPaginated} */
 export async function fetchBlogPaginated({ direction, cursor, limit }) {
     const url = new URL("/api/v1/blog/paginated", BASE_URL);
-    console.log(url);
     url.searchParams.append("cursor", cursor);
     url.searchParams.append("direction", direction);
     url.searchParams.append("limit", limit + "");
-    console.log(url);
 
     const request = new Request(url, {
         credentials: "omit", /* this endpoint doesn't require authentication */

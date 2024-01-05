@@ -5,7 +5,9 @@
 }
 #blogs .list {
     direction: rtl;
+    list-style: disc;
 }
+
 #blogs .blog-item {
 
 }
@@ -28,4 +30,28 @@
     font-size: var(--fs-400);
     color: rgb(94, 94, 94);
 }
+
+/* ------ pagination controls ------- */
+#blogs .pagination-controls {
+    border-top: 1px solid gray;
+    margin-top: 1rem;
+    padding: .5rem 0;
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+}
+#blogs .pagination-controls a {
+    text-decoration: none;
+    color: black;
+    /* To make the link bigger and easier to click */
+    padding: .25rem .25rem;
+    background-color: gray;
+}
+
+#blogs .pagination-controls a .icon {
+    pointer-events: none;
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
 /* */

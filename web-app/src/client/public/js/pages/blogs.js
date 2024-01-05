@@ -1,3 +1,4 @@
+import { toggleRevealOfPageElements } from "../reveal-animation.js";
 import { createErrorElement, showHideLoadingSpinner } from "../ui-utils.js";
 
 /** @param {{ fetchBlogPaginated: FetchBlogPaginated }} param0 @returns {PageView} */
@@ -22,7 +23,7 @@ export default function makeBlogsView({
 
             // App might be crashed while loading data from server, etc. So we first check:
             if (ongoingDisplayState === "loading") {
-                if (isUserCurrentlyAtThisPage){
+                if (isUserCurrentlyAtThisPage) {
                     showHideLoadingSpinner(sectionEl, false);
                 }
             }
@@ -45,14 +46,12 @@ export default function makeBlogsView({
 
     async function render(/** @type {any} */params) {
         document.title = "نوشته‌ها";
-        sectionEl.innerHTML = /*html*/`
-            <h1 class="h1">نوشته‌ها</h1>
-        `;
+        sectionEl.innerHTML = "";
         sectionEl.setAttribute("aria-hidden", "false");
         sectionEl.setAttribute("aria-live", "polite");
         sectionEl.classList.add("active");
         ongoingDisplayState = "loading";
-        showHideLoadingSpinner(/*inside=*/sectionEl, /*visibility=*/true);
+        showHideLoadingSpinner(sectionEl, true);
 
         //  The user might have navigated to another page, then come back to this page by clicking on nav-item.
         //  If the user clicks on nav-item, the params will be empty, but we want to continue from the page that
@@ -69,7 +68,7 @@ export default function makeBlogsView({
         const cursor = params.cursor ?? "newest";
         const direction = params.direction ?? "older";
         const limit = Number(params.limit ?? 10);
-        await new Promise((rs, rj) => setTimeout(rs, 2000)); // artificial delay
+        // await new Promise((rs, rj) => setTimeout(rs, 10 * window.MAX_ANIMATION_TIME));
         const result = await fetchBlogPaginated({ cursor, direction, limit });
 
         showHideLoadingSpinner(sectionEl, false);
@@ -78,6 +77,9 @@ export default function makeBlogsView({
         if (result.statusCode !== 200) {
             throw new Error(result.statusCode + " " + result.body.error);
         }
+        sectionEl.innerHTML = /*html*/`
+            <h1 class="h1">نوشته‌ها</h1>
+        `;
 
         const /**@type {import("#types").PaginatedResult}*/ current = result.body.current;
 
@@ -87,7 +89,7 @@ export default function makeBlogsView({
         listElOfCurrent.innerHTML = current.content.map((o) => {
             const blog = /**@type {import("#types").BlogV2}*/(o); // to make ts help us
             return /*html*/`
-                <li class="blog-item">
+                <li class="blog-item to-reveal">
                     <a href="/blog/${blog.id}" data-link>
                         <h2 class="blog-title">${blog.blogTitle}</h2>
                     </a>
@@ -103,8 +105,10 @@ export default function makeBlogsView({
 
         const paginationControlEl = createElementForPaginationControls({ cursor, limit, direction }, result.body);
 
-        sectionEl.appendChild(listElOfCurrent);
+        //  It's better to attack controls elements first. User can easily move many pages without the need to scroll down every time.
         sectionEl.appendChild(paginationControlEl);
+        sectionEl.appendChild(listElOfCurrent);
+        toggleRevealOfPageElements(true, ".blog-item");
     }
 
 
@@ -120,6 +124,7 @@ export default function makeBlogsView({
         const pagesBeyondInSameDirection = curResult.beyond;
 
         const controlEl = document.createElement("div");
+        controlEl.setAttribute("dir", "rtl");
         controlEl.classList.add("pagination-controls");
         let h = "";
 
@@ -139,7 +144,11 @@ export default function makeBlogsView({
                 cursor: cursorForGettingNewer + "",
             });
             h += /*html*/`
-                <a href="/blog/paginated?${searchParams.toString()}" title="load newer blogs" data-link>جدیدتر</a>
+                <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های جدیدتر" data-link>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </a>
             `;
         }
 
@@ -149,6 +158,7 @@ export default function makeBlogsView({
         }
         else {
             const cursorForGettingOlder = curSP.direction === "older" ? currentPage.tailCursor : currentPage.headCursor;
+            console.log(cursorForGettingOlder);
 
             const searchParams = new URLSearchParams({
                 direction: "older",
@@ -156,7 +166,11 @@ export default function makeBlogsView({
                 cursor: cursorForGettingOlder + "",
             });
             h += /*html*/`
-                <a href="/blog/paginated?${searchParams.toString()}" title="load older blogs" data-link>قدیمی‌تر</a>
+                <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های قدیمی‌تر" data-link>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </a>
             `;
         }
 
@@ -164,19 +178,32 @@ export default function makeBlogsView({
         //  Now let's also add button for first and last page.
         //  There are some edges cases, like when number of total blogs in db is less one page. We don't care
         //  about this case.
-        h = /*html*/`
-            <a href="/blog/paginated?limit=${curSP.limit}&cursor=newest&direction=older" data-link>جدیدترین</a>
-            ` +
-            h + /*html*/`
-            <a href="/blog/paginated?limit=${curSP.limit}&cursor=oldest&direction=newer" data-link>قدیمی‌ترین</a>
-        `;
 
+        if (curSP.cursor !== "newest" /*if not already in first page*/) {
+            h = /*html*/`
+                <a href="/blog/paginated?limit=${curSP.limit}&cursor=newest&direction=older" title="جدیدترین بلاگ‌ها" data-link>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+                    </svg>
+                </a>
+            ` + h;
+        }
+
+        if (curSP.cursor !== "oldest" /*if not already in last page*/) {
+            h = h + /*html*/`
+                <a href="/blog/paginated?limit=${curSP.limit}&cursor=oldest&direction=newer" title="قدیمی‌ترین بلاگ‌ها" data-link>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+                    </svg>
+                </a>
+            `;
+        }
         controlEl.innerHTML = h;
         return controlEl;
     }
 }
 
 /**
- * @typedef {import("./types").PageView} PageView
- * @typedef {import("./types").FetchBlogPaginated} FetchBlogPaginated
+ * @typedef {import("../types.d.ts").PageView} PageView
+ * @typedef {import("../types.d.ts").FetchBlogPaginated} FetchBlogPaginated
  */
