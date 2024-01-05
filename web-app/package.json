@@ -6,13 +6,16 @@
   "type": "module",
   "scripts": {
     "start": "node ./src/main.js",
+    "start:e2e": "NODE_ENV=test ./src/main.js",
     "dev": "nodemon src/main.js",
+    "echo:attention": "echo \"You must set e2e variables inside .env file.\"",
     "lint": "eslint .",
     "test:unit": "NODE_ENV=test node --test src/**/*.test.js",
     "tcl": "NODE_ENV=test node --test src/client/tests/*.test.js",
     "tda": "NODE_ENV=test node --test src/data-access/tests/*.test.js",
     "tint": "NODE_ENV=test PORT=9079 node --test-reporter=spec --test tests/integration/blog-add.test.js",
     "test:integration": "NODE_ENV=test PORT=9079 node --test-reporter=spec --test tests/integration",
+    "test:e2e": "npm run echo:attention && npm run start:e2e",
     "test": "npm run test:integration"
   },
   "keywords": [],

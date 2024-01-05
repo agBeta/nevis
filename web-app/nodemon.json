@@ -1,13 +1,19 @@
 {
     "ignore": [
-      "node_modules/**/node_modules"
+        "node_modules/**/node_modules"
     ],
     "verbose": true,
-    "watch": ["src/"],
+    "watch": [
+        "src/"
+    ],
     "env": {
-      "NODE_ENV": "test",
-      "PORT": 9079,
-      "DISABLE_CACHE": "yes"
+        "NODE_ENV": "test",
+        "PORT": 9079,
+        "DISABLE_CACHE": "yes",
+        "MYSQL_DB_NAME": "nevis_db_test__e2e",
+        "MYSQL_USERNAME": "nevis_nodejs_test__e2e",
+        "MYSQL_PASSWORD": "pass_^SaTifYinG_1402_policy_1402",
+        "MYSQL_PORT": "3306"
     },
     "ext": "js,json,cjs,ejs"
 }
