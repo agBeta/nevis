@@ -17,7 +17,7 @@ export default function makeRouter({ routes }) {
         document.querySelectorAll("section.page").forEach(page => {
             page.setAttribute("aria-hidden", "true");
         });
-        
+
 
         let matchingRoute = null;
         let params = null;
@@ -48,7 +48,7 @@ export default function makeRouter({ routes }) {
             if (ev.target instanceof Element && ev.target.matches("[data-link]")) {
                 // We aren't letting the browser take care of navigation, since we want to do it by our router, so...
                 ev.preventDefault();
-                navigateTo(/**@type {HTMLAnchorElement}*/(ev.target).href, true);
+                navigateTo(/**@type {HTMLAnchorElement}*/(ev.target).pathname, true);
             }
         });
 
