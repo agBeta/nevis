@@ -8,8 +8,8 @@ faker.seed(333);
  */
 export function makeFakeBlog(overrides) {
     const blog = {
-        blogTitle: faker.lorem.lines({ min: 10, max: 20 }),
-        blogBody: faker.lorem.words({ min: 2, max: 5 }),
+        blogTitle: faker.lorem.words({ min: 2, max: 5 }),
+        blogBody: faker.lorem.lines({ min: 10, max: 20 }),
         blogTopic: "Technology",
         // no imageUrl
     };

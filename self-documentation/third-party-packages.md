@@ -6,6 +6,9 @@ We could use another logging library called `pino`. But then we had to use anoth
 
 ## `mysql2`
 
+### release connection?
+According to [mysql2 docs](https://sidorares.github.io/node-mysql2/docs#using-connection-pools), // Connection is automatically released when query resolves if you use `pool.query`. **BUT** if you use `await pool.getConnection();`, the you **MUST** release the connection.
+
 ### query vs execute
 
 For return value of `query` and `execute` see [here] https://github.com/sidorares/node-mysql2/blob/master/documentation/en/TypeScript-Examples.md#type-specification.
@@ -32,6 +35,13 @@ See database.md.
 ### multiple queries
 https://github.com/sidorares/node-mysql2/issues/1889#issuecomment-1467614420.
 https://stackoverflow.com/questions/48181991/how-to-do-multiple-mysql-queries-in-one-line-in-node-js.
+
+### transactions
+For transactions take a look at: 
+- https://stackoverflow.com/a/38717014
+- https://stackoverflow.com/a/70240338
+- https://github.com/sidorares/node-mysql2/issues/384#issuecomment-543727621
+We cannot use the pool directly to begin a transaction like you can be for a query.
 
 </br>
 
