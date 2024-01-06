@@ -25,3 +25,20 @@ export async function fetchBlogPaginated({ direction, cursor, limit }) {
     };
 }
 
+/** @param {{ blogId: string }} param0 */
+export async function fetchBlog({ blogId }) {
+    const url = new URL(`/api/v1/blog/${blogId}`, BASE_URL);
+    const request = new Request(url, {
+        credentials: "omit",
+        mode: "no-cors",
+        method: "GET",
+    });
+    const raw = await fetch(request);
+    const statusCode = raw.status;
+    const body = await raw.json();
+    return {
+        statusCode,
+        body,
+    };
+}
+
