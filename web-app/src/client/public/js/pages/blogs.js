@@ -1,5 +1,5 @@
 import { toggleRevealOfMenu, toggleRevealOfPageElements } from "../reveal-animation.js";
-import { createErrorElement, showHideLoadingSpinner } from "../ui-utils.js";
+import { showHideLoadingSpinner } from "../ui-utils.js";
 
 /** @param {{ fetchBlogPaginated: FetchBlogPaginated }} param0 @returns {PageView} */
 export default function makeBlogsView({
@@ -25,28 +25,31 @@ export default function makeBlogsView({
         catch (err) {
             const cv = window.SMI.getCurrentViewOnScreen();
             const isUserCurrentlyAtThisPage = cv.name === THIS_VIEW && cv.timestamp === timestamp;
+            if (!isUserCurrentlyAtThisPage) {
+                return;
+            }
 
             // App might be crashed while loading data from server, etc. So we first check:
             if (ongoingDisplayState === "loading") {
-                if (isUserCurrentlyAtThisPage) {
-                    showHideLoadingSpinner(pageEl, false);
-                }
+                showHideLoadingSpinner(pageEl, false);
             }
             ongoingDisplayState = "free";
 
-            if (isUserCurrentlyAtThisPage) {
-                const errorEl = createErrorElement({
-                    title: "خطا",
-                    description: err.message ?? "Unknown Error",
-                    buttonTitle: "تلاش مجدد",
-                    onButtonClick: () => {
-                        errorEl.remove();
-                        safelyRender();
-                    }
-                });
-                pageEl.innerHTML = "";
-                pageEl.appendChild(errorEl);
-            }
+            const errorEl = document.createElement("div");
+            errorEl.classList.add("error-container", "to-reveal", "active");
+            errorEl.innerHTML = /*html*/`
+                <h2 class="error-title">${"خطا"}</h2>
+                <p class="en" dir="ltr">${err.message}</p>
+            `;
+            const button = document.createElement("button");
+            button.textContent = "تلاش مجدد";
+            button.addEventListener("click", function retry(){
+                errorEl.remove();
+                safelyRender();
+            });
+            errorEl.appendChild(button);
+            pageEl.innerHTML = "";
+            pageEl.appendChild(errorEl);
         }
     }
 
@@ -58,6 +61,12 @@ export default function makeBlogsView({
         pageEl.setAttribute("aria-live", "polite");
         ongoingDisplayState = "loading";
         showHideLoadingSpinner(pageEl, true);
+
+        document.querySelectorAll("nav[aria-label='Main Menu'] .nav-item > a").forEach(el => {
+            // @ts-ignore
+            if (el.pathname.includes("/blog/paginated")) el.setAttribute("aria-current", "page");
+            else el.removeAttribute("aria-current");
+        });
 
         //  We must include this here. Especially it covers the edge case when user is toggle menu and then
         //  clicks browser back button. Anyway, it's safe to do this.
@@ -141,7 +150,7 @@ export default function makeBlogsView({
         //  to scroll down every time.
         containerEl.appendChild(paginationControlEl);
         containerEl.appendChild(listElOfCurrent);
-        pageEl.innerHTML = containerEl.outerHTML;
+        pageEl.appendChild(containerEl);
         toggleRevealOfPageElements(true);
     }
 
@@ -225,7 +234,6 @@ export default function makeBlogsView({
         }
         else {
             const cursorForGettingOlder = curSP.direction === "older" ? currentPage.tailCursor : currentPage.headCursor;
-            console.log(cursorForGettingOlder);
 
             const searchParams = new URLSearchParams({
                 direction: "older",
