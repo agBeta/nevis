@@ -64,8 +64,15 @@ export default function makeBlogsView({
         toggleRevealOfMenu(false);
 
         const params = obtainSearchParams();
-        // await new Promise((rs, rj) => setTimeout(rs, 1 * window.MAX_ANIMATION_TIME));
-        const result = await fetchBlogPaginated(params);
+
+        const [result,] = await Promise.all([
+            fetchBlogPaginated(params),
+            //  Let's wait at least a few milliseconds. This probably gives a better ux and also lets
+            //  other fading elements to animate their exit gracefully. It also prevents the flashy
+            //  layout shift which would be annoying for the user. The way that we have created our
+            //  markup and animation, this seems the best choice for now.
+            new Promise((resolve, reject) => setTimeout(resolve, 300)),
+        ]);
 
         //  The fetch above might take some time. When we reach here we need to check if the result
         //  should be rendered or not.
@@ -182,14 +189,11 @@ export default function makeBlogsView({
     function createElementForPaginationControls(curSP, curResult) {
         const currentPage = curResult.current;
         const pagesBeyondInSameDirection = curResult.beyond;
-        console.log(currentPage);
-        console.log(pagesBeyondInSameDirection);
-        console.log();
 
         const controlEl = document.createElement("div");
         controlEl.setAttribute("dir", "rtl");
         controlEl.classList.add("pagination-controls", "to-reveal");
-        let html = "";
+        let ih = "";
 
         if (curSP.cursor === "newest" || (curSP.direction === "newer" && pagesBeyondInSameDirection == null)) {
             // Do nothing
@@ -206,7 +210,7 @@ export default function makeBlogsView({
                 limit: curSP.limit + "",
                 cursor: cursorForGettingNewer + "",
             });
-            html += /*html*/`
+            ih += /*html*/`
                 <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های جدیدتر" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 18l6-6-6-6"/>
@@ -228,7 +232,7 @@ export default function makeBlogsView({
                 limit: curSP.limit + "",
                 cursor: cursorForGettingOlder + "",
             });
-            html += /*html*/`
+            ih += /*html*/`
                 <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های قدیمی‌تر" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 18l-6-6 6-6"/>
@@ -237,23 +241,22 @@ export default function makeBlogsView({
             `;
         }
 
-
         //  Now let's also add button for first and last page.
         //  There are some edges cases, like when number of total blogs in db is less one page. We don't care
         //  about this case.
 
         if (curSP.cursor !== "newest" /*if not already in first page*/) {
-            html = /*html*/`
+            ih = /*html*/`
                 <a href="/blog/paginated?direction=older&limit=${curSP.limit}&cursor=newest" title="جدیدترین بلاگ‌ها" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
                     </svg>
                 </a>
-            ` + html;
+            ` + ih;
         }
 
         if (curSP.cursor !== "oldest" /*if not already in last page*/) {
-            html = html + /*html*/`
+            ih = ih + /*html*/`
                 <a href="/blog/paginated?direction=newer&limit=${curSP.limit}&cursor=oldest" title="قدیمی‌ترین بلاگ‌ها" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
@@ -261,7 +264,7 @@ export default function makeBlogsView({
                 </a>
             `;
         }
-        controlEl.innerHTML = html;
+        controlEl.innerHTML = ih;
         return controlEl;
     }
 }

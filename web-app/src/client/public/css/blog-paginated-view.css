@@ -9,22 +9,25 @@
     list-style: disc;
 }
 
-#blogs .blog-item {
-
-}
 #blogs .blog-item a {
     /* inline-block so that the inner <h2> doesn't make the link stretch the whole viewport width. */
     display: inline-block;
     color: black;
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
     text-decoration: none;
     cursor: pointer;
+    transition: transform .3s;
+}
+#blogs .blog-item a:hover {
+    color: var(--clr-accent-hover);
+    transform: translateX(-5px);
 }
 #blogs .blog-title {
     font-size: var(--fs-500);
 }
 #blogs .blog-item footer {
     font-size: var(--fs-400);
+    color: rgb(65, 65, 65);
     /* In order to place <p> and <time> on the same line */
     display: flex;
     gap: 0.5rem;
@@ -32,7 +35,6 @@
 }
 #blogs .blog-item time {
     font-size: var(--fs-400);
-    color: rgb(94, 94, 94);
 }
 
 /* ------ pagination controls ------- */
@@ -49,7 +51,7 @@
     color: black;
     /* To make the link bigger and easier to click */
     padding: .25rem .25rem;
-    background-color: gray;
+    /* background-color: gray; */
 }
 
 #blogs .pagination-controls a .icon {

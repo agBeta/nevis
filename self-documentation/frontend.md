@@ -8,3 +8,7 @@ EJS and Pug are roughly equivalent in terms of functionality. Even though EJS is
 ## aria-busy, aria-live
 Be careful about aria-busy. Read Craig Kovatch's comment in https://stackoverflow.com/a/38708396.
 https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live.
+
+## Hiding from screen-reader
+https://www.linkedin.com/pulse/hiding-elements-from-screen-readers-girijesh-tripathi.  
+https://snook.ca/archives/html_and_css/hiding-content-for-accessibility.

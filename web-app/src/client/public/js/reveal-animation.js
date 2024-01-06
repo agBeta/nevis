@@ -16,10 +16,10 @@ export function onMenuToggleClick() {
 
 /**
  * @description
- * This will actually result in (re)displaying reveal animation on screen. Primarily designed for pages
- * where some of inner elements don't have "active" class and are going to be revealed now.
  * @param {boolean} active - whether to reveal or hide.
- * @param {string} [selector]
+ * @param {string} [selector] - Primarily designed for pages where some of inner elements
+ * already have "active" class, but some other elements don't have and we want to display
+ * reveal/hide animation only for those.
  */
 export function toggleRevealOfPageElements(active, selector = "") {
     // We need to make an array (using [...]), so that we can use index in forEach callback.
