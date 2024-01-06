@@ -1,4 +1,4 @@
-import { toggleRevealOfPageElements } from "../reveal-animation.js";
+import { toggleRevealOfMenu, toggleRevealOfPageElements } from "../reveal-animation.js";
 import { createErrorElement, showHideLoadingSpinner } from "../ui-utils.js";
 
 /** @param {{ fetchBlogPaginated: FetchBlogPaginated }} param0 @returns {PageView} */
@@ -54,17 +54,21 @@ export default function makeBlogsView({
         ongoingDisplayState = "loading";
         showHideLoadingSpinner(pageEl, true);
 
+        //  We must include this here. Especially it covers the edge case when user is toggle menu and then
+        //  clicks browser back button. Anyway, it's safe to do this.
+        toggleRevealOfMenu(false);
+
         // We must use href or search, not pathname. pathname doesn't include query params.
         const urlSP = new URLSearchParams(window.location.search);
-        console.log(urlSP.toString());
+
         let params;
+
         //  The user might have navigated to another page, then come back to this page by clicking on nav-item.
         //  If the user clicks on nav-item, the params will be empty, but we want to continue from the page that
         //  was recently displayed. So ...
         const recentSearchParams = window.SMI.getState(THIS_VIEW);
 
         if (!urlSP.has("cursor") && recentSearchParams != null) {
-            console.log("using recent search params");
             params = Object.freeze({ ...recentSearchParams });
         }
         else {
@@ -76,10 +80,15 @@ export default function makeBlogsView({
             //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
             //  of this state will later decided to whether clean/error when params are invalid. Anyway...
             window.SMI.setSate(THIS_VIEW, params);
+
+            // updating href of nav-link for this view
+            const blogsNavLink = /**@type {HTMLAnchorElement}*/ (document.querySelector(
+                "nav[aria-label=\"Main Menu\"] a[href^=\"/blog/paginated\"]"
+            ));
+            blogsNavLink.href = "/blog/paginated?" + urlSP.toString();
         }
 
         // await new Promise((rs, rj) => setTimeout(rs, 1 * window.MAX_ANIMATION_TIME));
-        console.log(params);
         // @ts-ignore
         const result = await fetchBlogPaginated(params);
 
@@ -131,7 +140,7 @@ export default function makeBlogsView({
         containerEl.appendChild(paginationControlEl);
         containerEl.appendChild(listElOfCurrent);
         pageEl.innerHTML = containerEl.outerHTML;
-        toggleRevealOfPageElements(true, "");
+        toggleRevealOfPageElements(true);
     }
 
 

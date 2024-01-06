@@ -14,10 +14,6 @@ export default function makeRouter({ routes }) {
             //  See https://developer.mozilla.org/en-US/docs/Web/API/History/pushState.
             history.pushState({ route: routeToNavigate }, "", routeToNavigate);
         }
-        document.querySelectorAll("section.page").forEach(page => {
-            page.setAttribute("aria-hidden", "true");
-        });
-
 
         let matchingRoute = null;
         let params = null;
@@ -56,8 +52,10 @@ export default function makeRouter({ routes }) {
             navigateTo(ev.state.route, false/*<--*/);
         });
 
-        // Now listeners are registered, and we just need to take care of initial url
-        navigateTo(window.location.pathname);
+        //  Now listeners are registered, and we just need to take care of initial url
+        //  location.search will return empty string if there is no query string.
+        const initialUrl = window.location.pathname + window.location.search + window.location.hash;
+        navigateTo(initialUrl);
     }
 }
 

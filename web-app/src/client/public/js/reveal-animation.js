@@ -1,56 +1,27 @@
-/** maximum time reveal animation can take and shouldn't exceed it so that the user doesn't get bored. */
+/** maximum time (stacked) reveal animations can take, so that the user doesn't get bored. */
 const MAX_ANIMATION_TIME = 300;
 window.MAX_ANIMATION_TIME = MAX_ANIMATION_TIME; // make it public
 
 export function onMenuToggleClick() {
-    const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
     const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
-    const page = /**@type {HTMLElement}*/(document.querySelector("#page"));
-
-    const menuElementsToReveal = /**@type {HTMLElement[]}*/
-        ([...(document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"))]);
-
     if (menu.classList.contains("active")) {
-        menuToggle.classList.remove("active");
-        menuToggle.setAttribute("aria-expanded", "false");
-        menu.classList.remove("active");
-        menu.setAttribute("aria-hidden", "true");
-        page.setAttribute("aria-hidden", "false");
-
-        menuElementsToReveal.forEach(el => {
-            //  If you want to reveal menu elements one-by-one wrap line inside a setTimeout. But let's keep
-            //  things simple.
-            toggleReveal(el, false);
-        });
-        toggleRevealOfPageElements(true, ":not(.nav-item)");
+        toggleRevealOfMenu(false);
+        toggleRevealOfPageElements(true);
     }
     else {
-        menuToggle.classList.add("active");
-        menuToggle.setAttribute("aria-expanded", "true");
-        menu.classList.add("active");
-        menu.setAttribute("aria-hidden", "false");
-        page.setAttribute("aria-hidden", "true");
-
-        toggleRevealOfPageElements(false, ":not(.nav-item)");
-        menuElementsToReveal.forEach(el => {
-            toggleReveal(el, true);
-        });
+        toggleRevealOfPageElements(false);
+        toggleRevealOfMenu(true);
     }
-    //  You may also add aria-hidden="true" to nav-items for screen readers when menu isn't expanded. We didn't
-    //  do that. Some useful links:
-    //  https://www.linkedin.com/pulse/hiding-elements-from-screen-readers-girijesh-tripathi.
-    //  https://snook.ca/archives/html_and_css/hiding-content-for-accessibility.
 }
 
 /**
  * @description
  * This will actually result in (re)displaying reveal animation on screen. Primarily designed for pages
- * where some of inner elements don't have "active" class and are going to be revealed now, like <li>s
- * of newly fetched blogs in blogsView.
+ * where some of inner elements don't have "active" class and are going to be revealed now.
  * @param {boolean} active - whether to reveal or hide.
- * @param {string} selector
+ * @param {string} [selector]
  */
-export function toggleRevealOfPageElements(active, selector) {
+export function toggleRevealOfPageElements(active, selector = "") {
     // We need to make an array (using [...]), so that we can use index in forEach callback.
     const elementsOfInterest = /**@type {HTMLElement[]}*/
         ([...(document.querySelectorAll("#page .to-reveal" + selector))]);
@@ -62,6 +33,24 @@ export function toggleRevealOfPageElements(active, selector) {
             toggleReveal(el, active);
         }, Math.min(MAX_ANIMATION_TIME, i * 30));
     });
+}
+
+
+/** @param {boolean} active  */
+export function toggleRevealOfMenu(active) {
+    const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
+    const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
+    const page = /**@type {HTMLElement}*/(document.querySelector("#page"));
+
+    const menuElementsToReveal = /**@type {HTMLElement[]}*/
+        ([...(document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"))]);
+
+    menuElementsToReveal.forEach(el => toggleReveal(el, active));
+    menuToggle.setAttribute("aria-expanded", active ? "true" : "false");
+    menu.setAttribute("aria-hidden", active ? "false" : "true");
+    menu.classList.toggle("active", /*force=*/active);
+
+    page.setAttribute("aria-hidden", active ? "true" : "false");
 }
 
 /** @param {HTMLElement} el  @param {boolean} active  */
