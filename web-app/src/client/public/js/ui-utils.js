@@ -13,25 +13,4 @@ export function showHideLoadingSpinner(insideEl, visibility) {
         loaderEl?.remove();
     }
 }
-
-
-/** @param {{ title: string, description: string, buttonTitle?: string, onButtonClick?: * }} param0 */
-export function createErrorElement({ title, description, buttonTitle, onButtonClick }) {
-    const errorEl = document.createElement("div");
-    errorEl.classList.add("error-container", "to-reveal", "active");
-
-    errorEl.innerHTML = /*html*/`
-        <h2 class="error-title">${title}</h2>
-        <p>${description}</p>
-    `;
-
-    if (buttonTitle) {
-        const button = document.createElement("button");
-        button.textContent = buttonTitle;
-        button.addEventListener("click", onButtonClick);
-        errorEl.appendChild(button);
-    }
-    return errorEl;
-}
-
 //
