@@ -43,7 +43,8 @@ export default function makeRouter({ routes }) {
             if (ev.target.matches("[data-link]")) {
                 // We aren't letting the browser take care of navigation, since we want to do it by our router, so...
                 ev.preventDefault();
-                navigateTo(/**@type {HTMLAnchorElement}*/(ev.target).href, true);
+                const url = new URL(/**@type {HTMLAnchorElement}*/(ev.target).href);
+                navigateTo(url.pathname + url.search + url.hash, true);
             }
         });
 
@@ -81,6 +82,7 @@ export function matchAndCapture(pathPattern, routeToNavigate) {
     // See router.test.js to learn more about this Regex.
     const regex = new RegExp("^" + pathPattern.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
     const result = routeToNavigate.match(regex);
+
     if (result == null) {
         return null;
     }
