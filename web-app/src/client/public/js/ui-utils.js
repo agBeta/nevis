@@ -15,6 +15,7 @@ export function showHideLoadingSpinner(insideEl, visibility) {
 }
 
 
+/** @param {{ title: string, description: string, buttonTitle?: string, onButtonClick?: * }} param0 */
 export function createErrorElement({ title, description, buttonTitle, onButtonClick }) {
     const errorEl = document.createElement("div");
     errorEl.classList.add("error-container", "to-reveal", "active");
