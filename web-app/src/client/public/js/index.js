@@ -1,13 +1,17 @@
 import "./state-manage.js";
-import { fetchBlogPaginated } from "./api.js";
+import { fetchBlogPaginated, fetchBlog } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
 import makeBlogsView from "./pages/blogs.js";
+import makeIndividualBlogView from "./pages/individual-blog.js";
+import makeHomeView from "./pages/home.js";
 
 window.SMI.clearStates();
 
 const routes = [
-    { path: "/blog/paginated", pageView: makeBlogsView({ fetchBlogPaginated }) }
+    { path: "/blog/paginated", pageView: makeBlogsView({ fetchBlogPaginated }) },
+    { path: "/blog/:blogId", pageView: makeIndividualBlogView({ fetchBlog }) },
+    { path: "/", pageView: makeHomeView() }
 ];
 
 if (history.scrollRestoration) {

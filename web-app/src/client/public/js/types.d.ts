@@ -19,7 +19,13 @@ export type PageView = {
 }
 
 export type FetchBlogPaginated =
-    ({ direction, cursor, limit }: { direction: "newer"|"older", cursor:string, limit:string | number })
+    ({ direction, cursor, limit }: { direction: "newer"|"older", cursor: string, limit: string | number })
+    => Promise<{
+        statusCode: number, 
+        body: any,
+    }>;
+
+export type FetchBlog = ({ blogId } : { blogId: string }) 
     => Promise<{
         statusCode: number, 
         body: any,
