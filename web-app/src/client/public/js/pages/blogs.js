@@ -91,8 +91,8 @@ export default function makeBlogsView({
         }
         if (window.SMI.getCurrentViewOnScreen().timestamp !== timestamp) {
             //  So the user is currently on this view but he has left and came back while the result
-            //  was being fetched from server. So, again, no need to render anything. The render(..)
-            //  call triggered by most recent visit will take care of everything.
+            //  was being fetched from server. So, again, no need to render anything. The most recent
+            //  render(..) call (triggered when user came back to this page) will take care of everything.
             return;
         }
 
