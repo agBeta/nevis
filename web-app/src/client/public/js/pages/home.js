@@ -13,7 +13,7 @@ export default function makeHomeView() {
     async function render() {
         document.title = "خانه";
         pageEl.innerHTML = "";
-        // console.log("Here");
+        pageEl.setAttribute("aria-hidden", "false");
         document.querySelectorAll("nav[aria-label='Main Menu'] .nav-item > a").forEach(el => {
             // @ts-ignore
             if (el.pathname === "/") el.setAttribute("aria-current", "page");
@@ -22,7 +22,6 @@ export default function makeHomeView() {
 
         const containerEl = document.createElement("div");
         containerEl.classList.add("to-reveal");
-        // containerEl.setAttribute("aria-hidden", "false");
         containerEl.id = "home";
         containerEl.innerHTML = /*html*/`
             <h1 class="h1">خانه</h1>

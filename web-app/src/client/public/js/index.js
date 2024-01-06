@@ -3,6 +3,7 @@ import { updateMainMenuItemsBasedOnUserLoggedIn } from "./ui-utils.js";
 import { fetchBlogPaginated, fetchBlog } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
+
 import makeBlogsView from "./pages/blogs.js";
 import makeIndividualBlogView from "./pages/individual-blog.js";
 import makeHomeView from "./pages/home.js";
