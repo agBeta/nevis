@@ -5,6 +5,7 @@ window.MAX_ANIMATION_TIME = MAX_ANIMATION_TIME; // make it public
 export function onMenuToggleClick() {
     const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
     const menu = /**@type {HTMLElement}*/(document.querySelector("nav[aria-label='Main Menu']"));
+    const page = /**@type {HTMLElement}*/(document.querySelector("#page"));
 
     const menuElementsToReveal = /**@type {HTMLElement[]}*/
         ([...(document.querySelectorAll("nav[aria-label='Main Menu'] .to-reveal"))]);
@@ -14,6 +15,7 @@ export function onMenuToggleClick() {
         menuToggle.setAttribute("aria-expanded", "false");
         menu.classList.remove("active");
         menu.setAttribute("aria-hidden", "true");
+        page.setAttribute("aria-hidden", "false");
 
         menuElementsToReveal.forEach(el => {
             //  If you want to reveal menu elements one-by-one wrap line inside a setTimeout. But let's keep
@@ -27,6 +29,7 @@ export function onMenuToggleClick() {
         menuToggle.setAttribute("aria-expanded", "true");
         menu.classList.add("active");
         menu.setAttribute("aria-hidden", "false");
+        page.setAttribute("aria-hidden", "true");
 
         toggleRevealOfPageElements(false, ":not(.nav-item)");
         menuElementsToReveal.forEach(el => {
@@ -50,7 +53,7 @@ export function onMenuToggleClick() {
 export function toggleRevealOfPageElements(active, selector) {
     // We need to make an array (using [...]), so that we can use index in forEach callback.
     const elementsOfInterest = /**@type {HTMLElement[]}*/
-        ([...(document.querySelectorAll(".to-reveal" + selector))]);
+        ([...(document.querySelectorAll("#page .to-reveal" + selector))]);
 
     elementsOfInterest.forEach((el, i) => {
         //  We wrap it inside setTimeout so that elements reveal/hide one-by-one instead of all at once.
