@@ -94,13 +94,33 @@ body {
     max-width: var(--custom-max-width, 50rem);
     margin: 0 auto;
     /* padding so that it doesn't touch edges on small screens. */
-    padding: 0 .175rem;
+    padding: 0 .5rem;
 }
 
 /* Remove inconsistency of collapsing margins. */
 .u-flow-content > * + * {
     margin-top: var(--custom-space, 1rem);
 }
+
+.en[dir="ltr"] {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.h1 {
+    font-size: var(--fs-600);
+}
+
+
+
+/*--------  Pages (i.e. Panels in SPA) ------- */
+
+main {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 /* ------- Main navigation and Reveal animation ----------- */
 /* We prefer semantic css here. */
@@ -162,8 +182,6 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
-
-
 
 /*  aria-current is based on:
     https://stackoverflow.com/questions/19604677/what-aria-state-role-to-use-for-current-page-in-navigation.
@@ -243,27 +261,6 @@ nav[aria-label="Main Menu"] .to-reveal.active a {
 
 nav[aria-label="Main Menu"] .nav-item span {
     font-size: var(--fs-300);
-}
-
-/* */
-
-
-/*--------  Pages (i.e. Panels in SPA) ------- */
-main {
-    height: 100%;
-}
-
-section.page {
-    display: block;
-    /* This is closely associated with height:100% in <main> and <body>. */
-    /* Don't use height, since in blogs results won't fit in screen. */
-    min-height: 100%;
-    padding: 1rem;
-    /* background-color: aquamarine; */
-}
-
-section.page[aria-hidden="true"] {
-    display: none;
 }
 
 
