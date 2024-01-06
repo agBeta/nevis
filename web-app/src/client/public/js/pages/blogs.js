@@ -144,9 +144,9 @@ export default function makeBlogsView({
         }
         else {
             searchParams = Object.freeze({
-                cursor: urlSP.get("cursor") ?? "newest",
                 direction: urlSP.get("direction") ?? "older",
                 limit: urlSP.has("limit") ? Number(urlSP.get("limit")) : 10,
+                cursor: urlSP.get("cursor") ?? "newest",
             });
             //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
             //  of this state will later decided to whether clean/error when params are invalid. Anyway...
@@ -192,9 +192,9 @@ export default function makeBlogsView({
             const cursorForGettingNewer = curSP.direction === "newer" ? currentPage.tailCursor : currentPage.headCursor;
 
             const searchParams = new URLSearchParams({
-                cursor: cursorForGettingNewer + "",
                 direction: "newer",
                 limit: curSP.limit + "",
+                cursor: cursorForGettingNewer + "",
             });
             html += /*html*/`
                 <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های جدیدتر" data-link>
@@ -234,7 +234,7 @@ export default function makeBlogsView({
 
         if (curSP.cursor !== "newest" /*if not already in first page*/) {
             html = /*html*/`
-                <a href="/blog/paginated?limit=${curSP.limit}&cursor=newest&direction=older" title="جدیدترین بلاگ‌ها" data-link>
+                <a href="/blog/paginated?direction=older&limit=${curSP.limit}&cursor=newest" title="جدیدترین بلاگ‌ها" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
                     </svg>
@@ -244,7 +244,7 @@ export default function makeBlogsView({
 
         if (curSP.cursor !== "oldest" /*if not already in last page*/) {
             html = html + /*html*/`
-                <a href="/blog/paginated?limit=${curSP.limit}&cursor=oldest&direction=newer" title="قدیمی‌ترین بلاگ‌ها" data-link>
+                <a href="/blog/paginated?direction=newer&limit=${curSP.limit}&cursor=oldest" title="قدیمی‌ترین بلاگ‌ها" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
                     </svg>
