@@ -40,6 +40,13 @@
     font-size: var(--fs-400);
 }
 
+#blogs .blog-item .blog-title {
+    /*  We need rule below, so that e.target will be <a> (not .blog-title). Otherwise we would fail to
+        preventDefault (as it wouldn't match [data-link] selector) and the page will reload.
+    */
+    pointer-events: none;
+}
+
 /* ------ pagination controls ------- */
 #blogs .pagination-controls {
     border-top: 1px solid gray;
@@ -58,6 +65,9 @@
 }
 
 #blogs .pagination-controls a .icon {
+    /*  We need rule below, so that e.target will be <a> (not .icon). Otherwise we would fail to
+        preventDefault (as it wouldn't match [data-link] selector) and the page will reload.
+    */
     pointer-events: none;
     width: 1.75rem;
     height: 1.75rem;
@@ -87,7 +97,7 @@
 /* ------------- Individual Blog ------------ */
 #individual-blog {
     align-self: flex-start;
-    max-width: 40rem;
+    max-width: 45rem;
     margin-top: 1rem;
     --custom-space: 1.75rem;
 }

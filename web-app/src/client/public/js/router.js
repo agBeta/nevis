@@ -31,8 +31,6 @@ export default function makeRouter({ routes }) {
             matchingRoute = routes[routes.length - 1];
             params = null;
         }
-        console.log(routeToNavigate);
-        console.log(matchingRoute.pageView);
         matchingRoute.pageView.render(params); // an async function
     }
 
@@ -46,6 +44,7 @@ export default function makeRouter({ routes }) {
                 // We aren't letting the browser take care of navigation, since we want to do it by our router, so...
                 ev.preventDefault();
                 const url = new URL(/**@type {HTMLAnchorElement}*/(ev.target).href);
+                console.log("Here preventing default");
                 navigateTo(url.pathname + url.search + url.hash, true);
             }
         });
