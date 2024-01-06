@@ -8,18 +8,17 @@ const StateManagementInterface = Object.freeze({
         localStorage.clear();
     },
     // Some helper functions, in order to have single source of truth for essential key names.
-    setCurrentViewOnScreen: function (/**@type {string}*/nameOfView) {
+    setCurrentViewOnScreen: function (/**@type {string}*/nameOfView, /**@type {number}*/arrivedAt) {
         setSate("current_view_on_screen", {
             name: nameOfView,
-            /* when: Date.now() */
+            arrivedAt,
         });
     },
     getCurrentViewOnScreen: function () {
         const v = getState("current_view_on_screen");
-        if (v == null) return "";
+        if (v == null) return { name: "", arrivedAt: -1 };
         // @ts-ignore
-        if (v.name) return v.name;
-        return "";
+        return { name: v.name, arrivedAt: v.arrivedAt, };
     }
 });
 window.SMI = StateManagementInterface; // making it public

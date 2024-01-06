@@ -47,6 +47,9 @@ export default function makeBlogsView({
     }
 
     async function render() {
+        const arrivedAt = Date.now();
+        window.SMI.setCurrentViewOnScreen(THIS_VIEW, arrivedAt);
+
         document.title = "نوشته‌ها";
         pageEl.innerHTML = "";
         pageEl.setAttribute("aria-hidden", "false");
@@ -58,46 +61,26 @@ export default function makeBlogsView({
         //  clicks browser back button. Anyway, it's safe to do this.
         toggleRevealOfMenu(false);
 
-        // We must use href or search, not pathname. pathname doesn't include query params.
-        const urlSP = new URLSearchParams(window.location.search);
-
-        let params;
-
-        //  The user might have navigated to another page, then come back to this page by clicking on nav-item.
-        //  If the user clicks on nav-item, the params will be empty, but we want to continue from the page that
-        //  was recently displayed. So ...
-        const recentSearchParams = window.SMI.getState(THIS_VIEW);
-
-        if (!urlSP.has("cursor") && recentSearchParams != null) {
-            params = Object.freeze({ ...recentSearchParams });
-        }
-        else {
-            params = Object.freeze({
-                cursor: urlSP.get("cursor") ?? "newest",
-                direction: urlSP.get("direction") ?? "older",
-                limit: urlSP.has("limit") ? Number(urlSP.get("limit")) : 10,
-            });
-            //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
-            //  of this state will later decided to whether clean/error when params are invalid. Anyway...
-            window.SMI.setSate(THIS_VIEW, params);
-
-            // updating href of nav-link for this view
-            const blogsNavLink = /**@type {HTMLAnchorElement}*/ (document.querySelector(
-                "nav[aria-label=\"Main Menu\"] a[href^=\"/blog/paginated\"]"
-            ));
-            blogsNavLink.href = "/blog/paginated?" + urlSP.toString();
-        }
-
+        const params = obtainSearchParams();
         // await new Promise((rs, rj) => setTimeout(rs, 1 * window.MAX_ANIMATION_TIME));
-        // @ts-ignore
         const result = await fetchBlogPaginated(params);
 
-        const isUserCurrentlyAtThisPage = window.SMI.getCurrentViewOnScreen() === THIS_VIEW;
-        if (!isUserCurrentlyAtThisPage) {
+        //  The fetch above might take some time. When we reach here we need to check if the result
+        //  should be rendered or not.
+        if (window.SMI.getCurrentViewOnScreen().name !== THIS_VIEW) {
+            // No need to render the result.
             return;
         }
+        if (window.SMI.getCurrentViewOnScreen().arrivedAt !== arrivedAt) {
+            //  So the user is currently on this view but he has left and came back while the result
+            //  was being fetched from server. So, again, no need to render anything. The render(..)
+            //  call triggered by most recent visit will take care of everything.
+            return;
+        }
+
         showHideLoadingSpinner(pageEl, false);
         ongoingDisplayState = "free";
+
         if (result.statusCode !== 200) {
             throw new Error(result.statusCode + " " + result.body.error);
         }
@@ -143,6 +126,39 @@ export default function makeBlogsView({
         toggleRevealOfPageElements(true);
     }
 
+    /** @returns {{ cursor: string, limit: number, direction: "older" | "newer" }} */
+    function obtainSearchParams() {
+        // We must use href or search, not pathname. pathname doesn't include query params.
+        const urlSP = new URLSearchParams(window.location.search);
+        let searchParams;
+
+        //  The user might have navigated to another page, then come back to this page by clicking on nav-item.
+        //  If the user clicks on nav-item, the params will be empty, but we want to continue from the page that
+        //  was recently displayed. So ...
+        const recentSearchParams = window.SMI.getState(THIS_VIEW);
+
+        if (!urlSP.has("cursor") && recentSearchParams != null) {
+            searchParams = Object.freeze({ ...recentSearchParams });
+        }
+        else {
+            searchParams = Object.freeze({
+                cursor: urlSP.get("cursor") ?? "newest",
+                direction: urlSP.get("direction") ?? "older",
+                limit: urlSP.has("limit") ? Number(urlSP.get("limit")) : 10,
+            });
+            //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
+            //  of this state will later decided to whether clean/error when params are invalid. Anyway...
+            window.SMI.setSate(THIS_VIEW, searchParams);
+
+            // updating href of nav-link for this view
+            const blogsNavLink = /**@type {HTMLAnchorElement}*/ (document.querySelector(
+                "nav[aria-label=\"Main Menu\"] a[href^=\"/blog/paginated\"]"
+            ));
+            blogsNavLink.href = "/blog/paginated?" + urlSP.toString();
+        }
+        // @ts-ignore
+        return searchParams;
+    }
 
     /**
      * @param {{
@@ -171,9 +187,9 @@ export default function makeBlogsView({
             const cursorForGettingNewer = curSP.direction === "newer" ? currentPage.tailCursor : currentPage.headCursor;
 
             const searchParams = new URLSearchParams({
+                cursor: cursorForGettingNewer + "",
                 direction: "newer",
                 limit: curSP.limit + "",
-                cursor: cursorForGettingNewer + "",
             });
             html += /*html*/`
                 <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های جدیدتر" data-link>

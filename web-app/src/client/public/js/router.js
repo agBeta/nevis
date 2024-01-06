@@ -31,7 +31,6 @@ export default function makeRouter({ routes }) {
             matchingRoute = routes[routes.length - 1];
             params = null;
         }
-        window.SMI.setCurrentViewOnScreen(matchingRoute.pageView.NAME);
         matchingRoute.pageView.render(params); // an async function
     }
 
