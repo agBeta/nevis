@@ -30,3 +30,31 @@ export type FetchBlog = ({ blogId } : { blogId: string })
         statusCode: number, 
         body: any,
     }>;
+
+export type PostEmailForCode = 
+    ({ email, purpose }: { email: string, purpose: "signup" | "reset-password" })
+    => Promise<{
+        statusCode: number,
+        body: any,
+    }>;
+
+export type PostSignup =
+    ({ email, displayName, password, repeatPassword, birthYear, code }:
+        { email: string, displayName: string, password: string, repeatPassword: string, birthYear: integer, code: string }
+    )
+    => Promise<{
+        statusCode: number,
+        body: any,
+    }>;
+
+
+export type SignupState = null | {
+    step: "code" | "signup" | "loading" | "error_code" | "error_signup" | "completed",
+    enteredEmail?: string,
+    enteredDisplayName?: string,
+    enteredPassword?: string,
+    enteredRepeatPassword?: string,
+    enteredBirthYear?: string,
+    enteredCode?: string,
+    error?: string,
+};
