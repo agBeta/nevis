@@ -12,7 +12,10 @@
 
 }
 #blogs .blog-item a {
+    /* inline-block so that the inner <h2> doesn't make the link stretch the whole viewport width. */
+    display: inline-block;
     color: black;
+    background-color: aquamarine;
     text-decoration: none;
     cursor: pointer;
 }

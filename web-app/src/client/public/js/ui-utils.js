@@ -17,18 +17,19 @@ export function showHideLoadingSpinner(insideEl, visibility) {
 
 export function createErrorElement({ title, description, buttonTitle, onButtonClick }) {
     const errorEl = document.createElement("div");
+    errorEl.classList.add("error-container", "to-reveal", "active");
+
     errorEl.innerHTML = /*html*/`
         <h2 class="error-title">${title}</h2>
         <p>${description}</p>
     `;
-    errorEl.classList.add("error-container", "to-reveal");
+
     if (buttonTitle) {
         const button = document.createElement("button");
         button.textContent = buttonTitle;
         button.addEventListener("click", onButtonClick);
         errorEl.appendChild(button);
     }
-    setTimeout(() => errorEl.classList.add("active"), 300);
     return errorEl;
 }
 

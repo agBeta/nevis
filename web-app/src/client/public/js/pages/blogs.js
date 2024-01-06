@@ -5,18 +5,19 @@ import { createErrorElement, showHideLoadingSpinner } from "../ui-utils.js";
 export default function makeBlogsView({
     fetchBlogPaginated,
 }) {
-    const sectionEl = /**@type {HTMLElement}*/(document.getElementById("blogs"));
-    let /**@type {"loading"|"free"}*/ ongoingDisplayState;
+    const pageEl = /**@type {HTMLElement}*/ (document.querySelector("#page"));
     const THIS_VIEW = "blogs_view";
+
+    let /**@type {"loading"|"free"}*/ ongoingDisplayState;
 
     return Object.freeze({
         render: safelyRender,
         NAME: THIS_VIEW,
     });
 
-    async function safelyRender(/**@type {any}*/ params) {
+    async function safelyRender() {
         try {
-            await render(params);
+            await render();
         }
         catch (err) {
             const isUserCurrentlyAtThisPage = window.SMI.getCurrentViewOnScreen() === THIS_VIEW;
@@ -24,7 +25,7 @@ export default function makeBlogsView({
             // App might be crashed while loading data from server, etc. So we first check:
             if (ongoingDisplayState === "loading") {
                 if (isUserCurrentlyAtThisPage) {
-                    showHideLoadingSpinner(sectionEl, false);
+                    showHideLoadingSpinner(pageEl, false);
                 }
             }
             ongoingDisplayState = "free";
@@ -36,49 +37,68 @@ export default function makeBlogsView({
                     buttonTitle: "تلاش مجدد",
                     onButtonClick: () => {
                         errorEl.remove();
-                        safelyRender(params);
+                        safelyRender();
                     }
                 });
-                sectionEl.appendChild(errorEl);
+                pageEl.innerHTML = "";
+                pageEl.appendChild(errorEl);
             }
         }
     }
 
-    async function render(/** @type {any} */params) {
+    async function render() {
         document.title = "نوشته‌ها";
-        sectionEl.innerHTML = "";
-        sectionEl.setAttribute("aria-hidden", "false");
-        sectionEl.setAttribute("aria-live", "polite");
-        sectionEl.classList.add("active");
+        pageEl.innerHTML = "";
+        pageEl.setAttribute("aria-hidden", "false");
+        pageEl.setAttribute("aria-live", "polite");
         ongoingDisplayState = "loading";
-        showHideLoadingSpinner(sectionEl, true);
+        showHideLoadingSpinner(pageEl, true);
 
+        // We must use href or search, not pathname. pathname doesn't include query params.
+        const urlSP = new URLSearchParams(window.location.search);
+        console.log(urlSP.toString());
+        let params;
         //  The user might have navigated to another page, then come back to this page by clicking on nav-item.
         //  If the user clicks on nav-item, the params will be empty, but we want to continue from the page that
         //  was recently displayed. So ...
         const recentSearchParams = window.SMI.getState(THIS_VIEW);
-        if (params == null || Object.keys(params).length === 0) {
-            params = recentSearchParams ?? {}/*<-- so that params.cursor below won't throw error*/;
-        } else {
+
+        if (!urlSP.has("cursor") && recentSearchParams != null) {
+            console.log("using recent search params");
+            params = Object.freeze({ ...recentSearchParams });
+        }
+        else {
+            params = Object.freeze({
+                cursor: urlSP.get("cursor") ?? "newest",
+                direction: urlSP.get("direction") ?? "older",
+                limit: urlSP.has("limit") ? Number(urlSP.get("limit")) : 10,
+            });
             //  So we actually have some params. Here, we don't care if params are valid or not. The consumer
             //  of this state will later decided to whether clean/error when params are invalid. Anyway...
             window.SMI.setSate(THIS_VIEW, params);
         }
 
-        const cursor = params.cursor ?? "newest";
-        const direction = params.direction ?? "older";
-        const limit = Number(params.limit ?? 10);
-        // await new Promise((rs, rj) => setTimeout(rs, 10 * window.MAX_ANIMATION_TIME));
-        const result = await fetchBlogPaginated({ cursor, direction, limit });
+        // await new Promise((rs, rj) => setTimeout(rs, 1 * window.MAX_ANIMATION_TIME));
+        console.log(params);
+        // @ts-ignore
+        const result = await fetchBlogPaginated(params);
 
-        showHideLoadingSpinner(sectionEl, false);
+        const isUserCurrentlyAtThisPage = window.SMI.getCurrentViewOnScreen() === THIS_VIEW;
+        if (!isUserCurrentlyAtThisPage) {
+            return;
+        }
+        showHideLoadingSpinner(pageEl, false);
         ongoingDisplayState = "free";
-
         if (result.statusCode !== 200) {
             throw new Error(result.statusCode + " " + result.body.error);
         }
-        sectionEl.innerHTML = /*html*/`
-            <h1 class="h1">نوشته‌ها</h1>
+        const containerEl = document.createElement("div");
+        containerEl.id = "blogs";
+        // We need the outer element for <h1>. See .to-reveal selector in global.css
+        containerEl.innerHTML = /*html*/`
+            <header class="to-reveal">
+                <h1 class="h1">نوشته‌ها</h1>
+            </header>
         `;
 
         const /**@type {import("#types").PaginatedResult}*/ current = result.body.current;
@@ -103,12 +123,15 @@ export default function makeBlogsView({
             `;
         }).join("");
 
-        const paginationControlEl = createElementForPaginationControls({ cursor, limit, direction }, result.body);
+        // @ts-ignore
+        const paginationControlEl = createElementForPaginationControls(params, result.body);
 
-        //  It's better to attack controls elements first. User can easily move many pages without the need to scroll down every time.
-        sectionEl.appendChild(paginationControlEl);
-        sectionEl.appendChild(listElOfCurrent);
-        toggleRevealOfPageElements(true, ".blog-item");
+        //  It's better to attack controls elements first. User can easily move many pages without the need
+        //  to scroll down every time.
+        containerEl.appendChild(paginationControlEl);
+        containerEl.appendChild(listElOfCurrent);
+        pageEl.innerHTML = containerEl.outerHTML;
+        toggleRevealOfPageElements(true, "");
     }
 
 
@@ -125,8 +148,8 @@ export default function makeBlogsView({
 
         const controlEl = document.createElement("div");
         controlEl.setAttribute("dir", "rtl");
-        controlEl.classList.add("pagination-controls");
-        let h = "";
+        controlEl.classList.add("pagination-controls", "to-reveal");
+        let html = "";
 
         if (curSP.cursor === "newest" || (curSP.direction === "newer" && pagesBeyondInSameDirection == null)) {
             // Do nothing
@@ -143,7 +166,7 @@ export default function makeBlogsView({
                 limit: curSP.limit + "",
                 cursor: cursorForGettingNewer + "",
             });
-            h += /*html*/`
+            html += /*html*/`
                 <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های جدیدتر" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 18l6-6-6-6"/>
@@ -165,7 +188,7 @@ export default function makeBlogsView({
                 limit: curSP.limit + "",
                 cursor: cursorForGettingOlder + "",
             });
-            h += /*html*/`
+            html += /*html*/`
                 <a href="/blog/paginated?${searchParams.toString()}" title="بلاگ‌های قدیمی‌تر" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 18l-6-6 6-6"/>
@@ -180,17 +203,17 @@ export default function makeBlogsView({
         //  about this case.
 
         if (curSP.cursor !== "newest" /*if not already in first page*/) {
-            h = /*html*/`
+            html = /*html*/`
                 <a href="/blog/paginated?limit=${curSP.limit}&cursor=newest&direction=older" title="جدیدترین بلاگ‌ها" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
                     </svg>
                 </a>
-            ` + h;
+            ` + html;
         }
 
         if (curSP.cursor !== "oldest" /*if not already in last page*/) {
-            h = h + /*html*/`
+            html = html + /*html*/`
                 <a href="/blog/paginated?limit=${curSP.limit}&cursor=oldest&direction=newer" title="قدیمی‌ترین بلاگ‌ها" data-link>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
@@ -198,7 +221,7 @@ export default function makeBlogsView({
                 </a>
             `;
         }
-        controlEl.innerHTML = h;
+        controlEl.innerHTML = html;
         return controlEl;
     }
 }

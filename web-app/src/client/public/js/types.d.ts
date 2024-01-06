@@ -8,6 +8,7 @@ declare global {
 type StateManagementInterface = {
     setSate: (key: string, value: object) => boolean,
     getState: (key:string) => object | null,
+    clearStates: () => void,
     setCurrentViewOnScreen: (nameOfView: string) => void,
     getCurrentViewOnScreen: () => string,
 };

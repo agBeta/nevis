@@ -2,8 +2,9 @@ import "./state-manage.js";
 import { fetchBlogPaginated } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
-
 import makeBlogsView from "./pages/blogs.js";
+
+window.SMI.clearStates();
 
 const routes = [
     { path: "/blog/paginated", pageView: makeBlogsView({ fetchBlogPaginated }) }

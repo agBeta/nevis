@@ -2,14 +2,20 @@
 //  API, Cache API, etc.
 
 const StateManagementInterface = Object.freeze({
-    setSate: safelySetState,
-    getState: safelyGetState,
-    // Some helper functions, in order to have single source of truth for essential key names.
-    setCurrentViewOnScreen: function(/**@type {string}*/nameOfView) {
-        safelySetState("current_view_on_screen", { name: nameOfView, /* when: Date.now() */ });
+    setSate,
+    getState,
+    clearStates: function() {
+        localStorage.clear();
     },
-    getCurrentViewOnScreen: function(){
-        const v = safelyGetState("current_view_on_screen");
+    // Some helper functions, in order to have single source of truth for essential key names.
+    setCurrentViewOnScreen: function (/**@type {string}*/nameOfView) {
+        setSate("current_view_on_screen", {
+            name: nameOfView,
+            /* when: Date.now() */
+        });
+    },
+    getCurrentViewOnScreen: function () {
+        const v = getState("current_view_on_screen");
         if (v == null) return "";
         // @ts-ignore
         if (v.name) return v.name;
@@ -20,9 +26,14 @@ window.SMI = StateManagementInterface; // making it public
 
 
 /** @param {string} key @param {object} value @returns {boolean} */
-function safelySetState(key, value) {
+function setSate(key, value) {
     try {
-        setSate(key, value);
+        if (value == null) {
+            localStorage.setItem(key, "");
+            return true;
+        }
+        const v = JSON.stringify(value);
+        localStorage.setItem(key, v);
         return true;
     }
     catch (e) {
@@ -31,33 +42,16 @@ function safelySetState(key, value) {
     }
 }
 
-/** @param {string} key @param {object} value */
-function setSate(key, value) {
-    if (value == null) {
-        localStorage.setItem(key, "");
-        return;
-    }
-    const v = JSON.stringify(value);
-    localStorage.setItem(key, v);
-}
-
 /** @param {string} key @returns {object|null} */
-function safelyGetState(key) {
+function getState(key) {
     try {
-        const result = getState(key);
-        return result;
+        let v = localStorage.getItem(key);
+        if (v == null) return null;
+        return JSON.parse(v);
     }
     catch (e) {
         // Do nothing else (for now).
         return null;
     }
 }
-
-/** @param {string} key */
-function getState(key) {
-    let v = localStorage.getItem(key);
-    if (v == null) return null;
-    return JSON.parse(v);
-}
-
 
