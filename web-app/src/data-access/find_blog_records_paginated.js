@@ -28,7 +28,7 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
                     , U.display_name AS authorDisplayName
                     , B.blog_title  AS blogTitle
                     , B.created_at AS createdAt
-                    , B.order_id  AS order_id
+                    , B.order_id  AS orderId
                 FROM
                     blog_tbl AS B
                 INNER JOIN
@@ -59,7 +59,7 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
                     , U.display_name AS authorDisplayName
                     , B.blog_title  AS blogTitle
                     , B.created_at AS createdAt
-                    , B.order_id  AS order_id
+                    , B.order_id  AS orderId
                 FROM
                     blog_tbl AS B
                 INNER JOIN
@@ -84,7 +84,7 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
                 , U.display_name AS authorDisplayName
                 , B.blog_title  AS blogTitle
                 , B.created_at AS createdAt
-                , B.order_id  AS order_id
+                , B.order_id  AS orderId
             FROM
                 blog_tbl AS B
             INNER JOIN
