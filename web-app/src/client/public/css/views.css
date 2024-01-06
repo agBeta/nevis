@@ -84,3 +84,25 @@
     margin: 0 auto;
 }
 
+/* ------------- Individual Blog ------------ */
+#individual-blog {
+    align-self: flex-start;
+    max-width: 40rem;
+    margin-top: 1rem;
+    --custom-space: 1.75rem;
+}
+
+#individual-blog .h1 {
+    text-align: center;
+}
+
+#individual-blog footer {
+    display: flex;
+    justify-content: space-between;
+    color: rgb(70, 70, 70);
+}
+
+#individual-blog .body {
+    text-align: justify;
+    line-height: 2;
+}

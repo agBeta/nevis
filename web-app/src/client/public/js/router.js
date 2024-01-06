@@ -31,6 +31,8 @@ export default function makeRouter({ routes }) {
             matchingRoute = routes[routes.length - 1];
             params = null;
         }
+        console.log(routeToNavigate);
+        console.log(matchingRoute.pageView);
         matchingRoute.pageView.render(params); // an async function
     }
 
