@@ -16,11 +16,15 @@ export default function makeBlogsView({
     });
 
     async function safelyRender() {
+        const timestamp = Date.now();
+        window.SMI.setCurrentViewOnScreen(THIS_VIEW, timestamp);
+
         try {
-            await render();
+            await render({ timestamp });
         }
         catch (err) {
-            const isUserCurrentlyAtThisPage = window.SMI.getCurrentViewOnScreen() === THIS_VIEW;
+            const cv = window.SMI.getCurrentViewOnScreen();
+            const isUserCurrentlyAtThisPage = cv.name === THIS_VIEW && cv.timestamp === timestamp;
 
             // App might be crashed while loading data from server, etc. So we first check:
             if (ongoingDisplayState === "loading") {
@@ -46,10 +50,8 @@ export default function makeBlogsView({
         }
     }
 
-    async function render() {
-        const arrivedAt = Date.now();
-        window.SMI.setCurrentViewOnScreen(THIS_VIEW, arrivedAt);
-
+    /** @param {{ timestamp: number }} param0 */
+    async function render({ timestamp }) {
         document.title = "نوشته‌ها";
         pageEl.innerHTML = "";
         pageEl.setAttribute("aria-hidden", "false");
@@ -71,7 +73,7 @@ export default function makeBlogsView({
             // No need to render the result.
             return;
         }
-        if (window.SMI.getCurrentViewOnScreen().arrivedAt !== arrivedAt) {
+        if (window.SMI.getCurrentViewOnScreen().timestamp !== timestamp) {
             //  So the user is currently on this view but he has left and came back while the result
             //  was being fetched from server. So, again, no need to render anything. The render(..)
             //  call triggered by most recent visit will take care of everything.
@@ -170,6 +172,9 @@ export default function makeBlogsView({
     function createElementForPaginationControls(curSP, curResult) {
         const currentPage = curResult.current;
         const pagesBeyondInSameDirection = curResult.beyond;
+        console.log(currentPage);
+        console.log(pagesBeyondInSameDirection);
+        console.log();
 
         const controlEl = document.createElement("div");
         controlEl.setAttribute("dir", "rtl");

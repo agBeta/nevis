@@ -9,8 +9,8 @@ type StateManagementInterface = {
     setSate: (key: string, value: object) => boolean,
     getState: (key:string) => object | null,
     clearStates: () => void,
-    setCurrentViewOnScreen: (nameOfView: string, arrivedAt: number) => void,
-    getCurrentViewOnScreen: () => { name: string, arrivedAt: number },
+    setCurrentViewOnScreen: (nameOfView: string, timestamp: number) => void,
+    getCurrentViewOnScreen: () => { name: string, timestamp: number },
 };
 
 export type PageView = {
