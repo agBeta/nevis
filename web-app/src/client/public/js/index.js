@@ -1,4 +1,5 @@
 import "./state-manage.js";
+import { updateMainMenuItemsBasedOnUserLoggedIn } from "./ui-utils.js";
 import { fetchBlogPaginated, fetchBlog } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
@@ -20,6 +21,7 @@ if (history.scrollRestoration) {
 const Router = makeRouter({ routes });
 
 document.addEventListener("DOMContentLoaded", () => {
+    updateMainMenuItemsBasedOnUserLoggedIn();
     const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));
 
     menuToggle.addEventListener("click", onMenuToggleClick);
