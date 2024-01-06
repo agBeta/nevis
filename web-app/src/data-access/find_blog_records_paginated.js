@@ -94,7 +94,7 @@ export default function make_find_blog_records_paginated({ dbConnectionPool }) {
             WHERE
                 ${direction === "newer" ? "B.order_id > ?" : "B.order_id < ?"}
             ORDER BY
-                B.order_id ASC
+                ${direction === "newer" ? "B.order_id ASC" : "B.order_id DESC"}
             LIMIT ${limit}
         `;
         const [rows,] = await db.execute(sqlCmd, [cursor]);

@@ -86,6 +86,7 @@ export default function makeBlogsView({
         if (result.statusCode !== 200) {
             throw new Error(result.statusCode + " " + result.body.error);
         }
+
         const containerEl = document.createElement("div");
         containerEl.id = "blogs";
         // We need the outer element for <h1>. See .to-reveal selector in global.css
@@ -99,6 +100,15 @@ export default function makeBlogsView({
 
         const listElOfCurrent = document.createElement("ol");
         listElOfCurrent.classList.add("list", "u-flow-content");
+
+        //  Result from backend is according to "direction". But we ALWAYS want to display blog-items
+        //  in decreasing createdAt (equivalently decreasing orderId).
+        //  In other words, when direction=newer, the first element of "current" is created BEFORE the
+        //  last element. So we have to reverse it. The user should always see a consistent orders for
+        //  blog items on the page.
+        if (params.direction === "newer") {
+            current.content.reverse();
+        }
 
         listElOfCurrent.innerHTML = current.content.map((o) => {
             const blog = /**@type {import("#types").BlogV2}*/(o); // to make ts help us
