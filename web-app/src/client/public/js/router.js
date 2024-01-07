@@ -1,4 +1,4 @@
-/** @param {{ routes: Array<{path: string, pageView: PageView}> }} param0 */
+/** @param {{ routes: Array<Route> }} param0 */
 export default function makeRouter({ routes }) {
 
     return Object.freeze({
@@ -30,6 +30,14 @@ export default function makeRouter({ routes }) {
             // By convention, the last element should correspond to 404/crash page.
             matchingRoute = routes[routes.length - 1];
             params = null;
+        }
+
+        if (matchingRoute.guard) {
+            const { canPrecede, redirectPathIfFailed } = matchingRoute.guard();
+            if (!canPrecede) {
+                navigateTo(redirectPathIfFailed, true);
+                return;
+            }
         }
         matchingRoute.pageView.render(params); // an async function
     }
@@ -111,4 +119,5 @@ export function matchAndCapture(pathPattern, routeToNavigate) {
 
 /**
  * @typedef {import("./types.d.ts").PageView} PageView
+ * @typedef {import("./types.d.ts").Route} Route
  */

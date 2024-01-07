@@ -72,6 +72,8 @@
         "Jalali",
         "labelledby",
         "linebreak",
+        "maxlength",
+        "minlength",
         "nocheck",
         "paralleldrive",
         "Samim",

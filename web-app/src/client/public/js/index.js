@@ -1,18 +1,37 @@
 import "./state-manage.js";
+import { getValueOfRoleCookie } from "./utils.js";
 import { updateMainMenuItemsBasedOnUserLoggedIn } from "./ui-utils.js";
-import { fetchBlogPaginated, fetchBlog } from "./api.js";
+import {
+    fetchBlogPaginated,
+    fetchBlog,
+    postEmailForCode,
+    postSignup,
+} from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
 
 import makeBlogsView from "./pages/blogs.js";
 import makeIndividualBlogView from "./pages/individual-blog.js";
 import makeHomeView from "./pages/home.js";
+import makeSignupView from "./pages/signup.js";
 
 window.SMI.clearStates();
 
+/**@type {import("./types.d.ts").Route[]} */
 const routes = [
     { path: "/blog/paginated", pageView: makeBlogsView({ fetchBlogPaginated }) },
     { path: "/blog/:blogId", pageView: makeIndividualBlogView({ fetchBlog }) },
+    {
+        path: "/signup",
+        pageView: makeSignupView({ postEmailForCode, postSignup }),
+        guard: function() {
+            return {
+                // If user is logged in, we won't let him go to this route.
+                canPrecede: getValueOfRoleCookie() !== "user",
+                redirectPathIfFailed: "/"
+            };
+        }
+    },
     { path: "/", pageView: makeHomeView() }
 ];
 
