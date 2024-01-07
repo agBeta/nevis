@@ -40,6 +40,8 @@ if (history.scrollRestoration) {
 }
 const Router = makeRouter({ routes });
 
+window.Router = Router;
+
 document.addEventListener("DOMContentLoaded", () => {
     updateMainMenuItemsBasedOnUserLoggedIn();
     const menuToggle = /**@type {HTMLElement}*/(document.querySelector(".menu-toggle"));

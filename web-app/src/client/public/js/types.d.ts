@@ -2,6 +2,10 @@
 declare global {
     interface Window {  
         SMI: StateManagementInterface,
+        Router: {
+            navigateTo: (routeToNavigate: string, addToHistory: boolean = true) => void,
+            init: () => void,
+        },
         MAX_ANIMATION_TIME: number
     }
 }

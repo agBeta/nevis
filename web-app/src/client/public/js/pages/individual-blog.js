@@ -47,7 +47,7 @@ export default function makeIndividualBlogView({
             button.textContent = "بازگشت به خانه";
             button.addEventListener("click", function goBackToHome() {
                 errorEl.remove();
-                window.location.href = "/";
+                window.Router.navigateTo("/", false);
             });
             errorEl.appendChild(button);
             pageEl.innerHTML = "";

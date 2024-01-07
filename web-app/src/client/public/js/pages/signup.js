@@ -427,8 +427,9 @@ export default function makeSignupView({
         setTimeout(function resetEverythingForFreshSignup() {
             window.SMI.setSate(THIS_VIEW, { step: "code" });
             if (!window.location.pathname.endsWith("login")) {
-                // automatic redirect
-                window.location.href = "/login";
+                //  Automatic redirect. Don't use (window.location.href = "/login"). This will trigger full
+                //  page reload.
+                window.Router.navigateTo("/login");
             }
         }, 4000);
     }
