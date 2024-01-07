@@ -13,6 +13,15 @@ type StateManagementInterface = {
     getCurrentViewOnScreen: () => { name: string, timestamp: number },
 };
 
+export type Route = {
+    path: string,
+    pageView: PageView,
+    guard?: (args?: any) => ({
+        canPrecede: boolean,
+        redirectPathIfFailed: string,
+    })
+}
+
 export type PageView = {
     render: (params) => Promise<void>,
     NAME: string,

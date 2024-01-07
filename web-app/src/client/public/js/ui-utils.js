@@ -1,3 +1,5 @@
+import { getValueOfRoleCookie } from "./utils.js";
+
 /** @param {HTMLElement} insideEl @param {boolean} visibility  */
 export function showHideLoadingSpinner(insideEl, visibility) {
     if (visibility) {
@@ -14,9 +16,8 @@ export function showHideLoadingSpinner(insideEl, visibility) {
     }
 }
 
-export function updateMainMenuItemsBasedOnUserLoggedIn(){
-    const roleCookie = document.cookie.split("; ").find(c => c.startsWith("__Host-nevis_role"));
-    const role = roleCookie ? roleCookie.split("=")[1] : null;
+export function updateMainMenuItemsBasedOnUserLoggedIn() {
+    const role = getValueOfRoleCookie();
 
     const menuUlElement = /**@type {HTMLUListElement}*/ (document.querySelector("nav[aria-label='Main Menu'] ul"));
 
@@ -69,5 +70,23 @@ export function updateMainMenuItemsBasedOnUserLoggedIn(){
             </li>
         `;
     }
+}
+
+
+/** @param {Element} _el  */
+export function registerListenerToDisplayErrorForInvalidInput(_el) {
+    const el = /**@type {HTMLInputElement}*/(_el);  // to suppress ts
+    const containingFormGroupEl = /**@type {HTMLDivElement}*/(el.parentElement);
+
+    ["change", "blur"].forEach(type => {
+        el.addEventListener(type, () => {
+            containingFormGroupEl.removeAttribute("data-error");
+            // According to https://stackoverflow.com/questions/11586980/is-it-possible-to-trigger-an-event-when-a-field-is-valid-html5
+            const isValid = el.value.length > 0 && el.checkValidity(); // This will check all minlength, type="email", etc.
+            if (!isValid) {
+                containingFormGroupEl.setAttribute("data-error", "ورودی نامعتبر است.");
+            }
+        });
+    });
 }
 //

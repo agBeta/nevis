@@ -2,11 +2,13 @@
     align-self: flex-start;
     width: 100%;
 }
+
 #blogs .h1 {
     margin: 1rem 0;
     font-weight: bold;
     text-align: center;
 }
+
 #blogs .list {
     direction: rtl;
     list-style: disc;
@@ -21,13 +23,16 @@
     cursor: pointer;
     transition: transform .3s;
 }
+
 #blogs .blog-item a:hover {
     color: var(--clr-accent-hover);
     transform: translateX(-5px);
 }
+
 #blogs .blog-title {
     font-size: var(--fs-500);
 }
+
 #blogs .blog-item footer {
     font-size: var(--fs-400);
     color: rgb(65, 65, 65);
@@ -36,6 +41,7 @@
     gap: 0.5rem;
     align-items: center;
 }
+
 #blogs .blog-item time {
     font-size: var(--fs-400);
 }
@@ -56,6 +62,7 @@
     gap: .75rem;
     justify-content: center;
 }
+
 #blogs .pagination-controls a {
     text-decoration: none;
     color: black;
@@ -115,4 +122,128 @@
 #individual-blog .body {
     text-align: justify;
     line-height: 2;
+}
+
+
+/* -------------- Signup ----------------- */
+#signup {
+    /* align-self: flex-start; <-- different from other pages */
+    width: 100%;
+    text-align: center;
+    margin: 1rem;
+}
+
+#signup form {
+    direction: rtl;
+    /* Don't set margin left and right. They would overwrite u-container class then. */
+    --custom-space: 1rem;
+}
+
+#signup.code-step {
+    --custom-max-width: calc(var(--fs-450) * 25);
+}
+
+#signup.signup-step {
+    --custom-max-width: calc(var(--fs-450) * 20);
+}
+
+#signup .form-group {
+    display: flex;
+    flex-direction: column;
+    --fs-error: var(--fs-350);
+    gap: .5rem;
+    /* For ::after elements that will show validation errors */
+    position: relative;
+    /*  We need padding-bottom so that errors will displayed. Otherwise they would be placed outside
+        .form-group block and wouldn't be visible on screen.
+    */
+    padding-bottom: calc(var(--fs-error) + .5rem);
+}
+
+#signup .form-group label {
+    text-align: right;
+    cursor: pointer;
+}
+
+#signup input {
+    font-size: var(--fs-450);
+    text-align: center;
+    direction: rtl;
+    padding: .5rem .25rem;
+    border: 1px solid black;
+    border-radius: .5rem;
+    background: none;
+    /* For background-color when input is invalid */
+    transition: all .4s;
+}
+
+#signup input[type="password"],
+#signup input[type="email"],
+#signup input[type="number"],
+#signup input[type="text"] {
+    font-family: 'Courier New', Courier, monospace;
+    direction: ltr;
+}
+
+#signup form button {
+    /* layout related */
+    max-width: 10rem;
+    align-self: center;
+    margin-right: auto;
+    /* style related */
+    padding: .5rem 1.25rem;
+    background: none;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: .5rem;
+    font-size: var(--fs-400);
+    cursor: pointer;
+    transition: all .3s;
+}
+
+#signup form button:hover {
+    background-color: black;
+    color: white;
+}
+
+/*  We don't want to display error for inputs that user hasn't typed inside them yet
+    Adding :invalid to input doesn't work for minlength requirements. Moreover, we may
+    have more complicated validations.
+    Also we cannot use pseudo-elements on <input>. See https://stackoverflow.com/a/4660434.
+*/
+#signup form .form-group[data-error]:not(:focus-within)::after {
+    content: attr(data-error);
+    position: absolute;
+    display: block;
+    bottom: 0;
+    right: .25rem;
+    /* --fs-error is set inside .form-group */
+    font-size: var(--fs-error);
+    color: var(--clr-dark-red);
+    animation: fade-in .4s;
+}
+
+#signup form .form-group[data-error] input:not(:focus) {
+    background-color: var(--clr-pale-red);
+}
+
+#signup .back-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    margin-top: 3rem;
+}
+
+#signup .success-title {}
+
+
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

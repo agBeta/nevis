@@ -31,12 +31,15 @@
 :root {
     --fs-200: .625rem;
     --fs-300: .75rem;
+    --fs-350: .875rem;
     --fs-400: 1rem;
+    --fs-450: 1.25rem;
     --fs-500: 1.5rem;
     --fs-600: 1.75rem;
     --fs-700: 2.25rem;
     --border-radius: .75rem;
     --clr-dark-red: #b30101;
+    --clr-pale-red: #f5adad4e;
     --clr-accent-hover: #00a1ab;
 }
 
@@ -44,8 +47,10 @@
     :root {
         --fs-200: .625rem;
         --fs-300: .75rem;
+        --fs-350: .825rem;
         --fs-400: 1rem;
-        --fs-500: 1.125rem;
+        --fs-450: 1.125rem;
+        --fs-500: 1.325rem;
         --fs-600: 1.625rem;
         --fs-700: 2rem;
     }
@@ -88,7 +93,14 @@ body {
 }
 
 /* ---- utility classes ------- */
-.u-hide-visually {}
+.u-hide-visually {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
 
 .u-container {
     max-width: var(--custom-max-width, 50rem);
