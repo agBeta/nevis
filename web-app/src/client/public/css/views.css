@@ -238,8 +238,14 @@
 #signup .success-container {
     direction: rtl;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
+#signup .success-container .success-title {
+    font-weight: bold;
+}
 
 
 @keyframes fade-in {

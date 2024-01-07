@@ -420,7 +420,7 @@ export default function makeSignupView({
         const successEl = document.createElement("div");
         successEl.classList.add("success-container", "to-reveal", "active");
         successEl.innerHTML = /*html*/`
-            <h1 class="success-title">ثبت‌نام موفق</h1>
+            <h1 class="success-title h1">ثبت‌نام موفق!</h1>
             <p>ثبت‌نام شما با موفقیت انجام شد. جهت ورود به حساب کاربری خود به صفحه ورود مراجعه نمایید.</p>
         `;
 
@@ -431,7 +431,11 @@ export default function makeSignupView({
                 //  page reload.
                 window.Router.navigateTo("/login");
             }
-        }, 4000);
+        }, 3000);
+
+        containerEl.appendChild(successEl);
+        pageEl.appendChild(containerEl);
+        toggleRevealOfPageElements(true);
     }
 }
 
