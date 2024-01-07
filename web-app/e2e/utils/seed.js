@@ -21,6 +21,8 @@ dbConnectionPool.end();
 async function clearAll(){
     const db = await dbConnectionPool;
     await db.execute("DELETE FROM user_tbl;");
+    await db.execute("DELETE FROM session_tbl;");
+    await db.execute("DELETE FROM code_tbl;");
 }
 
 async function seedUsers(n = 10) {
