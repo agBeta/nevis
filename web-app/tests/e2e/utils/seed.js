@@ -7,7 +7,7 @@ import { faker } from "@faker-js/faker/locale/fa";
 import makeDbConnectionPool from "#da/connection.js";
 
 dotenv.config({
-    path: path.resolve(new URL(".", import.meta.url).pathname, /*-->*/ "e2e.env"),
+    path: path.resolve(new URL(".", import.meta.url).pathname, "..", /*-->*/ "e2e.env"),
     override: true,
 });
 const dbConnectionPool = makeDbConnectionPool({ port: 3306 });
