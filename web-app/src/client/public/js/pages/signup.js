@@ -61,6 +61,24 @@ export default function makeSignupView({
                 pageEl.querySelectorAll("input").forEach(el => {
                     registerListenerToDisplayErrorForInvalidInput(el);
                 });
+                (function add_some_more_ad_hoc_validations() {
+                    if (lastState?.step === "signup") {
+                        const [passEl, repeatPassEl] =
+                            /**@type {HTMLInputElement[]}*/([...document.querySelectorAll("input[type='password']")]);
+                        const correspondingFormGroupEl = repeatPassEl.parentElement;
+                        //  We must also add listener for password element. If user changes password, we will display
+                        //  error below repeatPassword if there aren't the same.
+                        [passEl, repeatPassEl].forEach(el => {
+                            el.addEventListener("blur", function displayErrorIfPasswordAndRepeatNotMatching() {
+                                if (passEl.value !== repeatPassEl.value) {
+                                    correspondingFormGroupEl?.setAttribute("data-error",
+                                        "رمز عبور با تکرار آن برابر نیست."
+                                    );
+                                }
+                            });
+                        });
+                    }
+                })();
             });
         });
     }
@@ -123,10 +141,11 @@ export default function makeSignupView({
                     step: "loading",
                     enteredEmail,
                 });
-                await new Promise((resolve, reject) => setTimeout(resolve, 2000));
                 const [result,] = await Promise.all([
                     postEmailForCode({ email: enteredEmail, purpose: "signup" }),
-                    new Promise((resolve, reject) => setTimeout(resolve, window.MAX_ANIMATION_TIME)),
+                    //  Showing the loading will give a better feeling to the user than quick layout shift or
+                    //  content change on the page. That is why the time is quite long.
+                    new Promise((resolve, reject) => setTimeout(resolve, 1500 + window.MAX_ANIMATION_TIME)),
                 ]);
 
                 if (result.statusCode === 201) {
@@ -252,6 +271,11 @@ export default function makeSignupView({
             const /**@type {string}*/ enteredCode = (document.querySelector("input[name='code']")).value;
             const enteredEmail = state.enteredEmail ?? "";
 
+            // Some more ad-hoc validation
+            if (enteredPassword !== enteredRepeatPassword) {
+                return;
+            }
+
             const allOfEntered = Object.freeze({
                 enteredEmail,
                 enteredBirthYear,
@@ -281,7 +305,7 @@ export default function makeSignupView({
                         repeatPassword: enteredRepeatPassword,
                         code: enteredCode,
                     }),
-                    new Promise((resolve, reject) => setTimeout(resolve, window.MAX_ANIMATION_TIME)),
+                    new Promise((resolve, reject) => setTimeout(resolve, 1500 + window.MAX_ANIMATION_TIME)),
                 ]);
 
                 if (result.statusCode === 201) {
@@ -406,7 +430,7 @@ export default function makeSignupView({
                 // automatic redirect
                 window.location.href = "/login";
             }
-        }, 1000);
+        }, 4000);
     }
 }
 

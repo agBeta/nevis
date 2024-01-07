@@ -25,3 +25,8 @@ The defer attribute causes the browser to defer execution of the script until af
 
 Also a minor note about `s.async` according https://stackoverflow.com/a/14813913 and the comment below it:
 s.async = true is correct. The property async is specified explicitly as a boolean in W3C's HTML 5 recommendation at w3.org/TR/html5/scripting-1.html#attr-script-async. You are confusing the async attribute with the async property exposed by objects implementing the HTMLScriptElement DOM interface. Indeed, when manipulating the corresponding attribute of the element through something like Element.setAttribute, you should use element.setAttribute("async", "async") as all HTML attributes are first and foremost text. – Armen Michaeli
+
+
+## :has()
+Don't use it. Spec https://drafts.csswg.org/selectors-4/#relational.
+But according to https://caniuse.com/?search=%3Ahas, only browsers versions after 2022 support this selector.
