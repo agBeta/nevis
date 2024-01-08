@@ -37,7 +37,7 @@ export function makeEndpointController({
         // @ts-ignore
         const /** @type {string} */ purpose = httpRequest.body.purpose;
 
-        const code = await generateCode();
+        const code = process.env.NODE_ENV === "e2e" ? "123abc" : generateCode();
         // Must also hash this short-lived code before storing in db. See comment at the end of this file.
         // Maybe it would be better to also include client IP to create hashed code. But let's keep it simple.
         const hashedCode = await createSecureHash(code);
