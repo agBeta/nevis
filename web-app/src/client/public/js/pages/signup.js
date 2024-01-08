@@ -78,6 +78,21 @@ export default function makeSignupView({
                             });
                         });
                     }
+                    //  We could have merged this to previous "if", but this way we create another scope
+                    //  and reuse variable names.
+                    if (lastState?.step === "signup") {
+                        const birthYearEl = /**@type {HTMLInputElement}*/
+                            (document.querySelector("input[name='birthYear']"));
+                        const correspondingFormGroupEl = birthYearEl.parentElement;
+
+                        birthYearEl.addEventListener("blur", function displayErrorIfKeyboardIsNonEnglish() {
+                            if ([...birthYearEl.value].some(c => !("1234567890".includes(c)))) {
+                                correspondingFormGroupEl?.setAttribute("data-error",
+                                    "لطفا از ارقام انگلیسی استفاده نمایید."
+                                );
+                            }
+                        });
+                    }
                 })();
             });
         });
@@ -145,7 +160,7 @@ export default function makeSignupView({
                     postEmailForCode({ email: enteredEmail, purpose: "signup" }),
                     //  Showing the loading will give a better feeling to the user than quick layout shift or
                     //  content change on the page. That is why the time is quite long.
-                    new Promise((resolve, reject) => setTimeout(resolve, 1500 + window.MAX_ANIMATION_TIME)),
+                    new Promise((resolve, reject) => setTimeout(resolve, 1000 + window.MAX_ANIMATION_TIME)),
                 ]);
 
                 if (result.statusCode === 201) {
@@ -198,7 +213,6 @@ export default function makeSignupView({
         `;
 
         backButton.addEventListener("click", () => {
-            console.log("Clicked");
             window.SMI.setSate(THIS_VIEW, {
                 step: "code",
                 enteredEmail: state?.enteredEmail ?? "",
@@ -223,7 +237,7 @@ export default function makeSignupView({
                     minlength="2" maxlength="80" required
                     value="${state?.enteredDisplayName ?? ""}"/>
             </div>
-            <div class="to-reveal form-group">
+            <div class="to-reveal form-group" data-testid="form-group-email">
                 <label for="birthYear">سال تولد (جلالی)</label>
                 <input id="birthYear" name="birthYear" type="number" autocomplete="off"
                     min="1300" max="1402" required
@@ -305,7 +319,7 @@ export default function makeSignupView({
                         repeatPassword: enteredRepeatPassword,
                         code: enteredCode,
                     }),
-                    new Promise((resolve, reject) => setTimeout(resolve, 1500 + window.MAX_ANIMATION_TIME)),
+                    new Promise((resolve, reject) => setTimeout(resolve, 1000 + window.MAX_ANIMATION_TIME)),
                 ]);
 
                 if (result.statusCode === 201) {

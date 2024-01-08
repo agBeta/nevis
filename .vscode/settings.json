@@ -80,6 +80,7 @@
         "signup",
         "subtest",
         "subtests",
+        "testid",
         "TINYINT",
         "uncategorized",
         "worktree",
