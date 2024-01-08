@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker/locale/fa";
-import makeDbConnectionPool from "#da/connection.js";
+import makeDbConnectionPool from "../../src/data-access/connection.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "..", /*-->*/ "e2e.env"),

@@ -118,7 +118,7 @@ test.describe("signup scenarios", async () => {
     });
 
 
-    test.only("03: display validation errors live for each input field (especially birth year)", async ({ page }) => {
+    test("03: display validation errors live for each input field (especially birth year)", async ({ page }) => {
         await page.goto("/signup");
 
         const email = "not_taken_for_sure@example.com";
