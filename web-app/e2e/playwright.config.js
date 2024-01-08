@@ -51,6 +51,9 @@ export default defineConfig({
 
     /* Run your local dev server before starting the tests */
     webServer: {
+        //  We cannot use "npm run start:e2e" in our command, because it will throw permission denied
+        //  error. So we simply copied content of "start:e2e" script from parent package.json file
+        //  and removed it from there. Finally...
         command: "cd .. && NODE_ENV=e2e node ./src/main.js",
         //  The url on your http server that is expected to return a 2xx, 3xx, 400, 401, 402, or 403 status
         //  code when the server "is ready to accept connections".
