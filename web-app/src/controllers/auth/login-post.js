@@ -121,6 +121,7 @@ export function makeEndpointController({
             payload: JSON.stringify({
                 success: true,
                 userId: user.id, // Ad-hoc decision to send some of user info as well. We don't care.
+                userDisplayName: user.displayName,
             })
         };
     }
