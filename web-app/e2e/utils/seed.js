@@ -44,7 +44,7 @@ export async function seedUsers(n = 10) {
     // We cannot use the pool directly to begin a transaction like you can be for a query. See first link above.
     const cn = await dbConnectionPool.getConnection();
     await cn.beginTransaction();
-    const ids = [];
+    const users = [];
 
     for (let i = 0; i < n; i++) {
         //  We cannot use makeFakeUser from fixtures, since that function create a user from POV of client,
@@ -62,7 +62,7 @@ export async function seedUsers(n = 10) {
                 to: "2023-12-20T00:00:00.000Z"
             }),
         };
-        ids.push(user.id);
+        users.push(user);
 
         // NOTE, you must the same hash function that is used inside auth-signup controller.
         const h = await bcrypt.hash(user.password, 9);
@@ -75,7 +75,10 @@ export async function seedUsers(n = 10) {
     }
 
     await cn.commit();
-    return ids;
+
+    // if (saveAsFixturesIntoFile) {...}  <-- No need to make things complicated for now.
+
+    return users.map(u => u.id);
 }
 
 /** @param {string[]} userIds */

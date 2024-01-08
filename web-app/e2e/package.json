@@ -7,7 +7,7 @@
   "scripts": {
     "test:headed": "npx playwright test --headed",
     "test": "npx playwright test",
-    "test:debug": "npx playwright test --debug"
+    "test:debug": "npx playwright test --debug signup.spec.js"
   },
   "keywords": [],
   "author": "",
