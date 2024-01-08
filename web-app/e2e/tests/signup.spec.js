@@ -12,14 +12,14 @@ test.describe("signup scenarios", async () => {
     });
     test.afterAll(async () => {
         await Utils.closeDbConnections();
-        console.log("Gracefully closed DB connection.");
+        console.log("🔈 Gracefully closed DB connection.");
     });
 
 
     test("01: Everything is fine but the user gives wrong verification code", async ({ page }) => {
         const email = "not_taken_for_sure@example.com";
         await page.goto("/signup");
-        const emailInputBox = await page.getByLabel("ایمیل", {exact: true });
+        const emailInputBox = await page.getByLabel("ایمیل", { exact: true });
         await emailInputBox.fill(email);
 
         await page.click("button[type='submit']");
@@ -37,7 +37,7 @@ test.describe("signup scenarios", async () => {
         const birthYearInputBox = await page.getByLabel(/تولد/);
         await birthYearInputBox.fill("1380");
 
-        const passwordInputBox = await page.getByLabel("رمز عبور", { exact: true /*<-- prevent selecting تکرار رمز عبور*/});
+        const passwordInputBox = await page.getByLabel("رمز عبور", { exact: true /*<-- prevent selecting تکرار رمز عبور*/ });
         await passwordInputBox.fill("pass123");
 
         const repeatPasswordInputBox = await page.getByLabel(/تکرار/);
@@ -53,5 +53,67 @@ test.describe("signup scenarios", async () => {
         const errorHeading = await page.getByRole("heading", { level: 1 });
         await expect(errorHeading).toHaveCount(1);
         await expect(errorHeading).toHaveText(/خطا/);
+    });
+
+    test("02: preserves state when user navigates to another page and comes back to signup page", async ({ page }) => {
+        await page.goto("/signup");
+        const menuToggleEl = await page.getByLabel(/main menu toggle/i);
+        const mainMenu = await page.getByLabel("Main Menu", { exact: true /*<--- to exclude toggle*/ });
+
+        // Menu and menu toggle should exist
+        await expect(menuToggleEl).toHaveCount(1);
+        await expect(mainMenu).toHaveCount(1);
+        // ... and have correct attributes (also crucial as css styling is based on these attributes)
+        await expect(menuToggleEl).toHaveAttribute("aria-expanded", "false");
+
+        //  Let's write something in the form.
+        const email = "not_taken_for_sure@example.com";
+        let emailInputBox = await page.getByLabel("ایمیل", { exact: true });
+        await emailInputBox.fill(email);
+        // Let's go to next step. By design, without going to next step, the email won't be preserved.
+        await page.click("button[type='submit']");
+
+        //  Now, let's switch to another page (home page).
+        await menuToggleEl.click();
+
+        //  🔷
+        //  As we're deep into this rabbit hole, let's also check whether some other things
+        //  are set correctly or not, though they aren't related to this test.
+
+        await expect(mainMenu).toHaveAttribute("aria-hidden", "false");
+        await expect(menuToggleEl).toHaveAttribute("aria-expanded", "true");
+
+        // In order to switch back/forth we need to grab these elements:
+        const homeNavItemEl = await page.locator("a[href='/']");
+        const signupNavItemEl = await page.locator("a[href='/signup']");
+        // ... and they should exist.
+        await expect(homeNavItemEl).toHaveCount(1);
+        await expect(signupNavItemEl).toHaveCount(1);
+
+        //  before we navigate, we are already in /signup route, so the corresponding nav item should
+        //  be different from others. Css style is based in this attribute.
+        await expect(signupNavItemEl).toHaveAttribute("aria-current", "page");
+
+        // Let's navigate to home.
+        await homeNavItemEl.click();
+        // First we make sure, the router really navigated us to home.
+        await expect(signupNavItemEl).not.toHaveAttribute("aria-current", "page");
+        await expect(page).toHaveTitle(/خانه/);
+
+        // Now let's go back to /signup using back button.
+        await page.goBack();
+        // First we make sure, the router really navigated us BACK to signup.
+        await expect(page).toHaveTitle(/ثبت‌نام/);
+
+        //  Let's check if the state is preserved.
+        //  First we should be in signup step
+        await expect(page.getByText("نام کاربری")).toHaveCount(1);
+        //  Now we check when we go back one step, the email input field is populated. First we need to
+        //  click go-back button.
+        const goBackButton = await page.getByTitle(/مرحله قبل/);
+        await goBackButton.click();
+
+        emailInputBox = await page.getByLabel("ایمیل", { exact: true });
+        await expect(emailInputBox).toHaveValue(email); // email is preserved
     });
 });
