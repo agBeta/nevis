@@ -21,6 +21,7 @@ export default function makeLoginView({ postLogin }) {
 
 
     async function render() {
+        window.SMI.setCurrentViewOnScreen(THIS_VIEW, /*not important here -> */Date.now());
         document.title = "ورود";
         pageEl.innerHTML = "";
         pageEl.setAttribute("aria-hidden", "false");
@@ -77,7 +78,7 @@ export default function makeLoginView({ postLogin }) {
                 <input id="password" name="password"  type="password" autocomplete="off"
                     minlength="1" maxlength="30" value="" required/>
             </div>
-            <div class="to-reveal form-group">
+            <div class="to-reveal form-group checkbox-ful">
                 <input type="checkbox" id="rememberMe" name="rememberMe" />
                 <label for="rememberMe">مرا بخاطر بسپار</label>
             </div>
