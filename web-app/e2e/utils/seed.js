@@ -1,5 +1,5 @@
-// These seed are used for e2e tests.
 import path from "node:path";
+import { pathToFileURL } from "url";
 import { randomBytes } from "node:crypto";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
@@ -10,22 +10,32 @@ dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "..", /*-->*/ "e2e.env"),
     override: true,
 });
-const dbConnectionPool = makeDbConnectionPool({ port: 3306 });
 
+export const dbConnectionPool = makeDbConnectionPool({ port: 3306 });
+
+// To have reproducible result
 faker.seed(100);
-await clearAll();
-const userIds = await seedUsers(10);
-await seedBlogs(userIds, 50);
-dbConnectionPool.end();
 
-async function clearAll(){
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+    // So this module wasn't imported, but called directly (i.e. via cli "node seed.js").
+    // Condition is based on https://stackoverflow.com/a/68848622.
+
+    await clearAll();
+    const userIds = await seedUsers(10);
+    await seedBlogs(userIds, 50);
+    dbConnectionPool.end();
+}
+
+
+export async function clearAll(){
     const db = await dbConnectionPool;
     await db.execute("DELETE FROM user_tbl;");
     await db.execute("DELETE FROM session_tbl;");
     await db.execute("DELETE FROM code_tbl;");
 }
 
-async function seedUsers(n = 10) {
+export async function seedUsers(n = 10) {
     //  For transactions take a look at:
     //  https://stackoverflow.com/a/38717014
     //  https://stackoverflow.com/a/70240338
@@ -68,8 +78,8 @@ async function seedUsers(n = 10) {
     return ids;
 }
 
-/** @param {string[]} usersId */
-async function seedBlogs(usersId, n = 50) {
+/** @param {string[]} userIds */
+export async function seedBlogs(userIds, n = 50) {
     const cn = await dbConnectionPool.getConnection();
     await cn.beginTransaction();
 
@@ -84,7 +94,6 @@ async function seedBlogs(usersId, n = 50) {
             )
             VALUES
     `;
-    const params = [];
 
     for (let i = 0; i < n; i++) {
         const blog = {
