@@ -58,9 +58,16 @@ export function makeEndpointController({
 
         const records = await find_code_records_by_email({ email: email });
 
-        const isCredentialsValid = records.some(async (el) => {
-            return await compareHash(code, el.hashedCode);
-        });
+        let isCredentialsValid = false;
+
+        // Don't use records.some(..), since predicate is async.
+        for (let r of records) {
+            const isMatching = await compareHash(code, r.hashedCode);
+            if (isMatching) {
+                isCredentialsValid = true;
+                break;
+            }
+        }
         // Don't use Promise.any() above as compareHash always resolves.
 
         if (!isCredentialsValid) {
