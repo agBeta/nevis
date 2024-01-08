@@ -125,7 +125,7 @@
 }
 
 
-/* -------------- Signup ----------------- */
+/* -------------- Signup & most of Login ----------------- */
 #signup {
     /* align-self: flex-start; <-- different from other pages */
     width: 100%;
@@ -147,7 +147,8 @@
     --custom-max-width: calc(var(--fs-450) * 20);
 }
 
-#signup .form-group {
+#signup .form-group,
+#login .form-group {
     display: flex;
     flex-direction: column;
     --fs-error: var(--fs-350);
@@ -160,11 +161,13 @@
     padding-bottom: calc(var(--fs-error) + .5rem);
 }
 
-#signup .form-group label {
+#signup .form-group label,
+#login .form-group label {
     text-align: right;
     cursor: pointer;
 }
 
+#login input,
 #signup input {
     font-size: var(--fs-450);
     text-align: center;
@@ -177,6 +180,8 @@
     transition: all .4s;
 }
 
+#login input[type="password"],
+#login input[type="email"],
 #signup input[type="password"],
 #signup input[type="email"],
 #signup input[type="number"],
@@ -185,7 +190,8 @@
     direction: ltr;
 }
 
-#signup form button {
+#signup form button,
+#login form button {
     /* layout related */
     max-width: 10rem;
     align-self: center;
@@ -201,7 +207,8 @@
     transition: all .3s;
 }
 
-#signup form button:hover {
+#signup form button:hover,
+#login form button:hover {
     background-color: black;
     color: white;
 }
@@ -211,7 +218,8 @@
     have more complicated validations.
     Also we cannot use pseudo-elements on <input>. See https://stackoverflow.com/a/4660434.
 */
-#signup form .form-group[data-error]:not(:focus-within)::after {
+#signup form .form-group[data-error]:not(:focus-within)::after,
+#login form .form-group[data-error]:not(:focus-within)::after {
     content: attr(data-error);
     position: absolute;
     display: block;
@@ -223,9 +231,26 @@
     animation: fade-in .4s;
 }
 
+#login form .form-group[data-error] input:not(:focus),
 #signup form .form-group[data-error] input:not(:focus) {
     background-color: var(--clr-pale-red);
 }
+
+
+/*  purpose of following 2 selectors: to not show errors when main menu is open */
+form .form-group[data-error]::after {
+    opacity: 1;
+    transition: all .5s;
+}
+
+/* We need high enough specificity below */
+#page[aria-hidden="true"] #signup form .form-group[data-error]::after,
+#page[aria-hidden="true"] #login form .form-group[data-error]::after {
+    /* this is the things that fixes the bug. */
+    opacity: 0;
+    transform: translateY(calc(2 * var(--fs-error)));
+}
+
 
 #signup .back-btn {
     margin-left: auto;
@@ -256,4 +281,32 @@
     to {
         opacity: 1;
     }
+}
+
+
+
+/* ----------- Remaining styles for Login -------- */
+#login {
+    width: 100%;
+    text-align: center;
+    margin: 1rem;
+    --custom-max-width: 30rem;
+}
+
+#login form {
+    direction: rtl;
+    --custom-space: 1rem;
+}
+
+#login .form-group.checkbox-ful {
+    flex-direction: row;
+}
+
+#login .form-group label {
+    text-align: right;
+    cursor: pointer;
+}
+
+#login input[type="checkbox"] {
+    cursor: pointer;
 }
