@@ -116,4 +116,31 @@ test.describe("signup scenarios", async () => {
         emailInputBox = await page.getByLabel("ایمیل", { exact: true });
         await expect(emailInputBox).toHaveValue(email); // email is preserved
     });
+
+
+    test.only("03: display validation errors live for each input field (especially birth year)", async ({ page }) => {
+        await page.goto("/signup");
+
+        const email = "not_taken_for_sure@example.com";
+        // Let's fill in the email step and move forward
+        let emailInputBox = await page.getByLabel("ایمیل", { exact: true });
+        await emailInputBox.fill(email);
+        await page.click("button[type='submit']");
+
+        const birthYearInputBox = await page.getByLabel(/تولد/);
+        // await birthYearInputBox.fill("۱۳۸۰", { force: true }); --> error: Cannot type text into input[type=number]
+        await birthYearInputBox.fill("1500" /* anything greater than 1402 is invalid */);
+        await birthYearInputBox.blur();
+
+        const fge = await page.getByTestId("form-group-email");
+        await expect(fge).toHaveAttribute("data-error", /نامعتبر/);
+        //  The error should be visible on the page, but since we use pseudo-elements it's quite
+        //  difficult (see https://stackoverflow.com/a/77222265). Line below will fail.
+        // await expect(page.getByText(/نامعتبر/)).toBeVisible(); --> fails
+
+        // Now let's type something valid and make sure the error will disappear
+        await birthYearInputBox.fill("1360");
+        await birthYearInputBox.blur();
+        await expect(fge).not.toHaveAttribute("data-error");
+    });
 });
