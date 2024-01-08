@@ -6,6 +6,7 @@ import {
     fetchBlog,
     postEmailForCode,
     postSignup,
+    postLogin,
 } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
@@ -14,6 +15,7 @@ import makeBlogsView from "./pages/blogs.js";
 import makeIndividualBlogView from "./pages/individual-blog.js";
 import makeHomeView from "./pages/home.js";
 import makeSignupView from "./pages/signup.js";
+import makeLoginView from "./pages/login.js";
 
 window.SMI.clearStates();
 
@@ -24,6 +26,17 @@ const routes = [
     {
         path: "/signup",
         pageView: makeSignupView({ postEmailForCode, postSignup }),
+        guard: function() {
+            return {
+                // If user is logged in, we won't let him go to this route.
+                canPrecede: getValueOfRoleCookie() !== "user",
+                redirectPathIfFailed: "/"
+            };
+        }
+    },
+    {
+        path: "/login",
+        pageView: makeLoginView({ postLogin }),
         guard: function() {
             return {
                 // If user is logged in, we won't let him go to this route.

@@ -89,4 +89,11 @@ export function registerListenerToDisplayErrorForInvalidInput(_el) {
         });
     });
 }
+
+
+/** @param {{ text: string, kind: "success" | "failure" }} param0 */
+export function showToast({ text, kind }){
+    window.alert(text);
+    /**@todo TODO */
+}
 //

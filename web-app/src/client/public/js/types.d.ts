@@ -60,6 +60,12 @@ export type PostSignup =
         body: any,
     }>;
 
+export type PostLogin = 
+    ({ email, password, rememberMe }: { email: string, password: string, rememberMe: boolean })
+    => Promise<{
+        statusCode: number,
+        body: any,
+    }>;
 
 export type SignupState = null | {
     step: "code" | "signup" | "loading" | "error_code" | "error_signup" | "completed",
@@ -69,5 +75,10 @@ export type SignupState = null | {
     enteredRepeatPassword?: string,
     enteredBirthYear?: string,
     enteredCode?: string,
+    error?: string,
+};
+
+export type LoginState = null | {
+    state: "login" | "loading" | "error_login" ,
     error?: string,
 };
