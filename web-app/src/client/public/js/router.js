@@ -20,6 +20,7 @@ export default function makeRouter({ routes }) {
 
         for (const r of routes) {
             const result = matchAndCapture(r.path, routeToNavigate);
+            console.log(r.path, result);
             if (result == null) continue;
             matchingRoute = r;
             params = result.params;
@@ -52,7 +53,7 @@ export default function makeRouter({ routes }) {
                 // We aren't letting the browser take care of navigation, since we want to do it by our router, so...
                 ev.preventDefault();
                 const url = new URL(/**@type {HTMLAnchorElement}*/(ev.target).href);
-                console.log("Here preventing default");
+                // console.log("Here preventing default");
                 navigateTo(url.pathname + url.search + url.hash, true);
             }
         });
@@ -78,9 +79,19 @@ export function matchAndCapture(pathPattern, routeToNavigate) {
         // Remove trailing slash. Trailing slash makes it difficult when we have query parameters and regex.
         routeToNavigate = routeToNavigate.slice(0, -1);
     }
+    // routeToNavigate will have at most one hash.
+    const hIndex = routeToNavigate.lastIndexOf("#");
+    if (hIndex !== -1) {
+        // We don't store hash anywhere, since our application doesn't use it.
+        routeToNavigate = routeToNavigate.slice(0, hIndex);
+    }
+
     // routeToNavigate will have at most one question mark.
     const qIndex = routeToNavigate.lastIndexOf("?");
     if (qIndex !== -1) {
+        //  Views that rely on query string will obtain their search params inside their render(..)
+        //  function by accessing 'window.location.search' (e.g. obtainSearchParams in pages/blogs.js).
+        //  So there's no need to store query string inside this function. No need to return it.
         routeToNavigate = routeToNavigate.slice(0, qIndex);
     }
 

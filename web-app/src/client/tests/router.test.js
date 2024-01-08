@@ -27,6 +27,10 @@ describe("Client Router", () => {
         candidate = "/blog?cursor=newest&limit=10&direction=older";
         result = matchAndCapture(pathPattern, candidate);
         assert.strictEqual(result == null, false);
+        // 6
+        candidate = "/blog#some_hash";
+        result = matchAndCapture(pathPattern, candidate);
+        assert.strictEqual(result == null, false); // matches
     });
 
     it("works for /blog/:id", () => {
@@ -70,6 +74,23 @@ describe("Client Router", () => {
         assert.strictEqual(result == null, false);
         assert.strictEqual(result.params.id, "1x234few");
         assert.strictEqual(result.params.userId, "345345");
+    });
+
+    it("works for signup", () => {
+        const pathPattern = "/signup";
+        let candidate, result;
+
+        candidate = "/signup";
+        result = matchAndCapture(pathPattern, candidate);
+        assert.strictEqual(result == null, false); // matches
+
+        candidate = "/signup/";
+        result = matchAndCapture(pathPattern, candidate);
+        assert.strictEqual(result == null, false); // matches
+
+        candidate = "/signup#some_hash";
+        result = matchAndCapture(pathPattern, candidate);
+        assert.strictEqual(result == null, false); // matches
     });
 });
 
