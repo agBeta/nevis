@@ -1,11 +1,13 @@
-// @ts-check
+import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+dotenv.config({
+    path: path.resolve(new URL(".", import.meta.url).pathname, "e2e.env"),
+    override: true
+});
+
+const PORT = process.env.PORT;
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -25,7 +27,8 @@ export default defineConfig({
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         /* Base URL to use in actions like `await page.goto('/')`. */
-        // baseURL: 'http://127.0.0.1:3000',
+        // PORT is from e2e.env
+        baseURL: `http://localhost:${PORT}`,
 
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: "on-first-retry",
@@ -47,10 +50,12 @@ export default defineConfig({
     ],
 
     /* Run your local dev server before starting the tests */
-    // webServer: {
-    //   command: 'npm run start',
-    //   url: 'http://127.0.0.1:3000',
-    //   reuseExistingServer: !process.env.CI,
-    // },
+    webServer: {
+        command: "cd .. && NODE_ENV=e2e node ./src/main.js",
+        //  The url on your http server that is expected to return a 2xx, 3xx, 400, 401, 402, or 403 status
+        //  code when the server "is ready to accept connections".
+        url: `http://localhost:${PORT}/api/v1/ready`,
+        reuseExistingServer: !process.env.CI,
+    },
 });
 

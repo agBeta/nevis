@@ -14,7 +14,8 @@ export default function makeEmailService({
     mailServiceFromAddress
 }) {
 
-    const transporter = process.env.NODE_ENV === "test" ? null :
+    const transporter = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "e2e"
+        ? null :
         // Need type casting to suppress ts errors. See https://github.com/DefinitelyTyped/DefinitelyTyped/issues/35847.
         nodemailer.createTransport(/** @type {TransportOptions} */({
             host: mailServiceHost,
@@ -45,7 +46,7 @@ export default function makeEmailService({
             keyword: "send_email",
             message: `To: ${email} with subject: ${subject}`
         });
-        if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "e2e") {
             // Do nothing.
         }
         else {

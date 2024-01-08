@@ -6,6 +6,9 @@ You may to want to kill all processes based on some keyword. Run the following. 
 ## really clear terminal
 run `tput reset`.
 
+## install automation using sed
+https://www.monolune.com/articles/installing-apt-packages-from-a-requirements-file/.
+
 ## Docker
 https://dev.to/gustavocontreiras/how-to-create-a-dockerized-full-stack-environment-with-mysql-nestjs-and-nextjs-27oh.
 
