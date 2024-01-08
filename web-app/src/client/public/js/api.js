@@ -61,16 +61,36 @@ export async function postEmailForCode({ email, purpose }) {
     };
 }
 
-/** @type {import("./pages/signup.js").PostSignup} */
+/** @type {import("./types.d.ts").PostSignup} */
 export async function postSignup({ email, displayName, password, repeatPassword, birthYear, code }) {
     const url = new URL("/api/v1/auth/signup", BASE_URL);
     const raw = await fetch(url, {
         method: "POST",
-        credentials: "include",
+        credentials: "same-origin",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, displayName, password, repeatPassword, birthYear, code }),
+    });
+    const statusCode = raw.status;
+    const body = await raw.json();
+    return {
+        statusCode,
+        body,
+    };
+}
+
+
+/**@type {import("./types.d.ts").PostLogin} */
+export async function postLogin({ email, password, rememberMe }) {
+    const url = new URL("/api/v1/auth/login", BASE_URL);
+    const raw = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, rememberMe }),
     });
     const statusCode = raw.status;
     const body = await raw.json();
