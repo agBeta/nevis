@@ -4,3 +4,14 @@ export function getValueOfRoleCookie(){
     const role = roleCookie ? roleCookie.split("=")[1] : "";
     return role;
 }
+
+
+/** @param {FormData} fd */
+export function convertFD2Json(fd) {
+    let obj = {};
+    for (let key of fd.keys()) {
+        // @ts-ignore
+        obj[key] = fd.get(key);
+    }
+    return obj;
+}
