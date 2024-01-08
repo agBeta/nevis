@@ -57,7 +57,7 @@ export default function makeSignupView({
 
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                // Making sure elements are inserted to DOM.
+                // ↖️↖️ Making sure elements are inserted to DOM.
                 pageEl.querySelectorAll("input").forEach(el => {
                     registerListenerToDisplayErrorForInvalidInput(el);
                 });
