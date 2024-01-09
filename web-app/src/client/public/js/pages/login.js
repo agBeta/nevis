@@ -119,10 +119,10 @@ export default function makeLoginView({ postLogin }) {
                         state: "login", // for next time, i.e. if user logs out and want to login later.
                     });
                     updateMainMenuItemsBasedOnUserLoggedIn();
-                    showToast({
-                        text: "کاربر محترم" + ` ${result.body.userDisplayName} ` + "خوش آمدید!",
-                        kind: "success",
-                    });
+                    // showToast({
+                    //     text: "کاربر محترم" + ` ${result.body.userDisplayName} ` + "خوش آمدید!",
+                    //     kind: "success",
+                    // });
                     window.Router.navigateTo("/", false);
                     return;
                 }
