@@ -6,3 +6,7 @@ You can can install them manually for only one browser (according to [docs](http
 ## test utils
 Inspired by youtube video "Playwright Crash Course" from "Nx - Smart Monorepos" channel.
 There's specially a part which uses `exec` from `child_process` in node to run a bash command (on minute 24). Maybe we can use the same approach to spin up a docker container for redis, MySQL, or run docker-compose.
+
+
+## global setup, teardown, storage
+https://playwright.dev/docs/test-global-setup-teardown.

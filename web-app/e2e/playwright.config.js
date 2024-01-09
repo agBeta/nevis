@@ -40,16 +40,28 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         {
+            name: "setup",
+            testMatch: "global-setup.spec.js",
+            teardown: "teardown",
+        },
+        {
             name: "chrome",
+            // ⤵️.
+            dependencies: ["setup"],
+            // 🚩 Also note, for some reason, teardown is executed before this project. Don't know why.
             use: {
                 ...devices["Desktop Chrome"],
-                channel: "chrome",
+                channel: "chrome", /* <-- use current installed version of chrome on your local machine */
             },
         },
         // {
         //   name: 'Mobile Safari',
         //   use: { ...devices['iPhone 12'] },
         // },
+        {
+            name: "teardown",
+            testMatch: "global-teardown.spec.js",
+        },
     ],
 
     /* Run your local dev server before starting the tests */

@@ -40,6 +40,11 @@ If you use git worktree, simply run `git worktree add <path>`. According to [git
 If you want to delete a branch, you must first remove its worktree.
 
 </br>
+##gitignore based on file size
+Based on [this SO answer](https://stackoverflow.com/questions/4035779/gitignore-by-file-size):
+`find . -size +100M | cat >> .gitignore`
+
+</br>
 
 ## Better Log
 
