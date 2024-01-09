@@ -19,6 +19,7 @@ import {
     insert_user,
     insert_session,
     remove_code_records_by_email,
+    remove_session_record_by_hashedSessionId,
     update_action,
 } from "../data-access/index.js";
 
@@ -26,6 +27,7 @@ import { makeEndpointController as make_auth_code_POST_controller } from "./auth
 import { makeEndpointController as make_auth_signup_POST_controller } from "./auth/signup-post.js";
 import { makeEndpointController as make_auth_login_POST_controller } from "./auth/login-post.js";
 import { makeEndpointController as make_auth_authenticated_as_GET_controller } from "./auth/authenticated_as-get.js";
+import { makeEndpointController as make_auth_logout_POST_controller } from "./auth/logout-post.js";
 
 import { makeEndpointController as make_blog_POST_action_creation_controller } from "./blog/action-create.js";
 import { makeEndpointController as make_blog_action_PUT } from "./blog/action-put.js";
@@ -117,6 +119,10 @@ const auth_authenticated_as_GET = make_auth_authenticated_as_GET_controller({
     createFastHash,
 });
 
+const auth_logout_POST = make_auth_logout_POST_controller({
+    remove_session_record_by_hashedSessionId,
+    createFastHash,
+});
 
 // 📝
 const blog_POST_action_creation = make_blog_POST_action_creation_controller({
@@ -158,6 +164,7 @@ export {
     auth_signup_POST,
     auth_login_POST,
     auth_authenticated_as_GET,
+    auth_logout_POST,
     blog_action_PUT,
     blog_blogId_GET,
     blog_paginated_GET,

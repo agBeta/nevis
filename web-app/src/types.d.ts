@@ -46,6 +46,7 @@ export type SetCookie = {
     }
 };
 
+
 export type HttpResponse = {
     statusCode: number,
     payload: any,
@@ -178,6 +179,9 @@ export type Insert_User = ({ id, email, hashedPassword, displayName, birthYear, 
         signupAt: number
     }
 ) => Promise<void>;
+
+
+export type Remove_Session = ({ hashedSessionId }: { hashedSessionId: string }) => Promise<void>;
 
 // ---------------------
 
