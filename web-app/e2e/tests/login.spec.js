@@ -69,12 +69,57 @@ test.describe("Signup Scenarios", async () => {
         const cookieNames = cookies.map(c => c.name);
         for (let name of cookieNames) {
             await expect(name).not.toContain("role");
-            await expect(name).not.toContain("__Host-nevis_role");
         }
 
         //  Let's also make sure the main menu still contains login nav item (meaning that the user
         //  has not logged in, otherwise login nav item would disappear)
         await expect(page.locator(".nav-item a[href='/login']")).toHaveCount(1);
         await expect(page.locator(".nav-item a[href='/logout']")).toHaveCount(0);
+    });
+
+
+    test("login works", async ({ page }) => {
+        await page.goto("/login");
+        let emailInputBox = await page.getByLabel("ایمیل", { exact: true });
+        let passwordInputBox = await page.getByLabel("رمز عبور", { exact: true });
+        let rememberMeCheckbox = await page.getByRole("checkbox");
+
+        await expect(rememberMeCheckbox).toHaveCount(1);
+
+        await rememberMeCheckbox.check();
+        await emailInputBox.fill(realUser1.email);
+        await passwordInputBox.fill(realUser1.password);
+
+        await page.click("button[type='submit']");
+
+        //  Main menu should be updated accordingly, after login. But since it takes a bit of
+        //  time, we should either wait a little bit or try to assert login nav item after other
+        //  assertions. Otherwise playwright would instantly grab login nav item (which hasn't
+        //  disappeared yet) and the test would fail. So the order of assertions below is important.
+        await expect(page.locator(".nav-item a[href='/logout']")).toHaveCount(1);
+        await expect(page.locator(".nav-item a[href='/post-blog']")).toHaveCount(1);
+        await expect(page.locator(".nav-item a[href='/login']")).toHaveCount(0);
+
+
+        const cookies = await page.context().cookies();
+        // Recall when NODE_ENV=e2e name of cookies doesn't have __Host- prefix.
+        const cookieRole = cookies.find(c => c.name.includes("nevis_role"));
+        const cookieSessionId = cookies.find(c => c.name.includes("nevis_session_id"));
+
+        await expect(cookieRole).toBeDefined();
+        await expect(cookieSessionId).toBeDefined();
+
+        await expect(cookieRole?.value).toBe("user");
+        // Since we have checked rememberMe, cookie shouldn't expire soon.
+        // @ts-ignore
+        await expect(cookieRole.expires * 1000 - Date.now()).toBeGreaterThan(
+            /*29 days*/ 29 * 24 * 60 * 60 * 1000
+        );
+
+        await expect(cookieSessionId?.value.length).toBeGreaterThan(30);
+        // @ts-ignore
+        await expect(cookieSessionId.expires * 1000 - Date.now()).toBeGreaterThan(
+            /*29 days*/ 29 * 24 * 60 * 60 * 1000
+        );
     });
 });
