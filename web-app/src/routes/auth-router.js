@@ -6,6 +6,7 @@ import {
     auth_login_POST,
     auth_signup_POST,
     auth_authenticated_as_GET,
+    auth_logout_POST,
 } from "#controllers";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.use(makeRateLimitMiddleware({
 router.post("/code", makeExpressCallback(auth_code_POST));
 router.post("/signup", makeExpressCallback(auth_signup_POST));
 router.post("/login", makeExpressCallback(auth_login_POST));
+router.post("/logout", makeExpressCallback(auth_logout_POST));
 
 
 export { router };
