@@ -1,4 +1,4 @@
-import { toggleRevealOfPageElements } from "../reveal-animation.js";
+import { toggleRevealOfMenu, toggleRevealOfPageElements } from "../reveal-animation.js";
 import {
     registerListenerToDisplayErrorForInvalidInput,
     showHideLoadingSpinner,
@@ -31,6 +31,7 @@ export default function makeLoginView({ postLogin }) {
             if (el.pathname === "/login") el.setAttribute("aria-current", "page");
             else el.removeAttribute("aria-current");
         });
+        toggleRevealOfMenu(false);
 
         const lastState = /**@type {LoginState}*/(window.SMI.getState(THIS_VIEW));
 
@@ -107,7 +108,7 @@ export default function makeLoginView({ postLogin }) {
 
             try {
                 window.SMI.setSate(THIS_VIEW, { state: "loading" });
-
+                console.log("Here...........");
                 const [result,] = await Promise.all([
                     postLogin({ email, password, rememberMe }),
                     new Promise((resolve, reject) => setTimeout(resolve, 1000 + window.MAX_ANIMATION_TIME)),

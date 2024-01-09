@@ -1,5 +1,8 @@
-import { toggleRevealOfPageElements } from "../reveal-animation.js";
-import { registerListenerToDisplayErrorForInvalidInput, showHideLoadingSpinner } from "../ui-utils.js";
+import { toggleRevealOfMenu, toggleRevealOfPageElements } from "../reveal-animation.js";
+import {
+    registerListenerToDisplayErrorForInvalidInput,
+    showHideLoadingSpinner,
+} from "../ui-utils.js";
 
 /**
  * @param {{ postEmailForCode: PostEmailForCode, postSignup: PostSignup }} param0
@@ -30,6 +33,7 @@ export default function makeSignupView({
             if (el.pathname === "/signup") el.setAttribute("aria-current", "page");
             else el.removeAttribute("aria-current");
         });
+        toggleRevealOfMenu(false);
 
         const lastState = /**@type {SignupState}*/(window.SMI.getState(THIS_VIEW));
 
