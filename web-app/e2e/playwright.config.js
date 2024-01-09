@@ -72,7 +72,7 @@ export default defineConfig({
         command: "cd .. && NODE_ENV=e2e node ./src/main.js",
         //  The url on your http server that is expected to return a 2xx, 3xx, 400, 401, 402, or 403 status
         //  code when the server "is ready to accept connections".
-        url: `http://localhost:${PORT}/api/v1/ready`,
+        url: `http://localhost:${PORT}/api/v1/auth/authenticated_as`,
         reuseExistingServer: !process.env.CI,
     },
 });

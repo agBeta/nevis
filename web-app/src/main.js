@@ -24,13 +24,6 @@ installMorgan({ app });
 installRouter({ app, router: authRouter, pathPrefix: "/api/v1/auth" });
 installRouter({ app, router: blogRouter, pathPrefix: "/api/v1/blog" });
 
-if (process.env.NODE_ENV === "e2e") {
-    // Why do we need this route? See "webServer" inside playwright.config.js.
-    app.get("/api/v1/ready", (req, res) => {
-        res.status(201).write("Server is ready for e2e testing.");
-        res.end();
-    });
-}
 app.use("/", filesRouter);
 
 const PORT = process.env.PORT;
