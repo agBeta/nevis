@@ -1,6 +1,8 @@
 /** @returns {string} */
 export function getValueOfRoleCookie(){
-    const roleCookie = document.cookie.split("; ").find(c => c.startsWith("__Host-nevis_role"));
+    const roleCookie = document.cookie.split("; ").find(c => c.startsWith(
+        window.location.hostname.startsWith("localhost") ? "nevis_role" : "__Host-nevis_role"
+    ));
     const role = roleCookie ? roleCookie.split("=")[1] : "";
     return role;
 }
