@@ -7,7 +7,7 @@
         "src/"
     ],
     "env": {
-        "NODE_ENV": "test",
+        "NODE_ENV": "e2e",
         "PORT": 9079,
         "DISABLE_CACHE": "yes",
         "MYSQL_DB_NAME": "nevis_db_test__e2e",
