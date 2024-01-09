@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import makeDbConnectionPool from "../connection.js";
 import makeRedisClient from "../cache-connection.js";
 import make_find_session_record_by_hashedSessionId from "../find_session_record_by_hashedSessionId.js";
+import make_remove_session_record_by_hashedSessionId from "../remove_session_record_by_hashedSessionId.js";
 import make_insert_session from "../insert_session.js";
 
 dotenv.config({
@@ -22,6 +23,10 @@ const insert_session = make_insert_session({ dbConnectionPool });
 const find_session_record_by_hashedSessionId = make_find_session_record_by_hashedSessionId({
     dbConnectionPool,
     cacheClient
+});
+const remove_session_record_by_hashedSessionId = make_remove_session_record_by_hashedSessionId({
+    dbConnectionPool,
+    cacheClient,
 });
 
 test("Session CRUD", { concurrency: false }, async (t) => {
@@ -107,7 +112,7 @@ test("Session CRUD", { concurrency: false }, async (t) => {
         //  So the idea (thank God) is to delete session from database and call find_... one again. If it returns the
         //  session it means the cache is working.
         db = await dbConnectionPool;
-        const /**@type {[ResultSetHeader, any]}*/ [resultSetHeader, ] = await db.execute(
+        const /**@type {[ResultSetHeader, any]}*/[resultSetHeader,] = await db.execute(
             `DELETE FROM session_tbl WHERE hashed_session_id = '${session.hashedSessionId}' ;`
         );
         // First check if it is indeed deleted from database
@@ -124,6 +129,30 @@ test("Session CRUD", { concurrency: false }, async (t) => {
         assert.strictEqual(Math.abs(again?.expiresAt - session.expiresAt) <= 1000, true);
     });
 
+    await t.test("should remove the session from both database and cache", async () => {
+        // First let's insert it.
+        const /**@type {Session}*/ session = Object.freeze({
+            hashedSessionId: "sR".repeat(12),
+            userId: user1.id,
+            expiresAt: Date.now() + (4 * 60 * 1000)
+        });
+        await insert_session(session);
+        // Now let's retrieve it once, so that it will be cached.
+        await find_session_record_by_hashedSessionId({ hashedSessionId: session.hashedSessionId });
+        // Double check the cache to make sure it is indeed cached.
+        let resFromCache = await cacheClient.GET(`session:${session.hashedSessionId}`);
+        assert.strictEqual(resFromCache == null, false);
+
+        //  Now we remove it.
+        await remove_session_record_by_hashedSessionId({ hashedSessionId: session.hashedSessionId });
+        //  The best assertion is that when we try to find it again, it returns null.
+        const res = await find_session_record_by_hashedSessionId({ hashedSessionId: session.hashedSessionId });
+        assert.strictEqual(res == null, true);
+
+        // Double check by asking the cache.
+        resFromCache = await cacheClient.GET(`session:${session.hashedSessionId}`);
+        assert.strictEqual(resFromCache == null, true);
+    });
 
     await t.after(async () => {
         // It might be necessary to: await db.end();
