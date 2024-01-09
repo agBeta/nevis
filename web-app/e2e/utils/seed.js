@@ -1,4 +1,5 @@
 import path from "node:path";
+import fsPromises from "node:fs/promises";
 import { pathToFileURL } from "url";
 import { randomBytes } from "node:crypto";
 import dotenv from "dotenv";
@@ -28,20 +29,29 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 }
 
 
-export async function clearAll(){
+export async function clearAll() {
     const db = await dbConnectionPool;
     await db.execute("DELETE FROM user_tbl;");
     await db.execute("DELETE FROM session_tbl;");
     await db.execute("DELETE FROM code_tbl;");
 }
 
-export async function seedUsers(n = 10) {
-    //  For transactions take a look at:
-    //  https://stackoverflow.com/a/38717014
-    //  https://stackoverflow.com/a/70240338
-    //  https://github.com/sidorares/node-mysql2/issues/384#issuecomment-543727621
+export async function seedUsers(n = 10, saveAsFixtureFile = false) {
 
-    // We cannot use the pool directly to begin a transaction like you can be for a query. See first link above.
+    /**@type {null | import("node:fs/promises").FileHandle}*/
+    let fileHandle = null;
+
+    if (saveAsFixtureFile) {
+        const pathOfFixtureFile = path.resolve(
+            new URL(".", import.meta.url).pathname, "..", "fixtures", "users.json"
+        );
+        // We must delete existing fixture file.
+        await deleteFileIfExists(pathOfFixtureFile);
+        fileHandle = await fsPromises.open(pathOfFixtureFile, "a");
+    }
+
+    //  We cannot use the pool directly to begin a transaction like you can be for a query.
+    //  See links at the end of this file for more information.
     const cn = await dbConnectionPool.getConnection();
     await cn.beginTransaction();
     const users = [];
@@ -70,13 +80,17 @@ export async function seedUsers(n = 10) {
         await cn.query(`
             INSERT INTO user_tbl
                 (id, email, hashed_password, display_name, birth_year, signup_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?) ;
         `, [user.id, user.email, h, user.displayName, user.birthYear, user.signupAt]);
     }
 
     await cn.commit();
 
-    // if (saveAsFixturesIntoFile) {...}  <-- No need to make things complicated for now.
+    if (fileHandle != null /*i.e. saveAsFixtureFile is true*/) {
+        // No try/catch block. We want to fail if it cannot write users to fixture file.
+        fileHandle.write(JSON.stringify(users));
+        await fileHandle.close();
+    }
 
     return users.map(u => u.id);
 }
@@ -140,6 +154,34 @@ export async function seedBlogs(userIds, n = 50) {
     function convertToMySQLDatetime(/**@type {Date}*/d) {
         //  Based on "Paulo Roberto Rosa" comment in https://stackoverflow.com/questions/5129624/convert-js-date-time-to-mysql-datetime
         //  This seems to also account timezone.
-        return d.toISOString().split("T")[0]+" "+d.toTimeString().split(" ")[0];
+        return d.toISOString().split("T")[0] + " " + d.toTimeString().split(" ")[0];
     }
 }
+
+
+async function deleteFileIfExists(/**@type {string}*/pathToFile) {
+    try {
+        await fsPromises.unlink(pathToFile);
+    }
+    catch (err) {
+        if (err.code === "ENOENT") {
+            // No such file. No need to do anything.
+        } else {
+            //  So there was some real issue.
+            //  We want to fail if it cannot delete any (fixture) file. So we raise an error without
+            //  catching it.
+            throw new Error("Could not delete the file: " + err);
+        }
+    }
+}
+
+/** For mysql transactions take a look at:
+        https://stackoverflow.com/a/38717014
+        https://stackoverflow.com/a/70240338
+        https://github.com/sidorares/node-mysql2/issues/384#issuecomment-543727621
+ */
+
+/*  Side about opening a file:
+    Unlike fsPromises that returns a file handle, openSync(..) returns a file descriptor
+    See also https://stackoverflow.com/a/16106756 to learn about working with file descriptor.
+*/
