@@ -1,5 +1,3 @@
-import { OperationalError } from "#utils/errors.js";
-
 /**
  * @param {{ dbConnectionPool: MySQLConnectionPool }} props
  */
@@ -20,6 +18,7 @@ export default function make_remove_code_record_by_email({ dbConnectionPool }) {
     async function remove_code_record_by_email({ email }) {
         const db = await dbConnectionPool;
         const [result,] = await db.execute(sqlCmd, [email]);
+        // @ts-ignore
         return result.info;
     }
 }
