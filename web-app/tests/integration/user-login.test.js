@@ -182,7 +182,7 @@ describe("User Login", { concurrency: false, timeout: 8000 }, () => {
         assert.strictEqual(sessionCookieParts.includes("HttpOnly"), true);
 
         const roleCookieParts = cookies[1].split(";").map(s => s.trim());
-        assert.strictEqual(roleCookieParts[0], "__Host-nevis_role=user");
+        assert.strictEqual(roleCookieParts[0], "nevis_role=user");
         // role cookie should be accessible from browser javascript.
         assert.strictEqual(roleCookieParts.includes("HttpOnly"), false);
     });
