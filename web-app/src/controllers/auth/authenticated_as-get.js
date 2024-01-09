@@ -1,6 +1,5 @@
 import makeHttpError from "../http-error.js";
-
-const NAME_OF_SESSION_COOKIE = "__Host-nevis_session_id";
+import { NAME_OF_SESSION_COOKIE } from "../../config.js";
 
 /**
  * @param {{
@@ -13,7 +12,6 @@ export function makeEndpointController({
     find_session_record_by_hashedSessionId,
     createFastHash,
 }) {
-
     return Object.freeze({
         handleRequest,
         validateRequest,

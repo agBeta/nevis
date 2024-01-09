@@ -1,6 +1,7 @@
 import log from "#utils/log.js";
 import { find_session_record_by_hashedSessionId } from "#da/index.js";
 import { createFastHash } from "#controllers";
+import { NAME_OF_SESSION_COOKIE } from "../config.js";
 
 export const requireAuthentication = makeRequireAuthenticationMiddleware({
     calculateHash: createFastHash,
@@ -15,6 +16,7 @@ export const requireAuthentication = makeRequireAuthenticationMiddleware({
  * @param {Find_Session_Record_By_HashedSessionId} param0.find_session_record_by_hashedSessionId
  */
 export function makeRequireAuthenticationMiddleware({ calculateHash, find_session_record_by_hashedSessionId }) {
+
     return requireLogin;
 
     /**
@@ -25,7 +27,7 @@ export function makeRequireAuthenticationMiddleware({ calculateHash, find_sessio
     async function requireLogin(req, res, next) {
         //  req.cookies might be undefined (recall we aren't using cookie-parser which guarantees to
         //  populate req.cookies with something or {}). So "?." is crucial.
-        const sessionId = req.cookies?.["__Host-nevis_session_id"];
+        const sessionId = req.cookies?.[NAME_OF_SESSION_COOKIE];
         if (!sessionId) {
             res.set("Content-Type", "application/json").status(401).send(JSON.stringify({
                 success: false,

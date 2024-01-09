@@ -14,16 +14,17 @@ import make_find_blog_record_by_blogId from "./find_blog_record_by_blogId.js";
 import make_find_blog_records_paginated from "./find_blog_records_paginated.js";
 import make_insert_blog from "./insert_blog.js";
 import make_update_action from "./update_action.js";
+import make_remove_session_record_by_hashedSessionId from "./remove_session_record_by_hashedSessionId.js";
 
 const dbConnectionPool = makeDbConnectionPool({
     port: process.env.MYSQL_PORT ? Number(process.env.MYSQL_PORT) : 3306
 });
 
-const redisClient = await /*IIFE*/(async function /* --> */ precedeWithoutCacheIfFailed(){
+const redisClient = await /*IIFE*/(async function /* --> */ precedeWithoutCacheIfFailed() {
     try {
         const r = await makeRedisClient();
         return r;
-    } catch(e) {
+    } catch (e) {
         if (process.env.REDIS_CONNECTION_FAIL_SILENTLY === "no") {
             throw new Error("🔥 The application should not continue without a cache.");
         }
@@ -68,6 +69,10 @@ const find_blog_record_by_blogId = make_find_blog_record_by_blogId({ dbConnectio
 
 const find_blog_records_paginated = make_find_blog_records_paginated({ dbConnectionPool });
 
+const remove_session_record_by_hashedSessionId = make_remove_session_record_by_hashedSessionId({
+    dbConnectionPool,
+    cacheClient: redisClient,
+});
 
 export {
     count_actions_by_userId,
@@ -83,6 +88,7 @@ export {
     insert_session,
     insert_user,
     remove_code_records_by_email,
+    remove_session_record_by_hashedSessionId,
     update_action,
 };
 

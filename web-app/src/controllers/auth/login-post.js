@@ -1,6 +1,7 @@
 import Joi from "joi";
 import makeHttpError from "../http-error.js";
 import makeBasicValidateNormalize from "../validate-normalize.js";
+import { NAME_OF_SESSION_COOKIE } from "../../config.js";
 
 /**
  * POST /auth/login endpoint controller isn't idempotent. Just for simplicity.
@@ -97,22 +98,23 @@ export function makeEndpointController({
             },
             /**@type {SetCookie[]}*/ cookies: [
                 {
-                    // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#__host-.
-                    name: "__Host-nevis_session_id",
+                    name: NAME_OF_SESSION_COOKIE,
                     value: sessionId,
                     options: {
-                        secure: process.env.NODE_ENV === "test" ? true : true,
-                        httpOnly: true,
+                        secure: true,
+                        httpOnly: process.env.NODE_ENV === "e2e" ? false : true,
                         sameSite: "lax",
                         maxAge: lifespanInSeconds,
                     }
                 },
                 {
-                    name: "__Host-nevis_role",
+                    name: "nevis_role",
                     value: "user",
                     options: {
-                        secure: process.env.NODE_ENV === "test" ? true : true,
-                        httpOnly: false, // can be used by frontend to implement offline functionality
+                        secure: true,
+                        //  This cookie should be accessible by js. Frontend will use it to implement
+                        //  route guard, offline, etc.
+                        httpOnly: false,
                         sameSite: "lax",
                         maxAge: lifespanInSeconds,
                     }
@@ -120,13 +122,15 @@ export function makeEndpointController({
             ],
             payload: JSON.stringify({
                 success: true,
-                userId: user.id, // Ad-hoc decision to send some of user info as well. We don't care.
+                // We're making an ad-hoc decision to send some of user info as well.
+                userId: user.id,
                 userDisplayName: user.displayName,
             })
         };
     }
 }
 
+// For '__Host-' prefix, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#__host-.
 
 /**
  * @typedef {import("#types").HttpRequest} HttpRequest
