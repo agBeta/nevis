@@ -65,7 +65,8 @@ export default function makeRouter({ routes }) {
         //  Now listeners are registered, and we just need to take care of initial url
         //  location.search will return empty string if there is no query string.
         const initialUrl = window.location.pathname + window.location.search + window.location.hash;
-        navigateTo(initialUrl);
+        //  Why addToHistory=false? See comment at the end of this file.
+        navigateTo(initialUrl, false);
     }
 }
 
@@ -122,6 +123,18 @@ export function matchAndCapture(pathPattern, routeToNavigate) {
 }
 
 
+/* Why addToHistory=false in init()?
+    If we use true, when the user types, say, /login into browser address bar and
+    directly wants to navigate to login page, then another redundant history for "/"
+    will be added. In other words, if user clicks back button, he won't go back to the
+    previous, but to our web-app login page.
+    Same happens when user directly (by typing into address bar) navigates from /login
+    to, say, /blog/paginated; Another redundant history (for "/") will be added. So when
+    the user clicks back button, the browser won't go to /login, but to "/" (home). This
+    isn't what we want.
+    You can witness this issue by setting addToHistory=true, and run login.spec.js e2e test
+    in debug mode (and inspect browser history in between steps of the test).
+ */
 
 
 //  Credit to:
