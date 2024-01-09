@@ -1,4 +1,4 @@
-import { toggleRevealOfPageElements } from "../reveal-animation.js";
+import { toggleRevealOfMenu, toggleRevealOfPageElements } from "../reveal-animation.js";
 
 /** @returns {PageView} */
 export default function makeHomeView() {
@@ -19,6 +19,8 @@ export default function makeHomeView() {
             if (el.pathname === "/") el.setAttribute("aria-current", "page");
             else el.removeAttribute("aria-current");
         });
+
+        toggleRevealOfMenu(false);
 
         const containerEl = document.createElement("div");
         containerEl.classList.add("to-reveal");
