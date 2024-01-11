@@ -52,7 +52,13 @@ const routes = [
     },
     {
         path: "/add-blog",
-        pageView: makeAddBlogView({ requestNewAction, postBlog })
+        pageView: makeAddBlogView({ requestNewAction, postBlog }),
+        guard: function () {
+            return {
+                canPrecede: getValueOfRoleCookie() === "user",
+                redirectPathIfFailed: "/"
+            };
+        }
     },
     {
         path: "/logout",
