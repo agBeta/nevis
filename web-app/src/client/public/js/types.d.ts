@@ -70,6 +70,23 @@ export type PostLogin =
 export type PostLogout =
     () => Promise<{ statusCode: number, body: any }>;
 
+
+export type PostBlog = 
+    ({ blogTitle, blogBody, blogTopic, imageUrl, actionId }:
+      { blogTitle: string, blogBody: string, blogTopic: string, imageUrl: string, actionId: string}) 
+    => Promise<{
+        statusCode: number,
+        body: any,
+    }>;
+
+export type RequestNewAction = (purpose: "add-blog") 
+    => Promise<{
+        statusCode: number,
+        actionId: any,
+    }>;
+
+// -------------------------------------
+
 export type SignupState = null | {
     step: "code" | "signup" | "loading" | "error_code" | "error_signup" | "completed",
     enteredEmail?: string,
@@ -84,4 +101,14 @@ export type SignupState = null | {
 export type LoginState = null | {
     state: "login" | "loading" | "error_login" ,
     error?: string,
+};
+
+export type AddBlogState = null | {
+    state: "add" | "loading" | "error",
+    error?: string,
+    enteredBlogTitle?: string,
+    enteredBlogBody?: string,
+    enteredBlogTopic?: string,
+    enteredImageUrl?: string,
+    lastActionId?: string,
 };

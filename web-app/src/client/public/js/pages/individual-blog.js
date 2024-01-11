@@ -107,7 +107,7 @@ export default function makeIndividualBlogView({
                 <h1 class="h1">${blog.blogTitle}</h1>
             </header>
             <div class="to-reveal">
-                <p dir="rtl" class="body">${blog.blogBody}</p>
+                <p dir="rtl" class="body">${blog.blogBody.replace(/\n/g, "</br>")}</p>
             </div>
             <footer class="info to-reveal">
                     <time datetime="${createdAt.toISOString()}" class="to-reveal" dir="rtl">

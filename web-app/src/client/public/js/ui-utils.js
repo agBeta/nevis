@@ -34,7 +34,7 @@ export function updateMainMenuItemsBasedOnUserLoggedIn() {
                 </a>
             </li>
             <li class="nav-item to-reveal">
-                <a href="/post-blog" data-link>
+                <a href="/add-blog" data-link>
                     <span>۰۳</span>/ افزودن نوشته
                 </a>
             </li>
@@ -92,7 +92,7 @@ export function registerListenerToDisplayErrorForInvalidInput(_el) {
 
 
 /** @param {{ text: string, kind: "success" | "failure" }} param0 */
-export function showToast({ text, kind }){
+export function showToast({ text, kind }) {
     console.log(kind, text);
     /**@todo TODO */
 }

@@ -97,7 +97,7 @@ test.describe("Login Scenarios", async () => {
         //  assertions. Otherwise playwright would instantly grab login nav item (which hasn't
         //  disappeared yet) and the test would fail. So the order of assertions below is important.
         await expect(page.locator(".nav-item a[href='/logout']")).toHaveCount(1);
-        await expect(page.locator(".nav-item a[href='/post-blog']")).toHaveCount(1);
+        await expect(page.locator(".nav-item a[href='/add-blog']")).toHaveCount(1);
         await expect(page.locator(".nav-item a[href='/login']")).toHaveCount(0);
 
 

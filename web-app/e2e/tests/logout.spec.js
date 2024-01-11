@@ -5,7 +5,7 @@ const { userId, pathToAuthFixture } = getSomeAuth();
 
 test.describe("Logout Scenarios", async () => {
 
-    test("@sanity", async({ browser }) => {
+    test("@sanity", async ({ browser }) => {
         // Let's check the auth state is really working.
         const context = await browser.newContext({
             storageState: pathToAuthFixture,
@@ -54,7 +54,7 @@ test.describe("Logout Scenarios", async () => {
         //  Main menu should be updated accordingly.
         await expect(page.locator(".nav-item a[href='/login']")).toHaveCount(1);
         await expect(page.locator(".nav-item a[href='/logout']")).toHaveCount(0);
-        await expect(page.locator(".nav-item a[href='/post-blog']")).toHaveCount(0);
+        await expect(page.locator(".nav-item a[href='/add-blog']")).toHaveCount(0);
 
         // ... and cookies should be removed.
         const cookies = await page.context().cookies();

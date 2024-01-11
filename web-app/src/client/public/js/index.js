@@ -8,6 +8,8 @@ import {
     postSignup,
     postLogin,
     postLogout,
+    requestNewAction,
+    postBlog,
 } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
@@ -18,6 +20,7 @@ import makeHomeView from "./pages/home.js";
 import makeSignupView from "./pages/signup.js";
 import makeLoginView from "./pages/login.js";
 import makeLogoutView from "./pages/logout.js";
+import makeAddBlogView from "./pages/add-blog.js";
 
 window.SMI.clearStates();
 
@@ -28,7 +31,7 @@ const routes = [
     {
         path: "/signup",
         pageView: makeSignupView({ postEmailForCode, postSignup }),
-        guard: function() {
+        guard: function () {
             return {
                 // If user is logged in, we won't let him go to this route.
                 canPrecede: getValueOfRoleCookie() !== "user",
@@ -39,13 +42,17 @@ const routes = [
     {
         path: "/login",
         pageView: makeLoginView({ postLogin }),
-        guard: function() {
+        guard: function () {
             return {
                 // If user is logged in, we won't let him go to this route.
                 canPrecede: getValueOfRoleCookie() !== "user",
                 redirectPathIfFailed: "/"
             };
         }
+    },
+    {
+        path: "/add-blog",
+        pageView: makeAddBlogView({ requestNewAction, postBlog })
     },
     {
         path: "/logout",
