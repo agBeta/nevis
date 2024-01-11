@@ -4,7 +4,7 @@ import { getSomeRealUsers } from "../utils/test-utils.js";
 
 let /**@type ReturnType<getSomeRealUsers>[number]*/ realUser1;
 
-test.describe("Signup Scenarios", async () => {
+test.describe("Login Scenarios", async () => {
     test.beforeAll(() => {
         realUser1 = getSomeRealUsers(/*n=*/1)[0];
     });
