@@ -76,13 +76,13 @@ export type PostBlog =
       { blogTitle: string, blogBody: string, blogTopic: string, imageUrl: string, actionId: string}) 
     => Promise<{
         statusCode: number,
-        body: any,
+        blogId: string | null,
     }>;
 
 export type RequestNewAction = (purpose: "add-blog") 
     => Promise<{
         statusCode: number,
-        actionId: any,
+        actionId: string | null,
     }>;
 
 // -------------------------------------

@@ -1,5 +1,10 @@
 import { toggleRevealOfMenu, toggleRevealOfPageElements } from "../reveal-animation.js";
-import { registerListenerToDisplayErrorForInvalidInput } from "../ui-utils.js";
+import {
+    registerListenerToDisplayErrorForInvalidInput,
+    showHideLoadingSpinner,
+    showToast,
+} from "../ui-utils.js";
+import { makeRetry } from "../utils.js";
 
 /**
  * @param {{
@@ -53,9 +58,12 @@ export default function makeAddBlogView({
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 // ↖️↖️ Making sure elements are inserted to DOM.
-                pageEl.querySelectorAll("input").forEach(el => {
-                    registerListenerToDisplayErrorForInvalidInput(el);
-                });
+                const titleInputEl =  /**@type {HTMLInputElement}*/
+                    (pageEl.querySelector("input[name='title']"));
+                registerListenerToDisplayErrorForInvalidInput(titleInputEl);
+
+                const textAreaEl = /**@type {HTMLTextAreaElement}*/ (pageEl.querySelector("textarea"));
+                registerListenerToDisplayErrorForInvalidInput(textAreaEl);
             });
         });
     }
@@ -79,11 +87,11 @@ export default function makeAddBlogView({
         formEl.innerHTML = /*html*/`
             <div class="to-reveal form-group">
                 <label for="title">عنوان</label>
-                <input id="title" name="title" type="text" autocomplete="off" autofocus
+                <input id="title" name="title" type="text" autocomplete="off"
                     value="${state?.enteredBlogTitle ?? ""}" required/>
             </div>
             <div class="to-reveal form-group body-from-group">
-                <label for="title">متن</label>
+                <label for="body">متن</label>
                 <textarea id="body" name="body" autocomplete="off" minlength="10" maxlength="4000"
                     required>${state?.enteredBlogBody ?? ""}</textarea>
             </div>
@@ -97,7 +105,97 @@ export default function makeAddBlogView({
 
         formEl.addEventListener("submit", async (ev) => {
             ev.preventDefault();
-            // TODO
+
+            // @ts-ignore
+            const /**@type {string}*/ enteredBlogTitle = (document.querySelector("input[name='title']")).value;
+            // @ts-ignore
+            const /**@type {string}*/ enteredBlogBody = (document.querySelector("textarea[name='body']")).value;
+            const enteredBlogTopic = "Technology"; // hard code for now.
+            const enteredImageUrl = undefined;
+
+            const allOfEntered = Object.freeze({
+                enteredBlogTitle,
+                enteredBlogBody,
+                enteredBlogTopic,
+                enteredImageUrl
+            });
+
+            toggleRevealOfPageElements(false);
+            setTimeout(() => {
+                formEl.remove();
+                showHideLoadingSpinner(containerEl, true);
+            }, window.MAX_ANIMATION_TIME - 1000 / 60);
+
+            //  If we successfully post a blog, we will clear [lastActionId] from state. So don't
+            //  worry about using [lastActionId]. It would be null if it's already used up.
+            let actionId = state?.lastActionId ?? null;
+
+            try {
+                window.SMI.setSate(THIS_VIEW, {
+                    state: "loading",
+                    ...allOfEntered,
+                });
+
+                if (actionId == null) {
+                    actionId = (await requestNewAction("add-blog")).actionId;
+                    console.log(" 🚒 ", actionId);
+                }
+
+                window.SMI.setSate(THIS_VIEW, /**@type {Exclude<AddBlogState, null>}*/({
+                    state: "loading",
+                    ...allOfEntered,
+                    //  We must store actionId. If we fail to post blog using this action (see few
+                    //  lines below), then we would use the same actionId.
+                    lastActionId: actionId,
+                }));
+
+                console.log(actionId);
+
+                const data = {
+                    blogTitle: enteredBlogTitle,
+                    blogBody: enteredBlogBody,
+                    blogTopic: enteredBlogTopic,
+                    imageUrl: enteredImageUrl,
+                    actionId,
+                };
+                /**@type {Awaited<ReturnType<PostBlog>>}*/
+                const result = await (makeRetry(postBlog, 3, 1000, true))(data);
+
+                //  So we have successfully added a new blog. Let's clear the state,
+                //  especially lastActionId ❗.
+                window.SMI.setSate(THIS_VIEW, { state: "add" });
+
+                showToast({
+                    kind: "success",
+                    text: "نوشته شما با موفقیت ارسال شد" + "."
+                });
+
+                if (window.SMI.getCurrentViewOnScreen().name === THIS_VIEW) {
+                    //  ↗️↗️ If user isn't on this view, we don't want to navigate him away from
+                    //  where he is currently at.
+                    window.Router.navigateTo(`/blog/${result.blogId}`);
+                }
+                return;
+            }
+            catch (err) {
+                window.SMI.setSate(THIS_VIEW, /**@type {Exclude<AddBlogState, null>}*/({
+                    state: "error",
+                    error: err.message,
+                    ...allOfEntered,
+                    lastActionId: actionId, // <-- don't forget this one!
+                }));
+            }
+            //  So we just updated state appropriately. Now let's take care of rendering
+            //  the state we just set.
+            if (window.SMI.getCurrentViewOnScreen().name !== THIS_VIEW) {
+                showToast({
+                    kind: "failure",
+                    text: "متاسفانه ارسال نوشته جدید با خطا مواجه شد" + ".",
+                });
+            }
+            else {
+                render();
+            }
         });
     }
 
@@ -122,8 +220,12 @@ export default function makeAddBlogView({
         button.addEventListener("click", function goBack() {
             // errorEl.remove(); // <-- not necessary, since we're going to call render below.
             window.SMI.setSate(THIS_VIEW, {
-                step: "add",
-                enteredEmail: state.enteredEmail ?? "",
+                state: "add",
+                enteredBlogTitle: state.enteredBlogTitle,
+                enteredBlogBody: state.enteredBlogBody,
+                enteredBlogTopic: state.enteredBlogTopic,
+                enteredImageUrl: state.enteredImageUrl,
+                lastActionId: state.lastActionId,
             });
             //  No need to check if (window.SMI.getCurrentViewOnScreen().name !== THIS_VIEW). Of course
             //  when click happens on the button, this view is on the screen.
