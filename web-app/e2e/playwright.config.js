@@ -22,8 +22,9 @@ export default defineConfig({
     // fullyParallel: true,
     fullyParallel: false,
     /* Opt out of parallel tests on CI. */ // workers: process.env.CI ? 1 : undefined,
-    workers: process.env.CI ? 1 : 2,
+    workers: process.env.CI ? 1 : 1,
 
+    timeout: 60_000,
 
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: "html",
@@ -45,14 +46,33 @@ export default defineConfig({
             teardown: "teardown",
         },
         {
-            name: "chrome",
+            name: "non-auth-related",
             // ⤵️.
             dependencies: ["setup"],
+            testIgnore: ["logout.spec.js", "auth-setup.spec.js"],
             // 🚩 Also note, for some reason, teardown is executed before this project. Don't know why.
             use: {
                 ...devices["Desktop Chrome"],
-                channel: "chrome", /* <-- use current installed version of chrome on your local machine */
+                channel: "chrome",
             },
+        },
+        {
+            name: "auth-setup",
+            dependencies: ["setup", "non-auth-related"],
+            //  Since this project runs in a browser, you must specify a browser, otherwise it would
+            //  try to run on all browsers, some of which you haven't installed on your machine. So
+            //  eventually everything will fail.
+            use: {
+                ...devices["Desktop Chrome"],
+                channel: "chrome", /*<-- use current installed version of chrome on your local machine */
+            },
+            testMatch: "auth-setup.spec.js",
+        },
+        {
+            name: "logout",
+            dependencies: ["setup", "auth-setup"],
+            use: { ...devices["Desktop Chrome"], channel: "chrome" },
+            testMatch: "logout.spec.js",
         },
         // {
         //   name: 'Mobile Safari',
