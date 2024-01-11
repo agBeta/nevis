@@ -119,7 +119,7 @@ export default function makeIndividualBlogView({
         `;
 
         pageEl.appendChild(containerEl);
-        document.title = blog.blogTitle
+        document.title = blog.blogTitle;
         toggleRevealOfPageElements(true);
     }
 }
