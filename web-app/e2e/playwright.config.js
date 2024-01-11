@@ -46,7 +46,7 @@ export default defineConfig({
             teardown: "teardown",
         },
         {
-            name: "non-auth-related",
+            name: "no-auth-required",
             // ⤵️.
             dependencies: ["setup"],
             testIgnore: ["logout.spec.js", "auth-setup.spec.js"],
@@ -58,7 +58,7 @@ export default defineConfig({
         },
         {
             name: "auth-setup",
-            dependencies: ["setup", "non-auth-related"],
+            dependencies: ["setup"],
             //  Since this project runs in a browser, you must specify a browser, otherwise it would
             //  try to run on all browsers, some of which you haven't installed on your machine. So
             //  eventually everything will fail.
@@ -69,7 +69,7 @@ export default defineConfig({
             testMatch: "auth-setup.spec.js",
         },
         {
-            name: "logout",
+            name: "require-auth",
             dependencies: ["setup", "auth-setup"],
             use: { ...devices["Desktop Chrome"], channel: "chrome" },
             testMatch: "logout.spec.js",
