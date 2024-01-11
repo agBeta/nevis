@@ -10,3 +10,8 @@ There's specially a part which uses `exec` from `child_process` in node to run a
 
 ## global setup, teardown, storage
 https://playwright.dev/docs/test-global-setup-teardown.
+
+
+## Playwright in CI
+https://gkushang.medium.com/playwright-failed-to-launch-browsers-how-to-solve-8b01d03fe5b9.
+https://github.com/microsoft/playwright/issues/4033.
