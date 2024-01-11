@@ -5,6 +5,7 @@ import { randomBytes } from "node:crypto";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker/locale/fa";
+import { createFastHash } from "../../src/controllers/index.js";
 import makeDbConnectionPool from "../../src/data-access/connection.js";
 
 dotenv.config({
@@ -156,6 +157,52 @@ export async function seedBlogs(userIds, n = 50) {
         //  This seems to also account timezone.
         return d.toISOString().split("T")[0] + " " + d.toTimeString().split(" ")[0];
     }
+}
+
+
+
+
+/** @deprecated @type {string[]}*/
+const ID_OF_USERS_WITH_SESSION_FIXTURE = [];
+
+/** @deprecated */
+export function getIdOfUserWithSessionFixture() {
+    return [...ID_OF_USERS_WITH_SESSION_FIXTURE];
+}
+/**
+ * @deprecated
+ * @param {string} userId  @param {boolean} saveAsFixtureFile
+ */
+export async function seedSession(userId, saveAsFixtureFile) {
+    ID_OF_USERS_WITH_SESSION_FIXTURE.push(userId);
+
+    const session = {
+        //  Anything for cookie value is ok. But it shouldn't collide with some other session
+        //  cookie belonging to another user
+        valueToSetInCookie: randomBytes(16).toString("hex"),
+        userId: userId,
+        expiresAt: Date.now() + 2 * 60 * 60 * 1000,
+    };
+    const hashedSessionId = createFastHash(session.valueToSetInCookie);
+
+    const db = await dbConnectionPool;
+    await db.execute(`
+        INSERT INTO session_tbl
+            (hashed_session_id , user_id , expires_at )
+        VALUES ( ? , ? , ? );
+    `, [hashedSessionId, session.userId, new Date(session.expiresAt)]);
+
+    if (saveAsFixtureFile) {
+        const pathOfFixtureFile = path.resolve(
+            new URL(".", import.meta.url).pathname, "..", "fixtures", `auth_${userId}.json`
+        );
+        await deleteFileIfExists(pathOfFixtureFile);
+        const fileHandle = await fsPromises.open(pathOfFixtureFile, "a");
+        fileHandle.write(JSON.stringify(session));
+        await fileHandle.close();
+    }
+
+    console.log(`Seed session for user ${userId} is done.`);
 }
 
 
