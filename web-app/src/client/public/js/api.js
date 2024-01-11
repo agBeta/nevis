@@ -99,5 +99,25 @@ export async function postLogin({ email, password, rememberMe }) {
         body,
     };
 }
+
+
+/**@type {import("./types.d.ts").PostLogout} */
+export async function postLogout(){
+    const url = new URL("/api/v1/auth/logout", BASE_URL);
+    const raw = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+    });
+    const statusCode = raw.status;
+    if (statusCode !== 200) {
+        // We must throw an error (i.e. reject), since we probably want to retry. Also see makeRetry in utils.
+        throw new Error("Failed to logout: Error " + statusCode);
+    }
+    const body = await raw.json();
+    return {
+        statusCode,
+        body,
+    };
+}
 //
 
