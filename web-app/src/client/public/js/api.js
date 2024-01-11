@@ -131,9 +131,12 @@ export async function requestNewAction(purpose){
     });
     const statusCode = raw.status;
     const body = await raw.json();
+    if (statusCode !== 201) {
+        throw new Error("Failed to obtain an action: " + statusCode + " " + body?.error);
+    }
     return {
         statusCode,
-        actionId: statusCode === 200 ? body.actionId : null,
+        actionId: statusCode === 201 ? body.actionId : null,
     };
 }
 
@@ -142,11 +145,16 @@ export async function requestNewAction(purpose){
 export async function postBlog({
     blogTitle, blogBody, blogTopic, imageUrl, actionId
 }){
-    const url = new URL("/api/v1/blog/action" + actionId, BASE_URL);
+    console.log(actionId);
+    const url = new URL("/api/v1/blog/action/" + actionId, BASE_URL);
     const request = new Request(url, {
         method: "PUT",
-        mode: "no-cors",
+        // We must use cors, PUT is unsupported in no-cors mode.
+        mode: "cors",
         credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({
             blogTitle, blogBody, blogTopic: blogTopic ??  "Technology"
         }),
@@ -154,9 +162,13 @@ export async function postBlog({
     const raw = await fetch(request);
     const statusCode = raw.status;
     const body = await raw.json();
+    if (statusCode !== 201) {
+        // We must throw an error (i.e. reject), since we want to retry.
+        throw new Error("Failed to post new blog: " + statusCode + " " + body?.error);
+    }
     return {
         statusCode,
-        body,
+        blogId: statusCode === 201 ? body.blogId : null,
     };
 }
 //
