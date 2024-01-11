@@ -67,6 +67,9 @@ export type PostLogin =
         body: any,
     }>;
 
+export type PostLogout =
+    () => Promise<{ statusCode: number, body: any }>;
+
 export type SignupState = null | {
     step: "code" | "signup" | "loading" | "error_code" | "error_signup" | "completed",
     enteredEmail?: string,

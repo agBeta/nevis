@@ -7,6 +7,7 @@ import {
     postEmailForCode,
     postSignup,
     postLogin,
+    postLogout,
 } from "./api.js";
 import makeRouter from "./router.js";
 import { onMenuToggleClick } from "./reveal-animation.js";
@@ -16,6 +17,7 @@ import makeIndividualBlogView from "./pages/individual-blog.js";
 import makeHomeView from "./pages/home.js";
 import makeSignupView from "./pages/signup.js";
 import makeLoginView from "./pages/login.js";
+import makeLogoutView from "./pages/logout.js";
 
 window.SMI.clearStates();
 
@@ -44,6 +46,10 @@ const routes = [
                 redirectPathIfFailed: "/"
             };
         }
+    },
+    {
+        path: "/logout",
+        pageView: makeLogoutView({ postLogout }),
     },
     { path: "/", pageView: makeHomeView() }
 ];
