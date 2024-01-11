@@ -119,5 +119,45 @@ export async function postLogout(){
         body,
     };
 }
+
+
+/**@type {import("./types.d.ts").RequestNewAction} */
+export async function requestNewAction(purpose){
+    const url = new URL("/api/v1" +  (purpose === "add-blog" ? "/blog" : ""), BASE_URL);
+    const raw = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        mode: "no-cors",
+    });
+    const statusCode = raw.status;
+    const body = await raw.json();
+    return {
+        statusCode,
+        actionId: statusCode === 200 ? body.actionId : null,
+    };
+}
+
+
+/**@type {import("./types.d.ts").PostBlog} */
+export async function postBlog({
+    blogTitle, blogBody, blogTopic, imageUrl, actionId
+}){
+    const url = new URL("/api/v1/blog/action" + actionId, BASE_URL);
+    const request = new Request(url, {
+        method: "PUT",
+        mode: "no-cors",
+        credentials: "same-origin",
+        body: JSON.stringify({
+            blogTitle, blogBody, blogTopic: blogTopic ??  "Technology"
+        }),
+    });
+    const raw = await fetch(request);
+    const statusCode = raw.status;
+    const body = await raw.json();
+    return {
+        statusCode,
+        body,
+    };
+}
 //
 
