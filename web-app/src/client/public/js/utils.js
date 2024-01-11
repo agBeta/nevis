@@ -48,7 +48,7 @@ export function clearAllCookies(){
 }
 
 
-/** @param {*} callback  */
+/** @param {Function} callback  */
 export function makeRetry(
     callback,
     maxAttempts = 3,
@@ -61,7 +61,7 @@ export function makeRetry(
     /** @type {(...args: any[]) => Promise<any>} */
     const retry = async function(...args) {
         try {
-            const result = await callback(...args);
+            const result = await callback(args); // BTW, no need to bind or apply.
             return result;
         }
         catch (err) {
@@ -74,7 +74,7 @@ export function makeRetry(
                 await new Promise((resolve) => setTimeout(resolve, delay));
                 if (backoff) delay *= 2;
             }
-            return retry(...args);
+            return retry(args);
         }
     };
     return retry;
