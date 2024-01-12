@@ -42,7 +42,7 @@ export default function makeDbConnectionPool({ port }) {
         enableKeepAlive: true,
         keepAliveInitialDelay: 10000,
         // See date-and-time.md from self-documentation. This field needs so much care.
-        timezone: "+03:30",
+        timezone: process.env.NODE_ENV === "production" ? process.env.MYSQL_TZ : "+03:30",
         // This field also seems important.
         charset: "utf8mb4_unicode_ci",
         dateStrings: false,
