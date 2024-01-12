@@ -282,6 +282,13 @@ form .form-group[data-error]::after {
     font-weight: bold;
 }
 
+#signup .subtitle {
+    direction: rtl;
+    color: rgb(68, 68, 68);
+    font-size: var(--fs-300);
+    text-align: right;
+}
+
 
 @keyframes fade-in {
     from {

@@ -261,6 +261,7 @@ export default function makeSignupView({
             </div>
             <div class="to-reveal form-group">
                 <label for="code">جهت تکمیل ثبت‌نام لطفا کد تایید ارسال‌شده به ایمیل‌تان را در زیر وارد نمایید:</label>
+                <p class="subtitle">ممکن است ایمیل کد تایید داخل پوشه هرزنامه قرار گرفته باشد.</p>
                 <input id="code" name="code" type="text" autocomplete="off"
                     minlength="6" maxlength="6" required
                     value="${state?.enteredCode ?? ""}"/>
