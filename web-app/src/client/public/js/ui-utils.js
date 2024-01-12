@@ -91,9 +91,27 @@ export function registerListenerToDisplayErrorForInvalidInput(_el) {
 }
 
 
+let /**@type {any}*/ hideTimeoutId;
+
 /** @param {{ text: string, kind: "success" | "failure" }} param0 */
 export function showToast({ text, kind }) {
-    console.log(kind, text);
-    /**@todo TODO */
+    const toastEl = /**@type {HTMLDivElement}*/(document.querySelector(".toast"));
+    toastEl.className = `toast toast--${kind}`;
+    toastEl.textContent = text;
+    toastEl.setAttribute("aria-hidden", "false");
+
+    //  If there is another call of showToast(..) in less than 4 seconds, we don't want to incorrectly
+    //  hide the new content of the toast (inside setTimeout).
+    if (hideTimeoutId != null) {
+        clearTimeout(hideTimeoutId);
+    }
+
+    hideTimeoutId = setTimeout(() => {
+        toastEl.setAttribute("aria-hidden", "true");
+        //  Don't do (toastEl.textContent = "";) here. This will make toast small and destroy the beauty
+        //  of fade out animation. If you want to do that, wrap it inside another setTimeout.
+        hideTimeoutId = null;
+    }, 4000 + (text.length / 120));
 }
+
 //

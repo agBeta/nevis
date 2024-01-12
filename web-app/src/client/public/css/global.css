@@ -385,3 +385,45 @@ nav[aria-label="Main Menu"] .nav-item span {
         transform: rotate(15deg);
     }
 }
+
+
+/* -------- Toast  --------------- */
+.toast {
+    direction: rtl;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    margin: auto;
+    max-width: min(25rem, 80vw);
+
+    padding: .25rem .75rem;
+    font-size: var(--fs-400);
+    text-align: justify;
+    border: 1px solid white;
+    border-radius: .5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    /* Be default it's hidden. */
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 400ms;
+}
+
+.toast[aria-hidden="true"] {
+    pointer-events: none;
+}
+.toast[aria-hidden="false"] {
+    opacity: 1;
+}
+
+.toast--success {
+    background-color: #049926;
+    border-color: #009d23;
+    color: white;
+}
+
+.toast--failure {
+    background-color: #d50000;
+    border-color: var(--clr-dark-red);
+    color: white;
+}
+/**/
