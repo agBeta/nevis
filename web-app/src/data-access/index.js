@@ -26,7 +26,7 @@ const redisClient = await /*IIFE*/(async function /* --> */ precedeWithoutCacheI
         return r;
     } catch (e) {
         if (process.env.REDIS_CONNECTION_FAIL_SILENTLY === "no") {
-            throw new Error("🔥 The application should not continue without a cache.");
+            throw new Error("The application should not continue without a cache.");
         }
         return null;
     }
