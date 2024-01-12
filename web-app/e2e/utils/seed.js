@@ -5,7 +5,6 @@ import { randomBytes } from "node:crypto";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker/locale/fa";
-import { createFastHash } from "../../src/controllers/index.js";
 import makeDbConnectionPool from "../../src/data-access/connection.js";
 
 dotenv.config({
@@ -13,11 +12,12 @@ dotenv.config({
     override: true,
 });
 
-export const dbConnectionPool = makeDbConnectionPool({ port: 3306 });
+export const dbConnectionPool = makeDbConnectionPool({
+    port: process.env.MYSQL_PORT ? Number(process.env.MYSQL_PORT) : 3306
+});
 
 // To have reproducible result
 faker.seed(100);
-
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     // So this module wasn't imported, but called directly (i.e. via cli "node seed.js").
@@ -175,6 +175,12 @@ export function getIdOfUserWithSessionFixture() {
  */
 export async function seedSession(userId, saveAsFixtureFile) {
     ID_OF_USERS_WITH_SESSION_FIXTURE.push(userId);
+
+
+    //  Don't import createFastHash at the top the file. This would trigger the whole controller/index.js
+    //  code to hoist and load before dotenv.config happens, which would lead to errors.
+    const createFastHash = (await import("../../src/controllers/index.js")).createFastHash;
+
 
     const session = {
         //  Anything for cookie value is ok. But it shouldn't collide with some other session
