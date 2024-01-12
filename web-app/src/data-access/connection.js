@@ -33,7 +33,7 @@ export default function makeDbConnectionPool({ port }) {
     if (!dbName) throw new AppError("Database connection must have a valid database name.", "env-var");
 
     connectionPool = mysql.createPool({
-        host: "localhost",
+        host: process.env.MYSQL_HOST ?? "localhost",
         database: dbName,
         user: process.env.MYSQL_USERNAME,
         password: process.env.MYSQL_PASSWORD,
