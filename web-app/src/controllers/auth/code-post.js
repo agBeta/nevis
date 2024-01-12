@@ -47,8 +47,13 @@ export function makeEndpointController({
         await insert_code({ email, hashedCode, purpose, expiresAt });
 
         const subject = "کد تایید";
-        const body = "کد تایید شما برابر".concat(" <strong>" + code + "</strong> ").concat("می‌باشد" + ".")
-            .concat(" ").concat("این کد برای مدت").concat(" " + "10" + " ").concat("دقیقه معتبر می‌باشد" + ".");
+        const body = /*html*/`
+            <html lang="fa">
+            <body dir="rtl">
+                <p>کد تایید شما جهت ثبت نام ${code} می‌باشد. این کد پس از ۱۰ دقیقه منقضی خواهد شد.</p>
+            </body>
+            </html>
+        `;
 
         await emailService.sendEmail({ email, subject, body });
 
