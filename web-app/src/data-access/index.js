@@ -20,13 +20,13 @@ const dbConnectionPool = makeDbConnectionPool({
     port: process.env.MYSQL_PORT ? Number(process.env.MYSQL_PORT) : 3306
 });
 
-const redisClient = await /*IIFE*/(async function /* --> */ precedeWithoutCacheIfFailed() {
+const redisClient = await (async function precedeWithoutCacheIfFailed() {
     try {
         const r = await makeRedisClient();
         return r;
-    } catch (e) {
+    } catch (err) {
         if (process.env.REDIS_CONNECTION_FAIL_SILENTLY === "no") {
-            throw new Error("The application should not continue without a cache.");
+            throw new Error("The application should not continue without a cache. " + err.message);
         }
         return null;
     }

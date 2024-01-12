@@ -15,7 +15,8 @@ export default async function makeRedisClient() {
     const redisPort = process.env.REDIS_PORT;
     const redisPassword = process.env.REDIS_PASSWORD;
 
-    if (!redisHost || !redisPort || (!redisPassword && process.env.NODE_ENV !== "test")) {
+    if (!redisHost || !redisPort ||
+        (redisPassword == null && process.env.NODE_ENV !== "test" && process.env.NODE_ENV !== "e2e")) {
         throw new AppError("Some of Redis environment variables are missing", "cache__connect");
     }
 
