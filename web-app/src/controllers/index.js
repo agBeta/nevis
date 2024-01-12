@@ -148,8 +148,8 @@ const /**@type {Controller}*/ blog_GET = {
     // @ts-ignore
     handleRequest: function() {
         const qs = new URLSearchParams([
-            ["cursor", "1"],
-            ["direction", "next"],
+            ["cursor", "newest"],
+            ["direction", "older"],
             ["limit", "10"],
         ]);
         return {
