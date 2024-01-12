@@ -6,9 +6,9 @@ import { promisify } from "node:util";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
-import make_find_code_records_by_email from "../../src/data-access/find_code_records_by_email.js";
-import make_find_user_records_by_email from "../../src/data-access/find_user_records_by_email.js";
-import make_insert_code from "../../src/data-access/insert_code.js";
+import make_find_code_records_by_email from "#da/queries/find_code_records_by_email.js";
+import make_find_user_records_by_email from "#da/queries/find_user_records_by_email.js";
+import make_insert_code from "#da/queries/insert_code.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "..", "configs", "user-signup.env"),

@@ -5,8 +5,8 @@ import assert from "node:assert";
 import dotenv from "dotenv";
 
 import makeDbConnectionPool from "../connection.js";
-import make_find_user_records_by_email from "../find_user_records_by_email.js";
-import make_insert_user from "../insert_user.js";
+import make_find_user_records_by_email from "../queries/find_user_records_by_email.js";
+import make_insert_user from "../queries/insert_user.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "user-crud.env"),

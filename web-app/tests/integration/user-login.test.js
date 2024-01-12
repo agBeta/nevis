@@ -6,9 +6,9 @@ import { promisify } from "node:util";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
-import make_insert_user from "../../src/data-access/insert_user.js";
-import make_insert_session from "../../src/data-access/insert_session.js";
-import make_find_session_record_by_hashedSessionId from "../../src/data-access/find_session_record_by_hashedSessionId.js";
+import make_insert_user from "#da/queries/insert_user.js";
+import make_insert_session from "#da/queries/insert_session.js";
+import make_find_session_record_by_hashedSessionId from "#da/queries/find_session_record_by_hashedSessionId.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "..", "configs", "user-login.env"),

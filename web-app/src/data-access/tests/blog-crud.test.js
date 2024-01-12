@@ -4,9 +4,9 @@ import assert from "node:assert";
 import dotenv from "dotenv";
 
 import makeDbConnectionPool from "../connection.js";
-import make_insert_blog from "../insert_blog.js";
-import make_find_blog_record_by_blogId from "../find_blog_record_by_blogId.js";
-import make_find_blog_records_paginated from "../find_blog_records_paginated.js";
+import make_insert_blog from "../queries/insert_blog.js";
+import make_find_blog_record_by_blogId from "../queries/find_blog_record_by_blogId.js";
+import make_find_blog_records_paginated from "../queries/find_blog_records_paginated.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "blog-crud.env"),

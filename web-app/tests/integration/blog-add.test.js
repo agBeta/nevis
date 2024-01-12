@@ -6,8 +6,8 @@ import { promisify } from "node:util";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
-import make_find_blog_record_by_blogId from "#da/find_blog_record_by_blogId.js";
-import make_find_action_record_by_actionId from "#da/find_action_record_by_actionId.js";
+import make_find_blog_record_by_blogId from "#da/queries/find_blog_record_by_blogId.js";
+import make_find_action_record_by_actionId from "#da/queries/find_action_record_by_actionId.js";
 import { makeFakeBlog } from "../fixtures/blog.js";
 
 dotenv.config({

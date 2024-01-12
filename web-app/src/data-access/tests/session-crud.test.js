@@ -5,9 +5,9 @@ import dotenv from "dotenv";
 
 import makeDbConnectionPool from "../connection.js";
 import makeRedisClient from "../cache-connection.js";
-import make_find_session_record_by_hashedSessionId from "../find_session_record_by_hashedSessionId.js";
-import make_remove_session_record_by_hashedSessionId from "../remove_session_record_by_hashedSessionId.js";
-import make_insert_session from "../insert_session.js";
+import make_find_session_record_by_hashedSessionId from "../queries/find_session_record_by_hashedSessionId.js";
+import make_remove_session_record_by_hashedSessionId from "../queries/remove_session_record_by_hashedSessionId.js";
+import make_insert_session from "../queries/insert_session.js";
 
 dotenv.config({
     path: path.resolve(new URL(".", import.meta.url).pathname, "session-crud.env"),
