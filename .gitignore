@@ -6,3 +6,4 @@
 *.jpg
 *.png
 self-documentation
+/web-app/liara.json

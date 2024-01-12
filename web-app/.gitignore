@@ -1,0 +1,5 @@
+# Just for deploy.
+.env
+production.env
+*.env
+node_modules/
