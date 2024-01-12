@@ -1,7 +1,8 @@
 /** @returns {string} */
-export function getValueOfRoleCookie(){
+export function getValueOfRoleCookie() {
     const roleCookie = document.cookie.split("; ").find(c => c.startsWith(
-        window.location.hostname.startsWith("localhost") ? "nevis_role" : "__Host-nevis_role"
+        // window.location.hostname.startsWith("localhost") ? "nevis_role" : "__Host-nevis_role"
+        "nevis_role"
     ));
     const role = roleCookie ? roleCookie.split("=")[1] : "";
     return role;
@@ -19,7 +20,7 @@ export function convertFD2Json(fd) {
 }
 
 
-export function clearAllCookies(){
+export function clearAllCookies() {
     //  This will clear all cookies in all paths and all cookies within the current domain and
     //  all trailing subdomains.
     //  It's fine, since we don't have any cookies (like ga) but "role", and we don't have any cookies
@@ -32,8 +33,8 @@ export function clearAllCookies(){
         while (hostnameParts.length > 0) {
             const cookieName = c.split(";")[0].split("=")[0];
             const v = encodeURIComponent(cookieName
-                    + "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" + hostnameParts.join(".")
-                    + " ; path="
+                + "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" + hostnameParts.join(".")
+                + " ; path="
             );
             const pathnameParts = location.pathname.split("/");
             document.cookie = v + "/";
@@ -59,7 +60,7 @@ export function makeRetry(
     let currentAttempt = 1;
     let delay = delayBetweenConsecutiveAttempts;
     /** @type {(...args: any[]) => Promise<any>} */
-    const retry = async function(...args) {
+    const retry = async function (...args) {
         try {
             // There is no need to bind or apply. But don't forget the three dots behind args.
             const result = await callback(...args);
