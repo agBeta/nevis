@@ -1,5 +1,5 @@
 @font-face {
-    /* "How to host your own fonts made simple" by Kevin Powell + https://caniuse.com/?search=woff2. */
+    /* https://caniuse.com/?search=woff2. */
     font-family: Samim;
     /*
         Don't add "." (dot) at the beginning of url. Doing that would result in relative url based on the url that
@@ -63,7 +63,7 @@
 
 h1, h2, h3, h4, p {
     margin: 0;
-    /* Why? headings are used for semantic purpose. For styling we will use css classes. */
+    /* Why? headings are used for semantic purposes. For styling we will use css classes. */
     font-size: inherit;
     font-weight: normal;
 }
