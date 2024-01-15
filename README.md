@@ -3,9 +3,8 @@
 *A Personal Mini Project*
 
 Welcome.
-
-This project is **not** production-quality at all. For educational purposes, we decided to deliberately not use any build tools, transpilers, uglifiers, etc on the client side.   
-Anyway, here are some of tools and patterns used in this project:
+   
+Here are some of tools and patterns used in this project. For educational purposes, we decided to not use any Frameworks, build tools, transpilers, uglifiers, etc on the client side.  
   
 - Client Side Routing (No frameworks)  
 - Session Based Authentication (No frameworks)  
