@@ -72,7 +72,7 @@ const generateSecureId = init({
 //  short-lived (unlike ids that we use to store records forever in db), so it doesn't have to collision
 //  resistent.
 const generateFastId = function () {
-    return crypto.randomBytes(16).toString("hex");
+    return crypto.randomBytes(16).toString("hex"); // TODO: switch to async (callback) version (?)
 };
 const sanitizeText = function(/**@type {string}*/ text) {
     // By default <img> tag is disallowed. See https://github.com/apostrophecms/sanitize-html?tab=readme-ov-file#default-options
