@@ -5,5 +5,5 @@
 *.env
 *.jpg
 *.png
-self-documentation
+# self-documentation
 /web-app/liara.json
