@@ -5,6 +5,6 @@
 *.env
 *.jpg
 *.png
-# self-documentation
+self-documentation
 /self-documentation/.obsidian
 /web-app/liara.json
