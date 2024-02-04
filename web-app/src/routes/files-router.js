@@ -37,7 +37,7 @@ router.get("/*", (req, res) => {
     //  have more control. We aren't using google fonts or any CDN to load icons, etc. So most of them are 'self'.
     //  For future versions, don't forget to add our image upload server.
     //  Also be ware: Not all directives fallback to default-src (according to https://content-security-policy.com/.)
-    const cspHeader = process.env.NODE_ENV === "test"
+    const cspHeader = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "e2e"
         ? `default-src 'self'; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'none'; manifest-src 'self'; connect-src 'self' localhost:${process.env.PORT} `
         : "default-src 'self'; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'none'; manifest-src 'self'; connect-src 'self' ";
 
