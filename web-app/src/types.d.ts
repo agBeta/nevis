@@ -3,6 +3,8 @@ import { Pool, Connection } from "mysql2/promise";
 import { Server } from "http";
 import { RedisClientType, RedisFunctions, RedisScripts, RedisModules } from "redis";
 
+// TODO maybe: namespace queries {...}, etc.
+
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;
 export type ExpressNextFunc = NextFunction;

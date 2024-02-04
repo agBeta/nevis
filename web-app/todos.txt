@@ -1,5 +1,7 @@
-// use scrypt instead of bcrypt. See  https://stackoverflow.com/a/49447738. Also LFLFM comment.
+- Bug fix (TODO): If user doesn't logout, the session will remain in redis cache forever.
 
-// Swagger auth/code --> we do not tell email is already in use. We do not leak info.
+- use scrypt instead of bcrypt. See  https://stackoverflow.com/a/49447738. Also LFLFM comment.
 
-// chmod +x setup.sh  --> deploy instructions
+- Swagger auth/code --> we do not tell email is already in use. We do not leak info.
+
+- chmod +x setup.sh  --> deploy instructions
