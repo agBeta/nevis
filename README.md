@@ -6,7 +6,7 @@ Welcome.
    
 Here are some of tools and patterns used in this project. For educational purposes, we decided to not use any Frameworks, build tools, transpilers, uglifiers, etc on the client side.  
 
-- Type-checked Javascript (using js-doc)
+- Type-checked Javascript (using jsdoc)
 - Client Side Routing (No frameworks)  
 - Session Based Authentication (No frameworks)  
 - API Pagination (according to [the article](https://mysql.rjweb.org/doc.php/pagination) by Mr Rich James)  
