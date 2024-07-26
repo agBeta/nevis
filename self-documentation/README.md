@@ -1,0 +1,1 @@
+These are some self-documentation for myself around the tooling. As Javascript land is *saturated* with packages that mostly work the same, these self-documentations may reduce **Search Fatigue** and headaches for future maintainance.
