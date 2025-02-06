@@ -1,6 +1,6 @@
 ## MySQL choice
 
-MySQL is good enough. Don't go into the rabbit hole of database any further. No need to over-engineer.
+MySQL is good enough. Don't go into the rabbit hole of database any further. No need to over-engineer.  
 
 [SO 1: MySQL Database with Multiple Servers](https://stackoverflow.com/a/43987579):  
 I'm 99.999% certain all those words are just saying "premature optimization". Unless you have over 20GB of data (or 50GB or 100GB.. basically, a lot), use a single database and once it starts slowing down look at different options (sharding, etc).
@@ -359,6 +359,10 @@ I would strongly recommend to avoid any object name that requires quoting. Using
 
 According to https://stackoverflow.com/questions/790242/how-to-add-a-port-to-mysql-server, You cannot bind mysqld to listen to multiple ports. The only way you can achieve this is with internal routing rules which would forward the target port to 3306. If you are on linux, you can achieve this using iptables.
 Although not very much related, but important to know: https://stackoverflow.com/questions/25905657/its-mysql-or-mysqld. mysqld is the MySQL server. https://dev.mysql.com/doc/refman/8.0/en/mysqld-server.html and https://dev.mysql.com/doc/refman/8.0/en/mysqld.html.
+
+## SQL?
+
+>  Your workload is not special enough to justify deviating from SQL ... [reddit](https://www.reddit.com/r/rust/comments/1b69gsp/comment/ktbexou/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
 
 ## Maybe NoSQL (Mongo)?
 
